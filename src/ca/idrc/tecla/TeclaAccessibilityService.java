@@ -7,11 +7,17 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaAccessibilityService extends AccessibilityService {
 
+	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
+	
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
 		Log.d("TeclaA11y", "Tecla Accessibility Service Connected!");
-		
+
+		if (mTeclaAccessibilityOverlay == null) {
+			mTeclaAccessibilityOverlay = new TeclaAccessibilityOverlay(this);
+			mTeclaAccessibilityOverlay.show();
+		}
 	}
 
 	@Override
