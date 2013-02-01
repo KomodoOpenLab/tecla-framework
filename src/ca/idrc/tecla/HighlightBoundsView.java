@@ -28,6 +28,7 @@ import android.graphics.Rect;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,7 +41,7 @@ public class HighlightBoundsView extends View {
 
     private final Rect mTemp = new Rect();
     private final Paint mPaint = new Paint();
-    private final HashSet<AccessibilityNodeInfoCompat> mNodes = new HashSet<AccessibilityNodeInfoCompat>();
+    private final HashSet<AccessibilityNodeInfo> mNodes = new HashSet<AccessibilityNodeInfo>();
     private final Matrix mMatrix = new Matrix();
 
     private int mHighlightColor;
@@ -76,7 +77,7 @@ public class HighlightBoundsView extends View {
 
         mPaint.setColor(mHighlightColor);
 
-        for (AccessibilityNodeInfoCompat node : mNodes) {
+        for (AccessibilityNodeInfo node : mNodes) {
             node.getBoundsInScreen(mTemp);
             c.drawRect(mTemp, mPaint);
         }
@@ -94,7 +95,7 @@ public class HighlightBoundsView extends View {
     }
 
     public void clear() {
-        for (AccessibilityNodeInfoCompat node : mNodes) {
+        for (AccessibilityNodeInfo node : mNodes) {
             node.recycle();
         }
 
@@ -106,12 +107,12 @@ public class HighlightBoundsView extends View {
      *
      * @param node The node to highlight.
      */
-    public void add(AccessibilityNodeInfoCompat node) {
+    public void add(AccessibilityNodeInfo node) {
         if (node == null) {
             return;
         }
 
-        final AccessibilityNodeInfoCompat clone = AccessibilityNodeInfoCompat.obtain(node);
+        final AccessibilityNodeInfo clone = AccessibilityNodeInfo.obtain(node);
 
         mNodes.add(clone);
     }
@@ -120,10 +121,10 @@ public class HighlightBoundsView extends View {
      * Removes nodes that are no longer accessible.
      */
     public void removeInvalidNodes() {
-        final Iterator<AccessibilityNodeInfoCompat> iterator = mNodes.iterator();
+        final Iterator<AccessibilityNodeInfo> iterator = mNodes.iterator();
 
         while (iterator.hasNext()) {
-            final AccessibilityNodeInfoCompat node = iterator.next();
+            final AccessibilityNodeInfo node = iterator.next();
 
             if (!isValidNode(node)) {
                 iterator.remove();
@@ -132,8 +133,8 @@ public class HighlightBoundsView extends View {
         }
     }
 
-    private boolean isValidNode(AccessibilityNodeInfoCompat node) {
-        final AccessibilityNodeInfoCompat parent = node.getParent();
+    private boolean isValidNode(AccessibilityNodeInfo node) {
+        final AccessibilityNodeInfo parent = node.getParent();
 
         if (parent != null) {
             parent.recycle();
@@ -143,7 +144,7 @@ public class HighlightBoundsView extends View {
         final int childCount = node.getChildCount();
 
         for (int i = 0; i < childCount; i++) {
-            final AccessibilityNodeInfoCompat child = node.getChild(i);
+            final AccessibilityNodeInfo child = node.getChild(i);
 
             if (child != null) {
                 child.recycle();

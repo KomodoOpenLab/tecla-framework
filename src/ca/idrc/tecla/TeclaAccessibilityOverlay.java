@@ -3,6 +3,7 @@ package ca.idrc.tecla;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaAccessibilityOverlay extends SimpleOverlay {
 
@@ -42,4 +43,30 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
 	}
 	
 
+    public static void removeInvalidNodes() {
+        if (sInstance == null) {
+            return;
+        }
+
+        sInstance.mBounds.removeInvalidNodes();
+        sInstance.mBounds.postInvalidate();
+
+        sInstance.mAnnounceBounds.removeInvalidNodes();
+        sInstance.mAnnounceBounds.postInvalidate();
+    }
+
+    public static void updateNodes(AccessibilityNodeInfo source, AccessibilityNodeInfo announced) {
+        if (sInstance == null) {
+            return;
+        }
+
+        sInstance.mBounds.clear();
+        sInstance.mBounds.add(source);
+        sInstance.mBounds.postInvalidate();
+
+        sInstance.mAnnounceBounds.clear();
+        sInstance.mAnnounceBounds.add(announced);
+        sInstance.mAnnounceBounds.postInvalidate();
+    }
+    
 }
