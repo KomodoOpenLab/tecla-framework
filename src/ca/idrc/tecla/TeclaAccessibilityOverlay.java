@@ -64,9 +64,12 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
         sInstance.mBounds.add(source);
         sInstance.mBounds.postInvalidate();
 
+        
         sInstance.mAnnounceBounds.clear();
+        /*
         sInstance.mAnnounceBounds.add(announced);
         sInstance.mAnnounceBounds.postInvalidate();
+        */
     }
     
 }

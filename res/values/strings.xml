@@ -1,5 +1,8 @@
 <resources>
 
     <string name="app_name">tecla-as</string>
+    
+    <!-- Tecla a11y service description -->
+    <string name="tecla_service_description">This is the Tecla service description</string>
 
 </resources>
