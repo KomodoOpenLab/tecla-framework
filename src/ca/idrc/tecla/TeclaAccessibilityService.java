@@ -11,7 +11,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static boolean DEBUG = true;
 	
-	private AccessibilityNodeInfo original, parent;
+	private AccessibilityNodeInfo original, ancestor;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
 	
 	// used for debugging 
@@ -50,9 +50,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			//if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 				Log.w("TeclaA11y", "Updating node!");
 				updateTeclaASNodeInfo(node);
-				if(DEBUG) logNode(node, true);
+				// if(DEBUG) logNode(node, true);
 				
-				TeclaAccessibilityOverlay.updateNodes(parent, null);
+				TeclaAccessibilityOverlay.updateNodes(node, null);
 			//}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
@@ -61,8 +61,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private void updateTeclaASNodeInfo(AccessibilityNodeInfo node) {
 		original = node;
-		parent = findMultipleChildAncestor(node);
-		Log.d("TeclaA11y", "New parent window ID " + parent.getWindowId()); // + " with " + child_count + " children");
+		ancestor = findMultipleChildAncestor(node);
+		Log.d("TeclaA11y", "New parent window ID " + ancestor.getWindowId()); // + " with " + child_count + " children");
 	}
 
 	private AccessibilityNodeInfo findMultipleChildAncestor(AccessibilityNodeInfo node) {
@@ -179,18 +179,23 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					touchup = TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT;
 				}
 				
+				AccessibilityNodeInfo temp_node = null;
 				if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPLEFT) {
 					// it's a left! 
-					Log.w("TeclaA11y", "6-switch access: LEFT");
+					Log.w("TeclaA11y", "6-switch access: LEFT");					
+					temp_node = original.findFocus(View.FOCUS_LEFT);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPRIGHT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					// it's an up!  
 					Log.w("TeclaA11y", "6-switch access: UP");
+					temp_node = original.findFocus(View.FOCUS_UP);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT) {
 					// it's a down!  
 					Log.w("TeclaA11y", "6-switch access: DOWN");
+					temp_node = original.findFocus(View.FOCUS_DOWN);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					// it's a right!  
 					Log.w("TeclaA11y", "6-switch access: RIGHT");
+					temp_node = original.findFocus(View.FOCUS_RIGHT);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					// it's a send!
 					Log.w("TeclaA11y", "6-switch access: SEND");
@@ -201,6 +206,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					// shut down   
 					Log.w("TeclaA11y", "6-switch access: SHUTDOWN");
 					shutdownInfrastructure();
+				}
+				if(temp_node != null) {
+					original = temp_node;
+					TeclaAccessibilityOverlay.updateNodes(original, null);
 				}
 				break;
 			default:
@@ -236,13 +245,22 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		
 		Log.w("TeclaA11y", "toString " + node.toString());
 		Log.w("TeclaA11y", "getActions " + Integer.toString(node.getActions()));
+		/*
 		CharSequence c = node.getContentDescription();
 		if(c != null) {
 			s = c.toString();
 			Log.w("TeclaA11y", "getContentDescription " + s);
 		}
+		*/
 		Log.w("TeclaA11y", "getMovementGranularities " + Integer.toString(node.getMovementGranularities()));
-		Log.w("TeclaA11y", "getText " + node.getText().toString());
+		
+		/*
+		c = node.getText();
+		if(c != null) {
+			s = c.toString();
+			Log.w("TeclaA11y", "getText " + s);
+		}
+		*/
 		Log.w("TeclaA11y", "isAccessibilityFocused " + Boolean.toString(node.isAccessibilityFocused()));
 		Log.w("TeclaA11y", "isCheckable " + Boolean.toString(node.isCheckable()));
 		Log.w("TeclaA11y", "isChecked " + Boolean.toString(node.isChecked()));
