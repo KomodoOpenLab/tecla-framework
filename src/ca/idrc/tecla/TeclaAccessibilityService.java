@@ -232,9 +232,15 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	private static void logNode(AccessibilityNodeInfo node, boolean lookForChildren) {
 
+		String s;
+		
 		Log.w("TeclaA11y", "toString " + node.toString());
 		Log.w("TeclaA11y", "getActions " + Integer.toString(node.getActions()));
-		Log.w("TeclaA11y", "getContentDescription " + node.getContentDescription().toString());
+		CharSequence c = node.getContentDescription();
+		if(c != null) {
+			s = c.toString();
+			Log.w("TeclaA11y", "getContentDescription " + s);
+		}
 		Log.w("TeclaA11y", "getMovementGranularities " + Integer.toString(node.getMovementGranularities()));
 		Log.w("TeclaA11y", "getText " + node.getText().toString());
 		Log.w("TeclaA11y", "isAccessibilityFocused " + Boolean.toString(node.isAccessibilityFocused()));
@@ -253,6 +259,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			for (int i=0; i<node.getChildCount(); ++i) {
 				AccessibilityNodeInfo node1 = node.getChild(i);
 				Log.w("TeclaA11y", "Child Node #" + Integer.toString(i+1) + ": ");
+				if(node1 == null) continue; 
 				logNode(node1, false);
 			}
 		}
