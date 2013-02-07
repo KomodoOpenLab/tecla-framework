@@ -42,18 +42,36 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		int event_type = event.getEventType();
-		Log.w("TeclaA11y", "I was here.  ");
 		Log.d("TeclaA11y", AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
 		
 		AccessibilityNodeInfo node = event.getSource();
+		AccessibilityNodeInfo child = null;
+		if(node != null) child=node.getChild(0);
 		if (node != null) {
-			//if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 				Log.w("TeclaA11y", "Updating node!");
-				updateTeclaASNodeInfo(node);
+				
+				int n= child.getChildCount();
+				Log.w("TeclaA11y", "Current child has " + Integer.toString(n) +
+						" children.");
+				AccessibilityNodeInfo gchild = null; 
+				int i = 0; 
+				/*while (gchild == null && i < n) {
+					gchild = child.getChild(i);
+					if(!gchild.isVisibleToUser()) gchild = null;
+				}*/gchild = child.getChild(1);
+				if(gchild != null ) {
+					Log.w("TeclaA11y", "Located the first visible child.  ");
+					TeclaAccessibilityOverlay.updateNodes(node, gchild);
+					
+				} else {
+					TeclaAccessibilityOverlay.updateNodes(node, null);
+				}
+				//updateTeclaASNodeInfo(node);
 				// if(DEBUG) logNode(node, true);
 				
-				TeclaAccessibilityOverlay.updateNodes(node, null);
-			//}
+				
+			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
 		}
@@ -62,7 +80,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void updateTeclaASNodeInfo(AccessibilityNodeInfo node) {
 		original = node;
 		ancestor = findMultipleChildAncestor(node);
-		Log.d("TeclaA11y", "New parent window ID " + ancestor.getWindowId()); // + " with " + child_count + " children");
+		// Log.d("TeclaA11y", "New parent window ID " + ancestor.getWindowId()); // + " with " + child_count + " children");
 	}
 
 	private AccessibilityNodeInfo findMultipleChildAncestor(AccessibilityNodeInfo node) {

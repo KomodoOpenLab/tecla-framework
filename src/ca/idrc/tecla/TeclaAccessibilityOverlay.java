@@ -61,15 +61,17 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
         }
 
         sInstance.mBounds.clear();
-        sInstance.mBounds.add(source);
-        sInstance.mBounds.postInvalidate();
-
+        if(source != null) {
+            sInstance.mBounds.add(source);
+            sInstance.mBounds.postInvalidate();        	
+        }
         
         sInstance.mAnnounceBounds.clear();
-        /*
-        sInstance.mAnnounceBounds.add(announced);
-        sInstance.mAnnounceBounds.postInvalidate();
-        */
+        if(announced != null) {
+            sInstance.mAnnounceBounds.add(announced);
+            sInstance.mAnnounceBounds.postInvalidate();
+        	
+        }
     }
     
 }
