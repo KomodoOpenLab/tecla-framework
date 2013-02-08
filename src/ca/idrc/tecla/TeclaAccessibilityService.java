@@ -1,5 +1,9 @@
 package ca.idrc.tecla;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import android.accessibilityservice.AccessibilityService;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -11,7 +15,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static boolean DEBUG = true;
 	
-	private AccessibilityNodeInfo original, ancestor;
+	private AccessibilityNodeInfo original, parent, mScanWindow, mScanNode, ancestor;
+	private Queue<AccessibilityNodeInfo> mScanWindows, mScanNodes;	
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
 	
 	// used for debugging 
@@ -26,7 +31,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	protected void onServiceConnected() {
 		super.onServiceConnected();
 		Log.d("TeclaA11y", "Tecla Accessibility Service Connected!");
-
+		
+		mScanWindows = new LinkedList<AccessibilityNodeInfo>();
+		mScanNodes = new LinkedList<AccessibilityNodeInfo>();
+		
 		if (mTeclaAccessibilityOverlay == null) {
 			mTeclaAccessibilityOverlay = new TeclaAccessibilityOverlay(this);
 			mTeclaAccessibilityOverlay.show();
@@ -48,35 +56,49 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		AccessibilityNodeInfo child = null;
 		if(node != null) child=node.getChild(0);
 		if (node != null) {
-			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-				Log.w("TeclaA11y", "Updating node!");
-				
-				int n= child.getChildCount();
-				Log.w("TeclaA11y", "Current child has " + Integer.toString(n) +
-						" children.");
-				AccessibilityNodeInfo gchild = null; 
-				int i = 0; 
-				/*while (gchild == null && i < n) {
-					gchild = child.getChild(i);
-					if(!gchild.isVisibleToUser()) gchild = null;
-				}*/gchild = child.getChild(1);
-				if(gchild != null ) {
-					Log.w("TeclaA11y", "Located the first visible child.  ");
-					TeclaAccessibilityOverlay.updateNodes(node, gchild);
-					
-				} else {
-					TeclaAccessibilityOverlay.updateNodes(node, null);
-				}
-				//updateTeclaASNodeInfo(node);
-				// if(DEBUG) logNode(node, true);
-				
-				
+			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {		
+				original = node;
+				enQueueScanWindowsBFS(node);
+				mScanWindow = mScanWindows.poll();
+				enQueueScanNodes(mScanWindow);
+				mScanNode = mScanNodes.poll();
+				TeclaAccessibilityOverlay.updateNodes(mScanWindow, mScanNode);
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
 		}
 	}
 
+	// find the scan windows with breadth first search 
+	private void enQueueScanWindowsBFS(AccessibilityNodeInfo node) {
+		mScanWindows.clear();
+		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
+		q.add(node);
+		while (!q.isEmpty()) {
+			AccessibilityNodeInfo thisnode = q.poll();
+			if(thisnode.getChildCount()>1) {
+				AccessibilityNodeInfo child = thisnode.getChild(0);
+				if(child.isClickable() && child.isVisibleToUser()) mScanWindows.add(thisnode);
+			}
+			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
+		}
+	}
+
+	// find the scan windows with breadth first search 
+	private void enQueueScanNodes(AccessibilityNodeInfo node) {
+		mScanNodes.clear();
+		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
+		q.add(node);
+		while (!q.isEmpty()) {
+			AccessibilityNodeInfo thisnode = q.poll();
+			if(thisnode.getChildCount()>1) {
+				AccessibilityNodeInfo child = thisnode.getChild(0);
+				if(child.isClickable() && child.isVisibleToUser()) mScanNodes.add(thisnode);
+			}
+			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
+		}
+	}
+	
 	private void updateTeclaASNodeInfo(AccessibilityNodeInfo node) {
 		original = node;
 		ancestor = findMultipleChildAncestor(node);
