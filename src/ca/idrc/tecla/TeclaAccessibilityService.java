@@ -15,9 +15,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static boolean DEBUG = true;
 	
-	private AccessibilityNodeInfo original, mScanWindow, mScanNode;
-	private ArrayList<AccessibilityNodeInfo> mScanWindows, mScanNodes;
-	private byte mScanWindowIndex, mScanNodeIndex;
+	private AccessibilityNodeInfo mOriginalNode, mScanNode;
+	private ArrayList<AccessibilityNodeInfo> mScanNodes;
+	private int mScanNodeIndex;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
 	
 	// used for debugging 
@@ -33,7 +33,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		super.onServiceConnected();
 		Log.d("TeclaA11y", "Tecla Accessibility Service Connected!");
 		
-		mScanWindows = new ArrayList<AccessibilityNodeInfo>();
 		mScanNodes = new ArrayList<AccessibilityNodeInfo>();
 		
 		if (mTeclaAccessibilityOverlay == null) {
@@ -56,41 +55,34 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		AccessibilityNodeInfo node = event.getSource();
 		if (node != null) {
 			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {		
-				original = node;
-				populateScanWindowsBFS(node);
-				mScanWindowIndex = 0;
-				mScanWindow = mScanWindows.get(mScanWindowIndex);
-				populateScanNodes(mScanWindow);
+				mOriginalNode = node;
+				populateScanNodesBFS(node);
 				mScanNodeIndex = 0;
 				mScanNode = mScanNodes.get(0);
-				TeclaAccessibilityOverlay.updateNodes(mScanWindow, mScanNode);
+				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);				
+			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {		
+				mOriginalNode = node;
+				populateScanNodesBFS(node);
+				mScanNodeIndex = 0;
+				mScanNode = mScanNodes.get(0);
+				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);							
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
 		}
 	}
 
-	// find the scan windows with breadth first search 
-	private void populateScanWindowsBFS(AccessibilityNodeInfo node) {
-		mScanWindows.clear();
+	// find the scan nodes with breadth first search 
+	private void populateScanNodesBFS(AccessibilityNodeInfo node) {
+		mScanNodes.clear();
 		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
 		q.add(node);
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
-			if(thisnode.getChildCount()>1) {
-				AccessibilityNodeInfo child = thisnode.getChild(0);
-				if(child.isClickable() && child.isVisibleToUser()) mScanWindows.add(thisnode);
-			}
+			if(thisnode.isVisibleToUser() && thisnode.isClickable()) mScanNodes.add(thisnode);
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
-	}
-
-	private void populateScanNodes(AccessibilityNodeInfo node) {
-		mScanNodes.clear();
-		for (int i=0; i<node.getChildCount(); ++i) {
-			AccessibilityNodeInfo thisnode = node.getChild(i);
-			if(thisnode.isClickable() && thisnode.isVisibleToUser()) mScanNodes.add(thisnode);
-		}
+		Log.w("TeclaA11y", "There are " + mScanNodes.size() + " elements in the scan node list.");
 	}
 	
 	@Override
@@ -141,31 +133,27 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				}
 				
 				if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPLEFT) {
-					// it's a left! 
-					//Log.w("TeclaA11y", "6-switch access: LEFT");					
-					//temp_node = original.findFocus(View.FOCUS_LEFT);
-					
+					Log.w("TeclaA11y", "3-switch access: scan node previous");
+					if(--mScanNodeIndex < 0) mScanNodeIndex = 0;
+					mScanNode = mScanNodes.get(mScanNodeIndex);
+					TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPRIGHT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
-					// it's an up!  
-					//Log.w("TeclaA11y", "6-switch access: UP");
-					//temp_node = original.findFocus(View.FOCUS_UP);
+					Log.w("TeclaA11y", "3-switch access: scan node next");
+					if(++mScanNodeIndex >= mScanNodes.size())  mScanNodeIndex = mScanNodes.size() - 1;
+					mScanNode = mScanNodes.get(mScanNodeIndex);
+					TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT) {
-					// it's a down!  
-					//Log.w("TeclaA11y", "6-switch access: DOWN");
-					//temp_node = original.findFocus(View.FOCUS_DOWN);
+					Log.w("TeclaA11y", "3-switch access: click ");
+					mScanNode.performAction(AccessibilityNodeInfo.ACTION_CLICK );
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
-					// it's a right!  
-					//Log.w("TeclaA11y", "6-switch access: RIGHT");
-					//temp_node = original.findFocus(View.FOCUS_RIGHT);
+					Log.w("TeclaA11y", "Current node: " + mScanNode.toString());
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
-					// it's a send!
-					//Log.w("TeclaA11y", "6-switch access: SEND");
+					
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
-					// it's a cancel!  
-					//Log.w("TeclaA11y", "6-switch access: CANCEL");
+					
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					// shut down   
-					//Log.w("TeclaA11y", "6-switch access: SHUTDOWN");
+					Log.w("TeclaA11y", "6-switch access: SHUTDOWN");
 					shutdownInfrastructure();
 				}
 				/*
