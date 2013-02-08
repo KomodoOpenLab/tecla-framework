@@ -87,15 +87,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	// find the scan windows with breadth first search 
 	private void enQueueScanNodes(AccessibilityNodeInfo node) {
 		mScanNodes.clear();
-		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
-		q.add(node);
-		while (!q.isEmpty()) {
-			AccessibilityNodeInfo thisnode = q.poll();
-			if(thisnode.getChildCount()>1) {
-				AccessibilityNodeInfo child = thisnode.getChild(0);
-				if(child.isClickable() && child.isVisibleToUser()) mScanNodes.add(thisnode);
-			}
-			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
+		for (int i=0; i<node.getChildCount(); ++i) {
+			AccessibilityNodeInfo thisnode = node.getChild(i);
+			if(thisnode.isClickable() && thisnode.isVisibleToUser()) mScanNodes.add(thisnode);
 		}
 	}
 	
@@ -223,19 +217,19 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPLEFT) {
 					// it's a left! 
 					Log.w("TeclaA11y", "6-switch access: LEFT");					
-					temp_node = original.findFocus(View.FOCUS_LEFT);
+					//temp_node = original.findFocus(View.FOCUS_LEFT);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPRIGHT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					// it's an up!  
 					Log.w("TeclaA11y", "6-switch access: UP");
-					temp_node = original.findFocus(View.FOCUS_UP);
+					//temp_node = original.findFocus(View.FOCUS_UP);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT) {
 					// it's a down!  
 					Log.w("TeclaA11y", "6-switch access: DOWN");
-					temp_node = original.findFocus(View.FOCUS_DOWN);
+					//temp_node = original.findFocus(View.FOCUS_DOWN);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					// it's a right!  
 					Log.w("TeclaA11y", "6-switch access: RIGHT");
-					temp_node = original.findFocus(View.FOCUS_RIGHT);
+					//temp_node = original.findFocus(View.FOCUS_RIGHT);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					// it's a send!
 					Log.w("TeclaA11y", "6-switch access: SEND");
@@ -247,10 +241,12 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					Log.w("TeclaA11y", "6-switch access: SHUTDOWN");
 					shutdownInfrastructure();
 				}
+				/*
 				if(temp_node != null) {
 					original = temp_node;
 					TeclaAccessibilityOverlay.updateNodes(original, null);
 				}
+				*/
 				break;
 			default:
 				break;
