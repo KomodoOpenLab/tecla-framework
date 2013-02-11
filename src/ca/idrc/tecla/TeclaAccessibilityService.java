@@ -34,6 +34,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		Log.d("TeclaA11y", "Tecla Accessibility Service Connected!");
 		
 		mScanNodes = new ArrayList<AccessibilityNodeInfo>();
+		mScrollNodes = new ArrayList<AccessibilityNodeInfo>();
 		
 		if (mTeclaAccessibilityOverlay == null) {
 			mTeclaAccessibilityOverlay = new TeclaAccessibilityOverlay(this);
@@ -73,14 +74,17 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	// find the scan nodes with breadth first search 
 	private void populateScanNodesBFS(AccessibilityNodeInfo node) {
 		mScanNodes.clear();
+		mScrollNodes.clear();
 		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
 		q.add(node);
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
-			if(thisnode.isVisibleToUser() && thisnode.isClickable()) mScanNodes.add(thisnode);
+			if(thisnode.isScrollable()) mScrollNodes.add(thisnode);
+			else if(thisnode.isVisibleToUser() && thisnode.isClickable()) mScanNodes.add(thisnode);
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
 		Log.w("TeclaA11y", "There are " + mScanNodes.size() + " elements in the scan node list.");
+		Log.w("TeclaA11y", "There are " + mScrollNodes.size() + " elements in the scroll node list.");
 	}
 	
 	@Override
