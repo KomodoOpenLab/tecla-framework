@@ -16,7 +16,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static boolean DEBUG = true;
 	
 	private AccessibilityNodeInfo mOriginalNode, mScanNode;
-	private ArrayList<AccessibilityNodeInfo> mScanNodes;
+	private ArrayList<AccessibilityNodeInfo> mScanNodes, mScrollNodes;
 	private int mScanNodeIndex;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
 	
@@ -60,12 +60,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				mScanNodeIndex = 0;
 				mScanNode = mScanNodes.get(0);
 				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);				
-			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {		
-				mOriginalNode = node;
-				populateScanNodesBFS(node);
-				mScanNodeIndex = 0;
-				mScanNode = mScanNodes.get(0);
-				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);							
+			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
+										
+			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+				
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
@@ -153,7 +151,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					// shut down   
-					Log.w("TeclaA11y", "6-switch access: SHUTDOWN");
+					Log.w("TeclaA11y", "3-switch access: SHUTDOWN");
 					shutdownInfrastructure();
 				}
 				/*
