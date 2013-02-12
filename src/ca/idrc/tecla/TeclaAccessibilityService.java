@@ -114,6 +114,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		q.add(node);
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
+			if(thisnode == null) continue; 
 			if(thisnode.isVisibleToUser() && thisnode.isClickable() && !thisnode.isScrollable()) {
 				if(thisnode.isFocused() || thisnode.isSelected()) {
 					mActiveNodes.add(thisnode);
