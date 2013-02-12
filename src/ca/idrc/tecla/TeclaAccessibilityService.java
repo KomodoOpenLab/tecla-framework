@@ -57,10 +57,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (node != null) {
 			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 				mOriginalNode = node;
-				populateRefNodesBFS(node);
-				mScanNodeIndex = 0;
-				mScanNode = mScanNodes.get(0);
-				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);				
+				AccessibilityNodeInfo activeNode = searchActiveNodeBFS(mOriginalNode);
+				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, activeNode);				
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
 										
 			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
@@ -82,6 +80,21 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private AccessibilityNodeInfo searchActiveNodeBFS(AccessibilityNodeInfo node) {
+		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
+		q.add(node);
+		while (!q.isEmpty()) {
+			AccessibilityNodeInfo thisnode = q.poll();
+			if(thisnode.isVisibleToUser() && thisnode.isClickable()) {
+				if(thisnode.isFocused() || thisnode.isSelected()) {
+					return thisnode;
+				}
+			}
+			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
+		}
+		return null;
+	}
+	
 	// find the scan nodes with breadth first search 
 	private void populateRefNodesBFS(AccessibilityNodeInfo node) {
 		mScanNodes.clear();
