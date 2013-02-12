@@ -16,8 +16,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static boolean DEBUG = true;
 	
 	private AccessibilityNodeInfo mOriginalNode, mScanNode;
-	private ArrayList<AccessibilityNodeInfo> mScanNodes, mScrollNodes;
-	private int mScanNodeIndex;
+	private ArrayList<AccessibilityNodeInfo> mScanNodes;
+	private int mScanNodeIndex, mTouchMode;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
 	
 	// used for debugging 
@@ -34,7 +34,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		Log.d("TeclaA11y", "Tecla Accessibility Service Connected!");
 		
 		mScanNodes = new ArrayList<AccessibilityNodeInfo>();
-		mScrollNodes = new ArrayList<AccessibilityNodeInfo>();
+		mTouchMode = 0;
 		
 		if (mTeclaAccessibilityOverlay == null) {
 			mTeclaAccessibilityOverlay = new TeclaAccessibilityOverlay(this);
@@ -55,16 +55,27 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		
 		AccessibilityNodeInfo node = event.getSource();
 		if (node != null) {
-			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {		
+			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 				mOriginalNode = node;
-				populateScanNodesBFS(node);
+				populateRefNodesBFS(node);
 				mScanNodeIndex = 0;
 				mScanNode = mScanNodes.get(0);
 				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);				
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
 										
 			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-				
+				mOriginalNode = node;
+				populateRefNodesBFS(node);
+				for (int i=0; i<mScanNodes.size(); ++i) {
+					AccessibilityNodeInfo searchNode = mScanNodes.get(i);
+					if(searchNode == mScanNode) {
+						mScanNodeIndex = i;
+						mScanNode = mScanNodes.get(i);	
+						break; 
+					}
+				}	
+				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);	
+				Log.w("TeclaA11y", "Scrolled ");
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
@@ -72,19 +83,32 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	// find the scan nodes with breadth first search 
-	private void populateScanNodesBFS(AccessibilityNodeInfo node) {
+	private void populateRefNodesBFS(AccessibilityNodeInfo node) {
 		mScanNodes.clear();
-		mScrollNodes.clear();
 		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
 		q.add(node);
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
-			if(thisnode.isScrollable()) mScrollNodes.add(thisnode);
-			else if(thisnode.isVisibleToUser() && thisnode.isClickable()) mScanNodes.add(thisnode);
+			if(thisnode.isVisibleToUser() && thisnode.isClickable()) mScanNodes.add(thisnode);
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
 		Log.w("TeclaA11y", "There are " + mScanNodes.size() + " elements in the scan node list.");
-		Log.w("TeclaA11y", "There are " + mScrollNodes.size() + " elements in the scroll node list.");
+	}
+	
+	private boolean checkScroll(AccessibilityNodeInfo scanNode, AccessibilityNodeInfo nextScanNode) {
+		AccessibilityNodeInfo parent1 = scanNode.getParent();
+		AccessibilityNodeInfo parent2 = nextScanNode.getParent();
+		if(!parent1.isScrollable()) return false;
+		Log.w("TeclaA11y", parent1.toString());
+		Log.w("TeclaA11y", parent2.toString());
+		Log.w("TeclaA11y", "Same parent = " + (parent1.toString().equals(parent2.toString())));
+		/*
+		if(parent1 != parent2) { // scroll (assumed backwards) 
+			parent1.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+			return true; 
+		}
+		*/
+		return false;  
 	}
 	
 	@Override
@@ -145,25 +169,40 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					mScanNode = mScanNodes.get(mScanNodeIndex);
 					TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mScanNode);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT) {
+					if(mTouchMode == 1) {
+						AccessibilityNodeInfo parent = mScanNode.getParent();
+						if(parent.isScrollable()) {
+							parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD );
+							mOriginalNode.recycle();
+						}
+						break; 
+					}
 					Log.w("TeclaA11y", "3-switch access: click ");
 					mScanNode.performAction(AccessibilityNodeInfo.ACTION_CLICK );
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
+					if(mTouchMode == 1) {
+						AccessibilityNodeInfo parent = mScanNode.getParent();
+						if(parent.isScrollable()) {
+							parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD );	
+							mOriginalNode.recycle();
+						}
+						break; 
+					}
 					Log.w("TeclaA11y", "Current node: " + mScanNode.toString());
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					
-				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
+				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					// shut down   
+					++mTouchMode;
+					mTouchMode = mTouchMode%2;
+					Log.w("TeclaA11y", "Touch mode = " + mTouchMode);
+				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
+					// shut down  
 					Log.w("TeclaA11y", "3-switch access: SHUTDOWN");
 					shutdownInfrastructure();
 				}
-				/*
-				if(temp_node != null) {
-					original = temp_node;
-					TeclaAccessibilityOverlay.updateNodes(original, null);
-				}
-				*/
 				break;
 			default:
 				break;
