@@ -57,16 +57,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (node != null) {
 			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 				mOriginalNode = node;
-				searchActiveNodesBFS(mOriginalNode);
-				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mActiveNodes.get(mActiveNodes.size()-1));				
+				searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
 				
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-				searchActiveNodesBFS(mOriginalNode);
-				TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mActiveNodes.get(mActiveNodes.size()-1));
+				searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
-				searchActiveNodesBFS(mOriginalNode);
-				TeclaAccessibilityOverlay.updateNodes(mOriginalNode,  mActiveNodes.get(mActiveNodes.size()-1));
+				searchAndUpdateNodes();
 			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
 				
 			}
@@ -75,6 +72,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private void searchAndUpdateNodes() {
+		searchActiveNodesBFS(mOriginalNode);
+		if (mActiveNodes.size() > 0 ) {
+			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mActiveNodes.get(mActiveNodes.size()-1));				
+		}		
+	}
+	
 	private AccessibilityNodeInfo searchActiveNodeBFS(AccessibilityNodeInfo node) {
 		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
 		q.add(node);
