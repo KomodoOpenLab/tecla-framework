@@ -11,6 +11,7 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
 
     private final HighlightBoundsView mAnnounceBounds;
     private final HighlightBoundsView mBounds;
+    protected final TeclaShieldControlView mControlView;
     
 	public TeclaAccessibilityOverlay(Context context) {
 		super(context);
@@ -28,6 +29,8 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
 		
 		mBounds = (HighlightBoundsView) findViewById(R.id.bounds);
 		mBounds.setHighlightColor(Color.RED);
+		
+		mControlView = (TeclaShieldControlView) findViewById(R.id.tecla_control);
 	}
 
 	@Override

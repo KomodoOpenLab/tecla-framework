@@ -19,6 +19,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mTouchMode;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
+	private TeclaShieldControl mControl;
 	
 	// used for debugging 
 	private final static int TOUCHED_TOPLEFT = 0;
@@ -39,7 +40,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mTeclaAccessibilityOverlay == null) {
 			mTeclaAccessibilityOverlay = new TeclaAccessibilityOverlay(this);
 			mTeclaAccessibilityOverlay.show();
-		}
+		}		
+		mControl = new TeclaShieldControl(mTeclaAccessibilityOverlay.mControlView);
 		
 		if(DEBUG) {
 			mTeclaAccessibilityOverlay.getRootView().setOnTouchListener(mOverlayTouchListener);
@@ -158,18 +160,20 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				}
 				
 				if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPLEFT) {
-					
+					mControl.setPreviousSelected();
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPRIGHT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
-					
+					mControl.setNextSelected();
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT) {
 					if(mTouchMode == 1) {
 						break; 
 					}
+					mControl.performAction();
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					if(mTouchMode == 1) {
 						break; 
 					}
-					Log.w("TeclaA11y", "Current node: " +  mActiveNodes.get(mActiveNodes.size()-1).toString());
+					mControl.performAction();
+					//Log.w("TeclaA11y", "Current node: " +  mActiveNodes.get(mActiveNodes.size()-1).toString());
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMLEFT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
