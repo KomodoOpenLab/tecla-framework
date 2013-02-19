@@ -14,9 +14,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static boolean DEBUG = true;
+	private static TeclaAccessibilityService sInstance;
 	
 	private AccessibilityNodeInfo mOriginalNode;
+	
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
+	private int mNodeIndex;
+	
 	private int mTouchMode;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
 	private TeclaShieldControl mControl;
@@ -26,14 +30,21 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static int TOUCHED_TOPRIGHT = 1;
 	private final static int TOUCHED_BOTTOMLEFT = 2;
 	private final static int TOUCHED_BOTTOMRIGHT = 3;
+	private final static int SCROLLED_NOWHERE = 0;
+	private final static int SCROLLED_BACKWARD = 1;
+	private final static int SCROLLED_FORWARD = 2;
 	private int touchdown;
 	private int touchup;
+	private int scrollDirection;
+	private AccessibilityNodeInfo scrollableNode;
 	
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
 		Log.d("TeclaA11y", "Tecla Accessibility Service Connected!");
 		
+		sInstance = this;
+		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mTouchMode = 0;
 		
@@ -57,8 +68,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		
 		AccessibilityNodeInfo node = event.getSource();
 		if (node != null) {
+			
+			mOriginalNode = node;
 			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-				mOriginalNode = node;
+				mNodeIndex = 0;
 				searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
 				
@@ -67,7 +80,15 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
 				searchAndUpdateNodes();
 			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-				
+				searchAndUpdateNodes();
+				mNodeIndex = 0;
+				for (AccessibilityNodeInfo testnode: mActiveNodes) {
+					if(scrollableNode.equals(testnode)) {
+						Log.w("TeclaAlly", "found the matching scroll node!");
+						return; 
+					}
+				}
+				Log.w("TeclaAlly", "couldn't find the matching scroll node!");
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
@@ -77,7 +98,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void searchAndUpdateNodes() {
 		searchActiveNodesBFS(mOriginalNode);
 		if (mActiveNodes.size() > 0 ) {
-			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mActiveNodes.get(mActiveNodes.size()-1));				
+			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mActiveNodes.get(mNodeIndex));				
 		}		
 	}
 	
@@ -104,12 +125,74 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			AccessibilityNodeInfo thisnode = q.poll();
 			if(thisnode == null) continue; 
 			if(thisnode.isVisibleToUser() && thisnode.isClickable() && !thisnode.isScrollable()) {
-				if(thisnode.isFocused() || thisnode.isSelected()) {
+			//if(thisnode.isFocused() || thisnode.isSelected()) {
 					mActiveNodes.add(thisnode);
-				}
+				//}
 			}
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
+	}
+	
+	public static void clickActiveNode() {
+		sInstance.mActiveNodes.get(sInstance.mNodeIndex).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+	}
+	
+	public static void selectActiveNode(int index) {
+		if(sInstance.mActiveNodes.size()==0) return; 
+		sInstance.mNodeIndex = index;
+		sInstance.mNodeIndex = Math.min(sInstance.mActiveNodes.size() - 1, sInstance.mNodeIndex + 1);
+		sInstance.mNodeIndex = Math.max(0, sInstance.mNodeIndex - 1);
+		TeclaAccessibilityOverlay.updateNodes(sInstance.mOriginalNode, sInstance.mActiveNodes.get(sInstance.mNodeIndex));
+	}
+	
+	public static void selectPreviousActiveNode() {
+		if(sInstance.mActiveNodes.size()==0) return; 
+		sInstance.mNodeIndex = Math.max(0, sInstance.mNodeIndex - 1);
+		TeclaAccessibilityOverlay.updateNodes(sInstance.mOriginalNode, sInstance.mActiveNodes.get(sInstance.mNodeIndex));
+		
+	}
+	
+	public static void selectNextActiveNode() {
+		if(sInstance.mActiveNodes.size()==0) return;
+		sInstance.mNodeIndex = Math.min(sInstance.mActiveNodes.size() - 1, sInstance.mNodeIndex + 1);
+		TeclaAccessibilityOverlay.updateNodes(sInstance.mOriginalNode, sInstance.mActiveNodes.get(sInstance.mNodeIndex));
+	}
+
+	public static void scrollBackward() {
+		boolean foundScrollableNode = false; 
+		AccessibilityNodeInfo node = sInstance.mActiveNodes.get(sInstance.mNodeIndex);
+		if(node == null) return; 
+		while (!foundScrollableNode) {
+			node = node.getParent();
+			if(node == null) return; 
+			if(node.isScrollable()) {
+				sInstance.scrollableNode = node;
+				sInstance.scrollDirection = SCROLLED_BACKWARD; 
+				node.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				if(sInstance.mOriginalNode != null) sInstance.mOriginalNode.recycle();
+				return; 
+			}
+		}
+		sInstance.scrollDirection = SCROLLED_NOWHERE;
+	}
+	
+	public static void scrollForward() {
+		boolean foundScrollableNode = false; 
+		AccessibilityNodeInfo node = sInstance.mActiveNodes.get(sInstance.mNodeIndex);
+		if(node == null) return; 
+		while (!foundScrollableNode) {
+			node = node.getParent();
+			if(node == null) return; 
+			if(node.isScrollable()) {
+				sInstance.scrollableNode = node;
+				sInstance.scrollDirection = SCROLLED_FORWARD;
+				node.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				if(sInstance.mOriginalNode != null) sInstance.mOriginalNode.recycle();
+				return; 
+			}
+		}
+		sInstance.scrollDirection = SCROLLED_NOWHERE;
+		
 	}
 	
 	@Override
