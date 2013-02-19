@@ -21,6 +21,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
+	private final static int DIRECTION_UP = 0;
+	private final static int DIRECTION_LEFT = 1;
+	private final static int DIRECTION_RIGHT = 2;
+	private final static int DIRECTION_DOWN = 3;
+	private final static int DIRECTION_ANY = 4;
 	
 	private int mTouchMode;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
@@ -134,22 +139,49 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 	
-	public static AccessibilityNodeInfo findClosestNode(int x, int y) {
-		int d_min = Integer.MAX_VALUE;
-		int d;
+	public static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
+		int r2_min = Integer.MAX_VALUE;
+		int r2;
+		double ratio;
+		Rect refOutBounds = new Rect();
+		refnode.getBoundsInScreen(refOutBounds);
+		int x = refOutBounds.centerX();
+		int y = refOutBounds.centerY();
 		Rect outBounds = new Rect();
 		AccessibilityNodeInfo result = null; 
 		for (AccessibilityNodeInfo node: TeclaAccessibilityService.sInstance.mActiveNodes ) {
+			if(refnode.equals(node)) continue; 
 			node.getBoundsInScreen(outBounds);
-			d = (x-outBounds.centerX())*(x-outBounds.centerX()) 
-					+ (y-outBounds.centerY())*(y-outBounds.centerY());
-			if(d < d_min) {
-				d_min = d;
+			r2 = (x - outBounds.centerX())*(x - outBounds.centerX()) 
+					+ (y - outBounds.centerY())*(y - outBounds.centerY());
+			switch (direction ) {
+			case DIRECTION_UP:
+				ratio =(y - outBounds.centerY())/Math.sqrt(r2);
+				if(ratio < Math.PI/4) continue; 
+				break; 
+			case DIRECTION_DOWN:
+				ratio =(outBounds.centerY() - y)/Math.sqrt(r2);
+				if(ratio < Math.PI/4) continue;
+				break; 
+			case DIRECTION_LEFT:
+				ratio =(x - outBounds.centerX())/Math.sqrt(r2);
+				if(ratio <= Math.PI/4) continue;
+				break; 
+			case DIRECTION_RIGHT:
+				ratio =(outBounds.centerX() - x)/Math.sqrt(r2);
+				if(ratio <= Math.PI/4) continue;
+				break; 
+			case DIRECTION_ANY:
+				break; 
+			default: 
+				break; 
+			}
+			if( r2 > 0 && r2 < r2_min) {
+				r2_min = r2;
 				result = node; 
 			}
 		}
-		return result;
-		
+		return result;		
 	}
 	
 	public static void clickActiveNode() {
