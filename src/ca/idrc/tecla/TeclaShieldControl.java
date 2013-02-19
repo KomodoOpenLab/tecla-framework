@@ -24,15 +24,15 @@ public class TeclaShieldControl {
     	for (TeclaShieldControlUnit cu: mView.mControlUnits) {
     		if(cu.isSelected()) {
     			if(cu.mText.equals("Up"))     {
-    				TeclaAccessibilityService.selectPreviousActiveNode();
+    				//TeclaAccessibilityService.selectPreviousActiveNode();
     			} else if(cu.mText.equals("Left"))     {
-    				TeclaAccessibilityService.scrollBackward();
+    				
     			} else if(cu.mText.equals("Right"))     {
-    				TeclaAccessibilityService.scrollForward();
+    				
     			} else if(cu.mText.equals("Down"))     {
-    				TeclaAccessibilityService.selectNextActiveNode();
+    				//TeclaAccessibilityService.selectNextActiveNode();
     			} else if(cu.mText.equals("B1"))     {
-    				TeclaAccessibilityService.clickActiveNode();
+    				//TeclaAccessibilityService.clickActiveNode();
     			} else if(cu.mText.equals("B2"))     {
     				
     			} else if(cu.mText.equals("B3"))     {

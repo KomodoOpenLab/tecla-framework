@@ -18,8 +18,12 @@ package ca.idrc.tecla;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.AttributeSet;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 
@@ -29,18 +33,24 @@ import java.util.ArrayList;
 public class TeclaShieldControlView extends View {
 
 	protected ArrayList<TeclaShieldControlUnit> mControlUnits = new ArrayList<TeclaShieldControlUnit>();
+	private int[] mCenterLocation = new int[2];
 	
     public TeclaShieldControlView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mControlUnits.add(new TeclaShieldControlUnit("Up", 200, 200));
-        mControlUnits.add(new TeclaShieldControlUnit("Left", 100, 300));
-        mControlUnits.add(new TeclaShieldControlUnit("Right", 300, 300));
-        mControlUnits.add(new TeclaShieldControlUnit("Down", 200, 400));
         
-        mControlUnits.add(new TeclaShieldControlUnit("B1", 500, 225));
-        mControlUnits.add(new TeclaShieldControlUnit("B2", 500, 275));
-        mControlUnits.add(new TeclaShieldControlUnit("B3", 500, 325));
-        mControlUnits.add(new TeclaShieldControlUnit("B4", 500, 375));
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        mCenterLocation[0] = size.x/2;
+        mCenterLocation[1] = size.y/2;
+    
+        mControlUnits.add(new TeclaShieldControlUnit("Up", 0, -100, Paint.Align.CENTER));
+        mControlUnits.add(new TeclaShieldControlUnit("Left", -100, 0, Paint.Align.RIGHT));
+        mControlUnits.add(new TeclaShieldControlUnit("Right", 100, 0, Paint.Align.LEFT));
+        mControlUnits.add(new TeclaShieldControlUnit("Down", 0, 100, Paint.Align.CENTER));
+        
+        mControlUnits.add(new TeclaShieldControlUnit("S", 0, 0, Paint.Align.CENTER));
         
     }
 
@@ -53,7 +63,21 @@ public class TeclaShieldControlView extends View {
     @Override
     public void onDraw(Canvas c) {
     	for (TeclaShieldControlUnit cu: mControlUnits) {
-    		c.drawText(cu.mText, cu.mScreenLocation[0], cu.mScreenLocation[1], cu.mPaint);
+    		c.drawText(cu.mText, mCenterLocation[0] + cu.mScreenLocationOffset[0], 
+    				mCenterLocation[1] + cu.mScreenLocationOffset[1], cu.mPaint);
     	}
     }
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        mCenterLocation[0] = size.x/2;
+        mCenterLocation[1] = size.y/2;
+    
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
 }

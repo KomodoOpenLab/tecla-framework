@@ -5,16 +5,16 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 
 public class TeclaShieldControlUnit {
-	public int[] mScreenLocation = new int[2];
+	public int[] mScreenLocationOffset = new int[2];
 	public final Paint mPaint = new Paint();
     private int mColor, mColorSelected, mColorNotSelected;
     public String mText;
     private boolean mSelected = false;
     
-	public TeclaShieldControlUnit(String text, int x, int y) {
+	public TeclaShieldControlUnit(String text, int x, int y, Paint.Align align) {
 		mText = text; 
-		mScreenLocation[0] = x;
-		mScreenLocation[1] = y;
+		mScreenLocationOffset[0] = x;
+		mScreenLocationOffset[1] = y;
 		
 		float[] hsv = new float[3];
 		Color.colorToHSV(Color.GRAY, hsv);
@@ -26,7 +26,8 @@ public class TeclaShieldControlUnit {
 		
 		mColor = mColorNotSelected;
 		mPaint.setStyle(Style.FILL);
-        mPaint.setTextSize(40);
+        mPaint.setTextSize(80);
+        mPaint.setTextAlign(align);
         mPaint.setColor(mColor);
 		
 	}
