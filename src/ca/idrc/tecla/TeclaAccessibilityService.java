@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import android.accessibilityservice.AccessibilityService;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -131,6 +132,24 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
+	}
+	
+	public static AccessibilityNodeInfo findClosestNode(int x, int y) {
+		int d_min = Integer.MAX_VALUE;
+		int d;
+		Rect outBounds = new Rect();
+		AccessibilityNodeInfo result = null; 
+		for (AccessibilityNodeInfo node: TeclaAccessibilityService.sInstance.mActiveNodes ) {
+			node.getBoundsInScreen(outBounds);
+			d = (x-outBounds.centerX())*(x-outBounds.centerX()) 
+					+ (y-outBounds.centerY())*(y-outBounds.centerY());
+			if(d < d_min) {
+				d_min = d;
+				result = node; 
+			}
+		}
+		return result;
+		
 	}
 	
 	public static void clickActiveNode() {
