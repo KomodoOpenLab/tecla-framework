@@ -25,7 +25,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static int DIRECTION_LEFT = 1;
 	private final static int DIRECTION_RIGHT = 2;
 	private final static int DIRECTION_DOWN = 3;
-	private final static int DIRECTION_ANY = 4;
+	private final static int DIRECTION_UP_NORATIOCONSTRAINT = 4;
+	private final static int DIRECTION_LEFT_NORATIOCONSTRAINT = 5;
+	private final static int DIRECTION_RIGHT_NORATIOCONSTRAINT = 6;
+	private final static int DIRECTION_DOWN_NORATIOCONSTRAINT = 7;
+	private final static int DIRECTION_ANY = 8;
 	
 	private int mTouchMode;
 	private TeclaAccessibilityOverlay mTeclaAccessibilityOverlay;
@@ -171,12 +175,24 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				ratio =(outBounds.centerX() - x)/Math.sqrt(r2);
 				if(ratio <= Math.PI/4) continue;
 				break; 
+			case DIRECTION_UP_NORATIOCONSTRAINT:
+				if(y - outBounds.centerY() <= 0) continue; 
+				break; 
+			case DIRECTION_DOWN_NORATIOCONSTRAINT:
+				if(outBounds.centerY() - y <= 0) continue;
+				break; 
+			case DIRECTION_LEFT_NORATIOCONSTRAINT:
+				if(x - outBounds.centerX() <= 0) continue;
+				break; 
+			case DIRECTION_RIGHT_NORATIOCONSTRAINT:
+				if(outBounds.centerX() - x <= 0) continue;
+				break; 
 			case DIRECTION_ANY:
 				break; 
 			default: 
 				break; 
 			}
-			if( r2 > 0 && r2 < r2_min) {
+			if(r2 < r2_min) {
 				r2_min = r2;
 				result = node; 
 			}
