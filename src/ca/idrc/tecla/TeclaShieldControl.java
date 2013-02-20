@@ -1,5 +1,7 @@
 package ca.idrc.tecla;
 
+import android.view.accessibility.AccessibilityNodeInfo;
+
 public class TeclaShieldControl {
 	private TeclaShieldControlView mView;
 
@@ -20,25 +22,19 @@ public class TeclaShieldControl {
     	return result; 
     }
     
-    public void performAction() {
+    public void performAction(AccessibilityNodeInfo node) {
     	for (TeclaShieldControlUnit cu: mView.mControlUnits) {
     		if(cu.isSelected()) {
     			if(cu.mText.equals("Up"))     {
-    				//TeclaAccessibilityService.selectPreviousActiveNode();
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_UP);
     			} else if(cu.mText.equals("Left"))     {
-    				
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_LEFT);
     			} else if(cu.mText.equals("Right"))     {
-    				
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_RIGHT);
     			} else if(cu.mText.equals("Down"))     {
-    				//TeclaAccessibilityService.selectNextActiveNode();
-    			} else if(cu.mText.equals("B1"))     {
-    				//TeclaAccessibilityService.clickActiveNode();
-    			} else if(cu.mText.equals("B2"))     {
-    				
-    			} else if(cu.mText.equals("B3"))     {
-    				
-    			} else if(cu.mText.equals("B4"))     {
-    				
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
+    			} else if(cu.mText.equals("S"))     {
+    				TeclaAccessibilityService.clickActiveNode();
     			}
     			break; 
     		}

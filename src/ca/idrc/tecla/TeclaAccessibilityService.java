@@ -17,14 +17,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static boolean DEBUG = true;
 	private static TeclaAccessibilityService sInstance;
 	
-	private AccessibilityNodeInfo mOriginalNode;
+	private AccessibilityNodeInfo mOriginalNode, mSelectedNode;
 	
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
-	private final static int DIRECTION_UP = 0;
-	private final static int DIRECTION_LEFT = 1;
-	private final static int DIRECTION_RIGHT = 2;
-	private final static int DIRECTION_DOWN = 3;
+	public final static int DIRECTION_UP = 0;
+	public final static int DIRECTION_LEFT = 1;
+	public final static int DIRECTION_RIGHT = 2;
+	public final static int DIRECTION_DOWN = 3;
 	private final static int DIRECTION_UP_NORATIOCONSTRAINT = 4;
 	private final static int DIRECTION_LEFT_NORATIOCONSTRAINT = 5;
 	private final static int DIRECTION_RIGHT_NORATIOCONSTRAINT = 6;
@@ -86,10 +86,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
 				
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-				searchAndUpdateNodes();
+				//searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
-				searchAndUpdateNodes();
+				//searchAndUpdateNodes();
 			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+				/*
 				searchAndUpdateNodes();
 				mNodeIndex = 0;
 				for (AccessibilityNodeInfo testnode: mActiveNodes) {
@@ -99,6 +100,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					}
 				}
 				Log.w("TeclaAlly", "couldn't find the matching scroll node!");
+				*/
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
@@ -108,7 +110,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void searchAndUpdateNodes() {
 		searchActiveNodesBFS(mOriginalNode);
 		if (mActiveNodes.size() > 0 ) {
-			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mActiveNodes.get(mNodeIndex));				
+			mSelectedNode =  mActiveNodes.get(mNodeIndex);
+			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mSelectedNode);				
 		}		
 	}
 	
@@ -143,7 +146,47 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 	
-	public static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
+	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
+		AccessibilityNodeInfo node;
+		switch (direction ) {
+		case DIRECTION_UP:
+			node = findNeighbourNode(refnode, DIRECTION_UP);
+			if(node == null) node = findNeighbourNode(refnode, DIRECTION_UP_NORATIOCONSTRAINT);
+			if(node != null) {
+				TeclaAccessibilityService.sInstance.mSelectedNode = node;
+				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+			}
+			break; 
+		case DIRECTION_DOWN:
+			node = findNeighbourNode(refnode, DIRECTION_DOWN);
+			if(node == null) node = findNeighbourNode(refnode, DIRECTION_DOWN_NORATIOCONSTRAINT);
+			if(node != null) {
+				TeclaAccessibilityService.sInstance.mSelectedNode = node;
+				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+			}
+			break; 
+		case DIRECTION_LEFT:
+			node = findNeighbourNode(refnode, DIRECTION_LEFT);
+			if(node == null) node = findNeighbourNode(refnode, DIRECTION_LEFT_NORATIOCONSTRAINT);
+			if(node != null) {
+				TeclaAccessibilityService.sInstance.mSelectedNode = node;
+				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+			}
+			break; 
+		case DIRECTION_RIGHT:
+			node = findNeighbourNode(refnode, DIRECTION_RIGHT);
+			if(node == null) node = findNeighbourNode(refnode, DIRECTION_RIGHT_NORATIOCONSTRAINT);
+			if(node != null) {
+				TeclaAccessibilityService.sInstance.mSelectedNode = node;
+				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+			}
+			break; 
+		default: 
+			break; 
+		}
+	}
+	
+	private static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
 		int r2_min = Integer.MAX_VALUE;
 		int r2;
 		double ratio;
@@ -317,12 +360,12 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					if(mTouchMode == 1) {
 						break; 
 					}
-					mControl.performAction();
+					mControl.performAction(mSelectedNode);
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					if(mTouchMode == 1) {
 						break; 
 					}
-					mControl.performAction();
+					mControl.performAction(mSelectedNode);
 					//Log.w("TeclaA11y", "Current node: " +  mActiveNodes.get(mActiveNodes.size()-1).toString());
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_TOPLEFT && touchup==TeclaAccessibilityService.TOUCHED_TOPRIGHT) {
 					
