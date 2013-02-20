@@ -17,7 +17,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static boolean DEBUG = true;
 	private static TeclaAccessibilityService sInstance;
 	
-	private AccessibilityNodeInfo mOriginalNode, mSelectedNode;
+	private AccessibilityNodeInfo mOriginalNode, mPreviousOriginalNode, mSelectedNode;
 	
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
@@ -79,13 +79,12 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		AccessibilityNodeInfo node = event.getSource();
 		if (node != null) {
 			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-				if(mOriginalNode != null) mOriginalNode.recycle();
+				mPreviousOriginalNode = mOriginalNode;
 				mOriginalNode = node;				
 				mNodeIndex = 0;
 				searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
-				mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
-				if(mOriginalNode != null) mOriginalNode.recycle();
+				mPreviousOriginalNode = mOriginalNode;
 				mOriginalNode = node;				
 				mNodeIndex = 0;
 				searchAndUpdateNodes();
@@ -114,24 +113,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void searchAndUpdateNodes() {
 		searchActiveNodesBFS(mOriginalNode);
 		if (mActiveNodes.size() > 0 ) {
-			mSelectedNode =  mActiveNodes.get(mNodeIndex);
-			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mSelectedNode);				
+			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
+			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
+			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mSelectedNode);	
+			mPreviousOriginalNode.recycle();
 		}		
-	}
-	
-	private AccessibilityNodeInfo searchActiveNodeBFS(AccessibilityNodeInfo node) {
-		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
-		q.add(node);
-		while (!q.isEmpty()) {
-			AccessibilityNodeInfo thisnode = q.poll();
-			if(thisnode.isVisibleToUser() && thisnode.isClickable() && !thisnode.isScrollable()) {
-				if(thisnode.isFocused() || thisnode.isSelected()) {
-					return thisnode;
-				}
-			}
-			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
-		}
-		return null;
 	}
 	
 	private void searchActiveNodesBFS(AccessibilityNodeInfo node) {
@@ -141,7 +127,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
 			if(thisnode == null) continue; 
-			if(thisnode.isVisibleToUser() && thisnode.isClickable() && !thisnode.isScrollable()) {
+			if(thisnode.isVisibleToUser() && thisnode.isClickable() 
+					&& !thisnode.isScrollable() && thisnode.getChildCount() == 0) {
 			//if(thisnode.isFocused() || thisnode.isSelected()) {
 					mActiveNodes.add(thisnode);
 				//}
@@ -195,6 +182,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		int r2;
 		double ratio;
 		Rect refOutBounds = new Rect();
+		if(refnode == null) return null;
 		refnode.getBoundsInScreen(refOutBounds);
 		int x = refOutBounds.centerX();
 		int y = refOutBounds.centerY();
