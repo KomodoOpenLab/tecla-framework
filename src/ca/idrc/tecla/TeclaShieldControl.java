@@ -1,6 +1,11 @@
 package ca.idrc.tecla;
 
+import android.app.Instrumentation;
+import android.inputmethodservice.Keyboard;
+import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.inputmethod.BaseInputConnection;
 
 public class TeclaShieldControl {
 	private TeclaShieldControlView mView;
@@ -35,6 +40,24 @@ public class TeclaShieldControl {
     				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
     			} else if(cu.mText.equals("S"))     {
     				TeclaAccessibilityService.clickActiveNode();
+    			} else if(cu.mText.equals("Back"))     {
+    				//node.performAction(AccessibilityNodeInfo.ACTION_PREVIOUS_HTML_ELEMENT);
+    			} else if(cu.mText.equals("Home"))     {
+    				//node.performAction(AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT);
+    			} else if(cu.mText.equals("SB"))     {
+    				if(node == null) break; 
+    				AccessibilityNodeInfo parent = node.getParent();
+    				while(parent != null && !parent.isScrollable()) parent = parent.getParent();
+    				if(parent != null) {
+    					parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+    				}
+    			} else if(cu.mText.equals("SF"))     {
+    				if(node == null) break; 
+    				AccessibilityNodeInfo parent = node.getParent();
+    				while(parent != null && !parent.isScrollable()) parent = parent.getParent();
+    				if(parent != null) {
+    					parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+    				}
     			}
     			break; 
     		}
