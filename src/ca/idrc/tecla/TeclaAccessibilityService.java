@@ -78,13 +78,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		
 		AccessibilityNodeInfo node = event.getSource();
 		if (node != null) {
-			
 			mOriginalNode = node;
 			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+				
 				mNodeIndex = 0;
 				searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
-				
+				//mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
 				//searchAndUpdateNodes();
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
@@ -244,7 +244,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 	
 	public static void clickActiveNode() {
-		sInstance.mActiveNodes.get(sInstance.mNodeIndex).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 	}
 	
 	public static void selectActiveNode(int index) {
