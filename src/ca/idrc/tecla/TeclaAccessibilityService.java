@@ -93,17 +93,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
 				//searchAndUpdateNodes();
 			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-				/*
-				searchAndUpdateNodes();
+				mPreviousOriginalNode = mOriginalNode;
+				mOriginalNode = node;				
 				mNodeIndex = 0;
-				for (AccessibilityNodeInfo testnode: mActiveNodes) {
-					if(scrollableNode.equals(testnode)) {
-						Log.w("TeclaAlly", "found the matching scroll node!");
-						return; 
-					}
-				}
-				Log.w("TeclaAlly", "couldn't find the matching scroll node!");
-				*/
+				searchAndUpdateNodes();
 			}
 		} else {
 			Log.e("TeclaA11y", "Node is null!");
@@ -115,8 +108,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
-			TeclaAccessibilityOverlay.updateNodes(mOriginalNode, mSelectedNode);	
-			mPreviousOriginalNode.recycle();
+			TeclaAccessibilityOverlay.updateNodes(mSelectedNode.getParent(), mSelectedNode);	
+			if(mPreviousOriginalNode != null) mPreviousOriginalNode.recycle();
 		}		
 	}
 	
@@ -128,7 +121,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			AccessibilityNodeInfo thisnode = q.poll();
 			if(thisnode == null) continue; 
 			if(thisnode.isVisibleToUser() && thisnode.isClickable() 
-					&& !thisnode.isScrollable() && thisnode.getChildCount() == 0) {
+					&& !thisnode.isScrollable()) {
 			//if(thisnode.isFocused() || thisnode.isSelected()) {
 					mActiveNodes.add(thisnode);
 				//}
@@ -145,7 +138,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_UP_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+				TeclaAccessibilityOverlay.updateNodes(node.getParent(), node);
 			}
 			break; 
 		case DIRECTION_DOWN:
@@ -153,7 +146,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_DOWN_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+				TeclaAccessibilityOverlay.updateNodes(node.getParent(), node);
 			}
 			break; 
 		case DIRECTION_LEFT:
@@ -161,7 +154,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_LEFT_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+				TeclaAccessibilityOverlay.updateNodes(node.getParent(), node);
 			}
 			break; 
 		case DIRECTION_RIGHT:
@@ -169,7 +162,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_RIGHT_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaAccessibilityOverlay.updateNodes(TeclaAccessibilityService.sInstance.mOriginalNode, node);
+				TeclaAccessibilityOverlay.updateNodes(node.getParent(), node);
 			}
 			break; 
 		default: 
@@ -189,7 +182,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		Rect outBounds = new Rect();
 		AccessibilityNodeInfo result = null; 
 		for (AccessibilityNodeInfo node: TeclaAccessibilityService.sInstance.mActiveNodes ) {
-			if(refnode.equals(node)) continue; 
+			if(refnode.equals(node) && direction != DIRECTION_ANY) continue; 
 			node.getBoundsInScreen(outBounds);
 			r2 = (x - outBounds.centerX())*(x - outBounds.centerX()) 
 					+ (y - outBounds.centerY())*(y - outBounds.centerY());
@@ -259,43 +252,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		sInstance.mNodeIndex = Math.min(sInstance.mActiveNodes.size() - 1, sInstance.mNodeIndex + 1);
 		TeclaAccessibilityOverlay.updateNodes(sInstance.mOriginalNode, sInstance.mActiveNodes.get(sInstance.mNodeIndex));
 	}
-
-	public static void scrollBackward() {
-		boolean foundScrollableNode = false; 
-		AccessibilityNodeInfo node = sInstance.mActiveNodes.get(sInstance.mNodeIndex);
-		if(node == null) return; 
-		while (!foundScrollableNode) {
-			node = node.getParent();
-			if(node == null) return; 
-			if(node.isScrollable()) {
-				sInstance.scrollableNode = node;
-				sInstance.scrollDirection = SCROLLED_BACKWARD; 
-				node.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-				if(sInstance.mOriginalNode != null) sInstance.mOriginalNode.recycle();
-				return; 
-			}
-		}
-		sInstance.scrollDirection = SCROLLED_NOWHERE;
-	}
-	
-	public static void scrollForward() {
-		boolean foundScrollableNode = false; 
-		AccessibilityNodeInfo node = sInstance.mActiveNodes.get(sInstance.mNodeIndex);
-		if(node == null) return; 
-		while (!foundScrollableNode) {
-			node = node.getParent();
-			if(node == null) return; 
-			if(node.isScrollable()) {
-				sInstance.scrollableNode = node;
-				sInstance.scrollDirection = SCROLLED_FORWARD;
-				node.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-				if(sInstance.mOriginalNode != null) sInstance.mOriginalNode.recycle();
-				return; 
-			}
-		}
-		sInstance.scrollDirection = SCROLLED_NOWHERE;
-		
-	}
 	
 	@Override
 	public void onInterrupt() {
@@ -319,7 +275,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			float logicalY=y/height;
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				Log.v("TeclaA11y", "Tecla Overlay Touch Down! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
+				//Log.v("TeclaA11y", "Tecla Overlay Touch Down! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
 				
 				if(logicalX<0.5 && logicalY<0.5) {
 					touchdown = TeclaAccessibilityService.TOUCHED_TOPLEFT; 
@@ -332,7 +288,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				}
 				break;
 			case MotionEvent.ACTION_UP:
-				Log.v("TeclaA11y", "Tecla Overlay Touch Up! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
+				//Log.v("TeclaA11y", "Tecla Overlay Touch Up! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
 
 				if(logicalX<0.5 && logicalY<0.5) {
 					touchup = TeclaAccessibilityService.TOUCHED_TOPLEFT; 
@@ -353,6 +309,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						break; 
 					}
 					mControl.performAction(mSelectedNode);
+					//Log.w("TeclaA11y", mSelectedNode.toString());
 				} else if(touchdown==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT && touchup==TeclaAccessibilityService.TOUCHED_BOTTOMRIGHT) {
 					if(mTouchMode == 1) {
 						break; 
