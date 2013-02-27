@@ -56,7 +56,6 @@ public class HighlightBoundsView extends View {
 
         mPaint.setStyle(Style.STROKE);
         mPaint.setStrokeJoin(Join.ROUND);
-        mPaint.setStrokeWidth(10);
 
         mHighlightColor = Color.RED;
     }
@@ -91,6 +90,15 @@ public class HighlightBoundsView extends View {
      */
     public void setHighlightColor(int color) {
         mHighlightColor = color;
+    }
+
+    /**
+     * Sets the color of the highlighted bounds.
+     *
+     * @param color
+     */
+    public void setStrokeWidth(float width) {
+        mPaint.setStrokeWidth(width);
     }
 
     public void clear() {

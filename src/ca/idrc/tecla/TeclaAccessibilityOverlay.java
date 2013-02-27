@@ -19,18 +19,19 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-		// params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
 		setParams(params);
 		
 		setContentView(R.layout.tecla_accessibility_overlay);
 		
 		mAnnounceBounds = (HighlightBoundsView) findViewById(R.id.announce_bounds);
-		mAnnounceBounds.setHighlightColor(Color.YELLOW);
+//		mAnnounceBounds.setHighlightColor(Color.argb(0xff, 0x21, 0xad, 0xe3));
+		mAnnounceBounds.setHighlightColor(Color.WHITE);
+		
 		
 		mBounds = (HighlightBoundsView) findViewById(R.id.bounds);
-		mBounds.setHighlightColor(Color.RED);
-		
 		mControlView = (TeclaShieldControlView) findViewById(R.id.tecla_control);
+		mBounds.setHighlightColor(Color.argb(0xdd, 0x38, 0x38, 0x38));
 	}
 
 	@Override
@@ -65,12 +66,14 @@ public class TeclaAccessibilityOverlay extends SimpleOverlay {
 
         sInstance.mBounds.clear();
         if(source != null) {
-            sInstance.mBounds.add(source);
+            sInstance.mBounds.setStrokeWidth(10);
+            sInstance.mBounds.add(announced);
             sInstance.mBounds.postInvalidate();        	
         }
         
         sInstance.mAnnounceBounds.clear();
         if(announced != null) {
+            sInstance.mAnnounceBounds.setStrokeWidth(4);
             sInstance.mAnnounceBounds.add(announced);
             sInstance.mAnnounceBounds.postInvalidate();
         	
