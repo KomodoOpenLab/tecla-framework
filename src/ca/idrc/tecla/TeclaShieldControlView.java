@@ -52,6 +52,11 @@ public class TeclaShieldControlView extends View {
         
         mControlUnits.add(new TeclaShieldControlUnit("S", 0, 0, Paint.Align.CENTER));
         
+        mControlUnits.add(new TeclaShieldControlUnit("Back", -100, 200, Paint.Align.CENTER));
+        mControlUnits.add(new TeclaShieldControlUnit("Home", 100, 200, Paint.Align.CENTER));
+        mControlUnits.add(new TeclaShieldControlUnit("SB", -100, 300, Paint.Align.CENTER));
+        mControlUnits.add(new TeclaShieldControlUnit("SF", 100, 300, Paint.Align.CENTER));
+        
     }
 
     @Override
