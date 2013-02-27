@@ -13,7 +13,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaAccessibilityService extends AccessibilityService {
 
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	private AccessibilityNodeInfo mOriginalNode;
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
@@ -85,7 +85,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
 			if(thisnode.isVisibleToUser() && thisnode.isClickable() && !thisnode.isScrollable()) {
-				if(thisnode.isFocused() || thisnode.isSelected()) {
+				if(thisnode.isFocused()) {
 					return thisnode;
 				}
 			}
@@ -102,7 +102,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			AccessibilityNodeInfo thisnode = q.poll();
 			if(thisnode == null) continue; 
 			if(thisnode.isVisibleToUser() && thisnode.isClickable() && !thisnode.isScrollable()) {
-				if(thisnode.isFocused() || thisnode.isSelected()) {
+				if(thisnode.isFocused()) {
 					mActiveNodes.add(thisnode);
 				}
 			}
