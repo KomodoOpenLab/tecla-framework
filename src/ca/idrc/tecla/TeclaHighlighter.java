@@ -5,32 +5,30 @@ import android.graphics.Color;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-public class TeclaAccessibilityOverlay extends SimpleOverlay {
+public class TeclaHighlighter extends SimpleOverlay {
 
-    private static TeclaAccessibilityOverlay sInstance;
+    private static TeclaHighlighter sInstance;
 
     private final HighlightBoundsView mAnnounceBounds;
     private final HighlightBoundsView mBounds;
-    protected final TeclaShieldControlView mControlView;
     
-	public TeclaAccessibilityOverlay(Context context) {
+	public TeclaHighlighter(Context context) {
 		super(context);
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;		
 		setParams(params);
 		
-		setContentView(R.layout.tecla_accessibility_overlay);
-		
+		setContentView(R.layout.tecla_highlighter);
+
 		mAnnounceBounds = (HighlightBoundsView) findViewById(R.id.announce_bounds);
 //		mAnnounceBounds.setHighlightColor(Color.argb(0xff, 0x21, 0xad, 0xe3));
 		mAnnounceBounds.setHighlightColor(Color.WHITE);
 		
 		
 		mBounds = (HighlightBoundsView) findViewById(R.id.bounds);
-		mControlView = (TeclaShieldControlView) findViewById(R.id.tecla_control);
 		mBounds.setHighlightColor(Color.argb(0xdd, 0x38, 0x38, 0x38));
 	}
 
