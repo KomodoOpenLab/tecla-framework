@@ -34,7 +34,7 @@ public class TeclaShieldControl {
     			} else if(cu.mText.equals("Down"))     {
     				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
     			} else if(cu.mText.equals("S"))     {
-    				TeclaAccessibilityService.clickActiveNode();
+//    				TeclaAccessibilityService.clickActiveNode();
     			}
     			break; 
     		}

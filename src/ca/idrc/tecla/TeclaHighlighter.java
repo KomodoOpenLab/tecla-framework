@@ -9,8 +9,8 @@ public class TeclaHighlighter extends SimpleOverlay {
 
     private static TeclaHighlighter sInstance;
 
-    private final HighlightBoundsView mAnnounceBounds;
-    private final HighlightBoundsView mBounds;
+    private final HighlightBoundsView mInnerBounds;
+    private final HighlightBoundsView mOuterBounds;
     
 	public TeclaHighlighter(Context context) {
 		super(context);
@@ -23,13 +23,13 @@ public class TeclaHighlighter extends SimpleOverlay {
 		
 		setContentView(R.layout.tecla_highlighter);
 
-		mAnnounceBounds = (HighlightBoundsView) findViewById(R.id.announce_bounds);
+		mInnerBounds = (HighlightBoundsView) findViewById(R.id.announce_bounds);
 //		mAnnounceBounds.setHighlightColor(Color.argb(0xff, 0x21, 0xad, 0xe3));
-		mAnnounceBounds.setHighlightColor(Color.WHITE);
+		mInnerBounds.setHighlightColor(Color.WHITE);
 		
 		
-		mBounds = (HighlightBoundsView) findViewById(R.id.bounds);
-		mBounds.setHighlightColor(Color.argb(0xdd, 0x38, 0x38, 0x38));
+		mOuterBounds = (HighlightBoundsView) findViewById(R.id.bounds);
+		mOuterBounds.setHighlightColor(Color.argb(0xdd, 0x38, 0x38, 0x38));
 	}
 
 	@Override
@@ -40,40 +40,41 @@ public class TeclaHighlighter extends SimpleOverlay {
 	@Override
 	protected void onHide() {
         sInstance = null;
-        mBounds.clear();
-        mAnnounceBounds.clear();
+        mOuterBounds.clear();
+        mInnerBounds.clear();
 	}
 	
 
+	public static void clearHighlight() {
+        sInstance.mOuterBounds.clear();
+        sInstance.mInnerBounds.clear();
+	}
+	
     public static void removeInvalidNodes() {
         if (sInstance == null) {
             return;
         }
 
-        sInstance.mBounds.removeInvalidNodes();
-        sInstance.mBounds.postInvalidate();
+        sInstance.mOuterBounds.removeInvalidNodes();
+        sInstance.mOuterBounds.postInvalidate();
 
-        sInstance.mAnnounceBounds.removeInvalidNodes();
-        sInstance.mAnnounceBounds.postInvalidate();
+        sInstance.mInnerBounds.removeInvalidNodes();
+        sInstance.mInnerBounds.postInvalidate();
     }
 
-    public static void updateNodes(AccessibilityNodeInfo source, AccessibilityNodeInfo announced) {
+    public static void highlightNode(AccessibilityNodeInfo announced) {
         if (sInstance == null) {
             return;
         }
 
-        sInstance.mBounds.clear();
-        if(source != null) {
-            sInstance.mBounds.setStrokeWidth(10);
-            sInstance.mBounds.add(announced);
-            sInstance.mBounds.postInvalidate();        	
-        }
-        
-        sInstance.mAnnounceBounds.clear();
+        clearHighlight();
         if(announced != null) {
-            sInstance.mAnnounceBounds.setStrokeWidth(4);
-            sInstance.mAnnounceBounds.add(announced);
-            sInstance.mAnnounceBounds.postInvalidate();
+            sInstance.mOuterBounds.setStrokeWidth(20);
+            sInstance.mOuterBounds.add(announced);
+            sInstance.mOuterBounds.postInvalidate();        	
+            sInstance.mInnerBounds.setStrokeWidth(6);
+            sInstance.mInnerBounds.add(announced);
+            sInstance.mInnerBounds.postInvalidate();
         	
         }
     }
