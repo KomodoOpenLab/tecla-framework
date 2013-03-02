@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-// import ca.idi.tecla.sdk.SwitchEvent;
-// import ca.idi.tecla.sdk.SEPManager;
+import ca.idi.tecla.sdk.SwitchEvent;
+import ca.idi.tecla.sdk.SEPManager;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;
@@ -69,8 +69,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaController.show();
 		}
 
-		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		//SEPManager.start(this);
+		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		SEPManager.start(this);
 	}
 
 	@Override
@@ -259,7 +259,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 //	}
 //
 	
-	/*
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -271,9 +270,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 		}
 	};
-	*/
 
-	/*
 	private void handleSwitchEvent(Bundle extras) {
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
@@ -304,7 +301,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 		}
 	}
-*/
 
 	@Override
 	public void onInterrupt() {
