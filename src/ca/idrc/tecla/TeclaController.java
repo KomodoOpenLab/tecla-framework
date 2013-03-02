@@ -86,14 +86,14 @@ public class TeclaController extends SimpleOverlay {
 						break; 
 					}
 					//TODO: Implement perform action using A11yService singleton
-//					mControl.performAction(mSelectedNode);
+					mControl.performAction(TeclaAccessibilityService.sInstance.mSelectedNode);
 					//Log.w("TeclaA11y", mSelectedNode.toString());
 				} else if(touchdown==TOUCHED_BOTTOMRIGHT && touchup==TOUCHED_BOTTOMRIGHT) {
 					if(mTouchMode == 1) {
 						break; 
 					}
 					//TODO: Implement perform action using singleton A11yService instance
-//					mControl.performAction(mSelectedNode);
+					mControl.performAction(TeclaAccessibilityService.sInstance.mSelectedNode);
 					//Log.w("TeclaA11y", "Current node: " +  mActiveNodes.get(mActiveNodes.size()-1).toString());
 				} else if(touchdown==TOUCHED_TOPLEFT && touchup==TOUCHED_TOPRIGHT) {
 					

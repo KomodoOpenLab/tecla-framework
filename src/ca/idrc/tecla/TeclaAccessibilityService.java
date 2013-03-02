@@ -22,7 +22,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static String TAG = "TeclaJB";
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 
 	public final static int DIRECTION_UP = 0;
 	public final static int DIRECTION_LEFT = 1;
@@ -34,9 +34,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static int DIRECTION_DOWN_NORATIOCONSTRAINT = 7;
 	private final static int DIRECTION_ANY = 8;
 	
-	private static TeclaAccessibilityService sInstance;
+	protected static TeclaAccessibilityService sInstance;
 
-	private AccessibilityNodeInfo mOriginalNode, mPreviousOriginalNode, mSelectedNode;
+	private AccessibilityNodeInfo mOriginalNode, mPreviousOriginalNode;
+	protected AccessibilityNodeInfo mSelectedNode;
 
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
@@ -231,11 +232,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return result;		
 	}
 
-//	public void clickActiveNode() {
-//		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-//		TeclaHighlighter.clearHighlight();
-//	}
-//
+	public static void clickActiveNode() {
+		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+		TeclaHighlighter.clearHighlight();
+	}
+
 //	public static void selectActiveNode(int index) {
 //		if(sInstance.mActiveNodes.size()==0) return; 
 //		sInstance.mNodeIndex = index;
