@@ -310,9 +310,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//SEPManager.stop(this);
+		SEPManager.stop(this);
 		shutdownInfrastructure();
-		//unregisterReceiver(mReceiver);
+		unregisterReceiver(mReceiver);
 	}
 
 	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
