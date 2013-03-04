@@ -134,6 +134,35 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private void sortAccessibilityNodes(ArrayList<AccessibilityNodeInfo> nodes) {
+		ArrayList<AccessibilityNodeInfo> sorted = new ArrayList<AccessibilityNodeInfo>();
+		Rect rt1 = new Rect();
+		Rect rt2 = new Rect();
+		boolean inserted = false; 
+		for(AccessibilityNodeInfo node: nodes) {
+			if(sorted.size() == 0) sorted.add(node);
+			else {
+				node.getBoundsInScreen(rt1);
+				inserted = false; 
+				for (int i=0; i<sorted.size() && !inserted; ++i) {
+					sorted.get(i).getBoundsInScreen(rt2);
+					if(rt2.centerY() > rt1.centerY()) {
+						sorted.add(i, node);
+						inserted = true;
+					} else if (rt2.centerY() == rt1.centerY()) {
+						if(rt2.centerX() > rt1.centerX()) {
+							sorted.add(i, node);
+							inserted = true;
+						}
+					}
+				}
+				if(!inserted) sorted.add(node);
+			}
+		}
+		nodes.clear();
+		nodes = sorted; 
+	}
+	
 	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
 		AccessibilityNodeInfo node;
 		switch (direction ) {
