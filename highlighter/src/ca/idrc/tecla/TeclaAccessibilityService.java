@@ -165,9 +165,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
 		AccessibilityNodeInfo node;
+		node = findNeighbourNode(refnode, direction );
 		switch (direction ) {
 		case DIRECTION_UP:
-			node = findNeighbourNode(refnode, DIRECTION_UP);
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_UP_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
@@ -175,7 +175,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			break; 
 		case DIRECTION_DOWN:
-			node = findNeighbourNode(refnode, DIRECTION_DOWN);
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_DOWN_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
@@ -183,7 +182,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			break; 
 		case DIRECTION_LEFT:
-			node = findNeighbourNode(refnode, DIRECTION_LEFT);
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_LEFT_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
@@ -191,7 +189,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			break; 
 		case DIRECTION_RIGHT:
-			node = findNeighbourNode(refnode, DIRECTION_RIGHT);
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_RIGHT_NORATIOCONSTRAINT);
 			if(node != null) {
 				TeclaAccessibilityService.sInstance.mSelectedNode = node;
