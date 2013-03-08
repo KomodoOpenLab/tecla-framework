@@ -23,18 +23,22 @@ public class TeclaShieldControl {
     }
     
     public void performAction(AccessibilityNodeInfo node) {
+    	AccessibilityNodeInfo updated_node = null;
     	for (TeclaShieldControlUnit cu: mView.mControlUnits) {
     		if(cu.isSelected()) {
     			if(cu.mText.equals("Up"))     {
-    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_UP);
+    				updated_node = TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_UP);
     			} else if(cu.mText.equals("Left"))     {
-    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_LEFT);
+    				updated_node = TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_LEFT);
     			} else if(cu.mText.equals("Right"))     {
-    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_RIGHT);
+    				updated_node = TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_RIGHT);
     			} else if(cu.mText.equals("Down"))     {
-    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
+    				updated_node = TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
     			} else if(cu.mText.equals("S"))     {
     				TeclaAccessibilityService.clickActiveNode();
+    			}
+    			if(updated_node != null) {
+    				TeclaHighlighter.highlightNode(updated_node);
     			}
     			break; 
     		}

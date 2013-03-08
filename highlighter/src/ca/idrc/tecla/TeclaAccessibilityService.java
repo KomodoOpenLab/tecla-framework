@@ -163,41 +163,29 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		nodes = sorted; 
 	}
 	
-	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
+	public static AccessibilityNodeInfo selectNode(AccessibilityNodeInfo refnode, int direction ) {
 		AccessibilityNodeInfo node;
 		node = findNeighbourNode(refnode, direction );
 		switch (direction ) {
 		case DIRECTION_UP:
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_UP_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
 			break; 
 		case DIRECTION_DOWN:
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_DOWN_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
 			break; 
 		case DIRECTION_LEFT:
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_LEFT_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
 			break; 
 		case DIRECTION_RIGHT:
 			if(node == null) node = findNeighbourNode(refnode, DIRECTION_RIGHT_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
 			break; 
 		default: 
 			break; 
 		}
+		if(node != null) {
+			TeclaAccessibilityService.sInstance.mSelectedNode = node;
+		}
+		return node;
 	}
 
 	private static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
