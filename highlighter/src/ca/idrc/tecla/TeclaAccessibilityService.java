@@ -69,8 +69,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaController.show();
 		}
 
-		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		SEPManager.start(this);
+		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		//SEPManager.start(this);
 	}
 
 	@Override
