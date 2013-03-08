@@ -3,6 +3,8 @@ package ca.idrc.tecla;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
@@ -350,5 +352,30 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHighlighter.hide();
 			mTeclaHighlighter = null;
 		}
+	}
+	
+	protected static class NodeSelectionThread extends Thread {
+		AccessibilityNodeInfo current_node;
+		int direction; 
+		ReentrantLock lock;
+	    public NodeSelectionThread(AccessibilityNodeInfo node, int dir, ReentrantLock lk) {
+	    	current_node = node;
+			direction = dir;
+			lock = lk;
+	    }
+	    public void run() {
+	    	AccessibilityNodeInfo updated_node = null;
+	    	try {
+				while(!lock.tryLock(100, TimeUnit.MILLISECONDS));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	updated_node = TeclaAccessibilityService.selectNode(current_node, direction);
+	    	lock.unlock();
+			if(updated_node != null) {
+				TeclaHighlighter.highlightNode(updated_node);
+			}
+	    }
 	}
 }
