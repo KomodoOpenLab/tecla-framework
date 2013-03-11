@@ -51,6 +51,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return sInstance;
 	}
 
+	protected static ReentrantLock mActionLock;
+	
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
@@ -59,7 +61,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		sInstance = this;
 		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
-
+		mActionLock = new ReentrantLock();
+		
 		if (mTeclaHighlighter == null) {
 			mTeclaHighlighter = new TeclaHighlighter(this);
 			mTeclaHighlighter.show();
@@ -165,29 +168,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		nodes = sorted; 
 	}
 	
-	public static AccessibilityNodeInfo selectNode(AccessibilityNodeInfo refnode, int direction ) {
-		AccessibilityNodeInfo node;
-		node = findNeighbourNode(refnode, direction );
-		switch (direction ) {
-		case DIRECTION_UP:
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_UP_NORATIOCONSTRAINT);
-			break; 
-		case DIRECTION_DOWN:
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_DOWN_NORATIOCONSTRAINT);
-			break; 
-		case DIRECTION_LEFT:
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_LEFT_NORATIOCONSTRAINT);
-			break; 
-		case DIRECTION_RIGHT:
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_RIGHT_NORATIOCONSTRAINT);
-			break; 
-		default: 
-			break; 
-		}
-		if(node != null) {
-			TeclaAccessibilityService.sInstance.mSelectedNode = node;
-		}
-		return node;
+	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
+		NodeSelectionThread thread = new NodeSelectionThread(refnode, direction);
+		thread.start();	
 	}
 
 	private static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
@@ -357,25 +340,37 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	protected static class NodeSelectionThread extends Thread {
 		AccessibilityNodeInfo current_node;
 		int direction; 
-		ReentrantLock lock;
-	    public NodeSelectionThread(AccessibilityNodeInfo node, int dir, ReentrantLock lk) {
+	    public NodeSelectionThread(AccessibilityNodeInfo node, int dir) {
 	    	current_node = node;
 			direction = dir;
-			lock = lk;
 	    }
 	    public void run() {
-	    	AccessibilityNodeInfo updated_node = null;
-	    	try {
-				while(!lock.tryLock(100, TimeUnit.MILLISECONDS));
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	    	AccessibilityNodeInfo node;
+	    	mActionLock.lock();
+			node = findNeighbourNode(current_node, direction );
+			if(node == null) {
+				switch (direction ) {
+				case DIRECTION_UP:
+					node = findNeighbourNode(current_node, DIRECTION_UP_NORATIOCONSTRAINT);
+					break; 
+				case DIRECTION_DOWN:
+					node = findNeighbourNode(current_node, DIRECTION_DOWN_NORATIOCONSTRAINT);
+					break; 
+				case DIRECTION_LEFT:
+					node = findNeighbourNode(current_node, DIRECTION_LEFT_NORATIOCONSTRAINT);
+					break; 
+				case DIRECTION_RIGHT:
+					node = findNeighbourNode(current_node, DIRECTION_RIGHT_NORATIOCONSTRAINT);
+					break; 
+				default: 
+					break; 
+				}
+			}			
+			if(node != null) {
+				getInstance().mSelectedNode = node;
 			}
-	    	updated_node = TeclaAccessibilityService.selectNode(current_node, direction);
-	    	lock.unlock();
-			if(updated_node != null) {
-				TeclaHighlighter.highlightNode(updated_node);
-			}
+			mActionLock.unlock();   
+			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
 	}
 }

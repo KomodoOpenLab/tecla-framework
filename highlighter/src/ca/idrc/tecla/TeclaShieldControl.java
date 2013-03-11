@@ -1,5 +1,6 @@
 package ca.idrc.tecla;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -7,12 +8,10 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaShieldControl {
 	private TeclaShieldControlView mView;
-	private ReentrantLock mActionLock;
 
 	public TeclaShieldControl(TeclaShieldControlView mView) {
 		super();
 		this.mView = mView;
-		mActionLock = new ReentrantLock();
 		setSelected("Up");
 	}
 
@@ -28,29 +27,23 @@ public class TeclaShieldControl {
     }
     
     public void performAction(AccessibilityNodeInfo node) {
-    	TeclaAccessibilityService.NodeSelectionThread thread = null;    	
     	for (TeclaShieldControlUnit cu: mView.mControlUnits) {
     		if(cu.isSelected()) {
     			if(cu.mText.equals("Up"))     {
-    				thread = new TeclaAccessibilityService.NodeSelectionThread(node, 
-    						TeclaAccessibilityService.DIRECTION_UP,
-    						mActionLock);
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_UP);
+    				
     			} else if(cu.mText.equals("Left"))     {
-    				thread = new TeclaAccessibilityService.NodeSelectionThread(node, 
-    						TeclaAccessibilityService.DIRECTION_LEFT,
-    						mActionLock);
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_LEFT);
+    				
     			} else if(cu.mText.equals("Right"))     {
-    				thread = new TeclaAccessibilityService.NodeSelectionThread(node, 
-    						TeclaAccessibilityService.DIRECTION_RIGHT,
-    						mActionLock);
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_RIGHT);
+    				
     			} else if(cu.mText.equals("Down"))     {
-    				thread = new TeclaAccessibilityService.NodeSelectionThread(node, 
-    						TeclaAccessibilityService.DIRECTION_DOWN,
-    						mActionLock);
+    				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
+    				
     			} else if(cu.mText.equals("S"))     {
     				TeclaAccessibilityService.clickActiveNode();
     			}
-				if(thread != null) thread.start();
     			break; 
     		}
     	}
