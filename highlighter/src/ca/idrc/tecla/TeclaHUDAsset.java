@@ -18,5 +18,13 @@ public class TeclaHUDAsset {
 		mScreenLocationOffset[1] = dy;
 		mAngleDegree = angle;
 	}
-    
+
+	public void setSelected(boolean b) {
+		mSelected = b;
+	}
+	
+	public boolean isSelected() {
+		return mSelected; 
+	}
+	
 }

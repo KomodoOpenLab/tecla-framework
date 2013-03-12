@@ -38,11 +38,9 @@ public class TeclaHUD extends View {
         mHUDAssets.add(new TeclaHUDAsset("Up", bmp, 0, 0, 0));        
     }
 
-
     @Override
     public void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-
     }
 
     @Override
