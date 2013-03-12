@@ -43,7 +43,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private int mNodeIndex;
 
 	private TeclaHighlighter mTeclaHighlighter;
-	private TeclaController mTeclaController;
 	private TeclaHUDController mTeclaHUDController;
 
 	public static TeclaAccessibilityService getInstance() {
@@ -64,15 +63,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHighlighter.show();
 		}
 
-		if(DEBUG) {
-			mTeclaController = new TeclaController(this);
-			mTeclaController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
-			mTeclaController.show();
-		}
-
 		mTeclaHUDController = new TeclaHUDController(this);
 		mTeclaHUDController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
 		mTeclaHUDController.show();
+		
 		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 		//SEPManager.start(this);
 	}
@@ -360,11 +354,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	/**
 	 * Shuts down the infrastructure in case it has been initialized.
 	 */
-	public void shutdownInfrastructure() {		
-		if (mTeclaController != null) {
-			mTeclaController.hide();
-			mTeclaController = null;
-		}
+	public void shutdownInfrastructure() {	
 		if (mTeclaHighlighter != null) {
 			mTeclaHighlighter.hide();
 			mTeclaHighlighter = null;

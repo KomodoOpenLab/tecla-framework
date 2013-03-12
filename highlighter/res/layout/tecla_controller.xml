@@ -4,11 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ca.idrc.tecla.TeclaShieldControlView
-        android:id="@+id/tecla_control"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <ca.idrc.tecla.TeclaHUD
         android:id="@+id/teclaHUD_control"
         android:layout_width="wrap_content"
