@@ -1,5 +1,9 @@
 package ca.idrc.tecla;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaShieldControl {
@@ -27,12 +31,16 @@ public class TeclaShieldControl {
     		if(cu.isSelected()) {
     			if(cu.mText.equals("Up"))     {
     				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_UP);
+    				
     			} else if(cu.mText.equals("Left"))     {
     				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_LEFT);
+    				
     			} else if(cu.mText.equals("Right"))     {
     				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_RIGHT);
+    				
     			} else if(cu.mText.equals("Down"))     {
     				TeclaAccessibilityService.selectNode(node, TeclaAccessibilityService.DIRECTION_DOWN);
+    				
     			} else if(cu.mText.equals("S"))     {
     				TeclaAccessibilityService.clickActiveNode();
     			}

@@ -3,6 +3,8 @@ package ca.idrc.tecla;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
@@ -49,6 +51,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return sInstance;
 	}
 
+	protected static ReentrantLock mActionLock;
+	
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
@@ -57,7 +61,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		sInstance = this;
 		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
-
+		mActionLock = new ReentrantLock();
+		
 		if (mTeclaHighlighter == null) {
 			mTeclaHighlighter = new TeclaHighlighter(this);
 			mTeclaHighlighter.show();
@@ -69,8 +74,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaController.show();
 		}
 
-		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		SEPManager.start(this);
+		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		//SEPManager.start(this);
 	}
 
 	@Override
@@ -164,43 +169,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 	
 	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
-		AccessibilityNodeInfo node;
-		switch (direction ) {
-		case DIRECTION_UP:
-			node = findNeighbourNode(refnode, DIRECTION_UP);
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_UP_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
-			break; 
-		case DIRECTION_DOWN:
-			node = findNeighbourNode(refnode, DIRECTION_DOWN);
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_DOWN_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
-			break; 
-		case DIRECTION_LEFT:
-			node = findNeighbourNode(refnode, DIRECTION_LEFT);
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_LEFT_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
-			break; 
-		case DIRECTION_RIGHT:
-			node = findNeighbourNode(refnode, DIRECTION_RIGHT);
-			if(node == null) node = findNeighbourNode(refnode, DIRECTION_RIGHT_NORATIOCONSTRAINT);
-			if(node != null) {
-				TeclaAccessibilityService.sInstance.mSelectedNode = node;
-				TeclaHighlighter.highlightNode(node);
-			}
-			break; 
-		default: 
-			break; 
-		}
+		NodeSelectionThread thread = new NodeSelectionThread(refnode, direction);
+		thread.start();	
 	}
 
 	private static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
@@ -365,5 +335,42 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHighlighter.hide();
 			mTeclaHighlighter = null;
 		}
+	}
+	
+	protected static class NodeSelectionThread extends Thread {
+		AccessibilityNodeInfo current_node;
+		int direction; 
+	    public NodeSelectionThread(AccessibilityNodeInfo node, int dir) {
+	    	current_node = node;
+			direction = dir;
+	    }
+	    public void run() {
+	    	AccessibilityNodeInfo node;
+	    	mActionLock.lock();
+			node = findNeighbourNode(current_node, direction );
+			if(node == null) {
+				switch (direction ) {
+				case DIRECTION_UP:
+					node = findNeighbourNode(current_node, DIRECTION_UP_NORATIOCONSTRAINT);
+					break; 
+				case DIRECTION_DOWN:
+					node = findNeighbourNode(current_node, DIRECTION_DOWN_NORATIOCONSTRAINT);
+					break; 
+				case DIRECTION_LEFT:
+					node = findNeighbourNode(current_node, DIRECTION_LEFT_NORATIOCONSTRAINT);
+					break; 
+				case DIRECTION_RIGHT:
+					node = findNeighbourNode(current_node, DIRECTION_RIGHT_NORATIOCONSTRAINT);
+					break; 
+				default: 
+					break; 
+				}
+			}			
+			if(node != null) {
+				getInstance().mSelectedNode = node;
+			}
+			mActionLock.unlock();   
+			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
+	    }
 	}
 }
