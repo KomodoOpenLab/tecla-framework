@@ -22,7 +22,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static String TAG = "TeclaJB";
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	public final static int DIRECTION_UP = 0;
 	public final static int DIRECTION_LEFT = 1;
@@ -44,6 +44,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private TeclaHighlighter mTeclaHighlighter;
 	private TeclaController mTeclaController;
+	private TeclaHUDController mTeclaHUDController;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
@@ -69,8 +70,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaController.show();
 		}
 
-		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		SEPManager.start(this);
+		mTeclaHUDController = new TeclaHUDController(this);
+		mTeclaHUDController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
+		mTeclaHUDController.show();
+		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		//SEPManager.start(this);
 	}
 
 	@Override
