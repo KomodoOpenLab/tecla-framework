@@ -17,9 +17,12 @@ import android.view.WindowManager;
 public class TeclaHUD extends View {
 
 	protected ArrayList<TeclaHUDAsset> mHUDAssets = new ArrayList<TeclaHUDAsset>();
-	protected ArrayList<TeclaHUDAsset> mHUDScanAssets = new ArrayList<TeclaHUDAsset>();
+	private TeclaHUDAsset mHUDScanAsset_arrow_highlight;
+	private TeclaHUDAsset mHUDScanAsset_dpad_highlight_background;
+	private TeclaHUDAsset mHUDScanAsset_dpad_highlight_border;
+	private TeclaHUDAsset mHUDScanAsset_dpad_center_highlight_border;
 	
-	private byte mState = 0;
+	private byte mState;
 	protected final static byte STATE_UP = 0;
 	protected final static byte STATE_RIGHT = 1;
 	protected final static byte STATE_DOWN = 2;
@@ -37,6 +40,7 @@ public class TeclaHUD extends View {
     public TeclaHUD(Context context, AttributeSet attrs) {
         super(context, attrs);
         
+        mState = STATE_UP;
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
@@ -69,15 +73,14 @@ public class TeclaHUD extends View {
         mHUDAssets.add(new TeclaHUDAsset("Right Arrow", bmp, 250, 0, 90));
         
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow_highlighted);
-        mHUDScanAssets.add(new TeclaHUDAsset("Arrow Highlight", bmp, 0, 0, 0)); 
+        mHUDScanAsset_arrow_highlight = new TeclaHUDAsset("Arrow Highlight", bmp, 0, 0, 0); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_highlight_background);
-        mHUDScanAssets.add(new TeclaHUDAsset("DPad Highlight Background", bmp, 0, 0, 0));  
+        mHUDScanAsset_dpad_highlight_background = new TeclaHUDAsset("DPad Highlight Background", bmp, 0, 0, 0);  
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_highlight_border);
-        mHUDScanAssets.add(new TeclaHUDAsset("DPad Highlight Border", bmp, 0, 0, 0)); 
+        mHUDScanAsset_dpad_highlight_border = new TeclaHUDAsset("DPad Highlight Border", bmp, 0, 0, 0); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_center_highlight_border);
-        mHUDScanAssets.add(new TeclaHUDAsset("DPad Center Highlight", bmp, 0, 0, 0));  
-        
-        
+        mHUDScanAsset_dpad_center_highlight_border = new TeclaHUDAsset("DPad Center Highlight Border", bmp, 0, 0, 0);  
+                
     }
 
     @Override
@@ -94,6 +97,108 @@ public class TeclaHUD extends View {
     		paint.setAlpha(t.mAlpha);
     		c.drawBitmap(t.mBmp, matrix, paint);
     	}
+
+        switch (mState) {
+        case (STATE_UP):
+        	matrix.setTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+    				mCenterLocation[1] - 180 - mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+    		paint.setAlpha(mHUDScanAsset_dpad_highlight_background.mAlpha);
+    		c.drawBitmap(mHUDScanAsset_dpad_highlight_background.mBmp, matrix, paint);
+    			
+    		matrix.setTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+    			mCenterLocation[1] - 180 - mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+    		paint.setAlpha(mHUDScanAsset_dpad_highlight_border.mAlpha);
+    		c.drawBitmap(mHUDScanAsset_dpad_highlight_border.mBmp, matrix, paint);
+    			
+    		matrix.setTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+    			mCenterLocation[1] - 250 - mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+    		paint.setAlpha(mHUDScanAsset_arrow_highlight.mAlpha);
+    		c.drawBitmap(mHUDScanAsset_arrow_highlight.mBmp, matrix, paint);
+        	break; 
+        case (STATE_RIGHT):
+        	matrix.setRotate(90, 
+        			mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+        			mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] + 180 - mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 0 - mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_dpad_highlight_background.mAlpha);
+			c.drawBitmap(mHUDScanAsset_dpad_highlight_background.mBmp, matrix, paint);
+			
+			matrix.setRotate(90, 
+					mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+					mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] + 180 - mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 0 - mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_dpad_highlight_border.mAlpha);
+			c.drawBitmap(mHUDScanAsset_dpad_highlight_border.mBmp, matrix, paint);
+			
+			matrix.setRotate(90, 
+					mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+					mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] + 250 - mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 0 - mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_arrow_highlight.mAlpha);
+			c.drawBitmap(mHUDScanAsset_arrow_highlight.mBmp, matrix, paint);
+        	break; 
+        case (STATE_DOWN):
+        	matrix.setRotate(-90, 
+        			mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+        			mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 180 - mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_dpad_highlight_background.mAlpha);
+			c.drawBitmap(mHUDScanAsset_dpad_highlight_background.mBmp, matrix, paint);
+			
+			matrix.setRotate(180, 
+					mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+					mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 180 - mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_dpad_highlight_border.mAlpha);
+			c.drawBitmap(mHUDScanAsset_dpad_highlight_border.mBmp, matrix, paint);
+			
+			matrix.setRotate(180, 
+					mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+					mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 250 - mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_arrow_highlight.mAlpha);
+			c.drawBitmap(mHUDScanAsset_arrow_highlight.mBmp, matrix, paint);
+        	break; 
+        case (STATE_LEFT):
+        	matrix.setRotate(-90, 
+        			mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+        			mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] - 180 - mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 0 - mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_dpad_highlight_background.mAlpha);
+			c.drawBitmap(mHUDScanAsset_dpad_highlight_background.mBmp, matrix, paint);
+			
+			matrix.setRotate(-90, 
+					mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+					mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] - 180 - mHUDScanAsset_dpad_highlight_border.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 0 - mHUDScanAsset_dpad_highlight_border.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_dpad_highlight_border.mAlpha);
+			c.drawBitmap(mHUDScanAsset_dpad_highlight_border.mBmp, matrix, paint);
+			
+			matrix.setRotate(-90, 
+					mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+					mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+			matrix.postTranslate(mCenterLocation[0] - 250 - mHUDScanAsset_arrow_highlight.mBmp.getWidth()/2, 
+				mCenterLocation[1] + 0 - mHUDScanAsset_arrow_highlight.mBmp.getHeight()/2);
+			paint.setAlpha(mHUDScanAsset_arrow_highlight.mAlpha);
+			c.drawBitmap(mHUDScanAsset_arrow_highlight.mBmp, matrix, paint);
+        	break; 
+        case (STATE_OK):
+        	matrix.setTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_dpad_center_highlight_border.mBmp.getWidth()/2, 
+    				mCenterLocation[1] + 0 - mHUDScanAsset_dpad_center_highlight_border.mBmp.getHeight()/2);
+    		paint.setAlpha(mHUDScanAsset_dpad_center_highlight_border.mAlpha);
+    		c.drawBitmap(mHUDScanAsset_dpad_center_highlight_border.mBmp, matrix, paint);
+        	break; 
+        default: 
+        	break; 
+        }
     }
 
 	@Override
