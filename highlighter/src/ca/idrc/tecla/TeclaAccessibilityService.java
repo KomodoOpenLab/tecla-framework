@@ -24,7 +24,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static String TAG = "TeclaJB";
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	public final static int DIRECTION_UP = 0;
 	public final static int DIRECTION_LEFT = 1;
@@ -45,7 +45,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private int mNodeIndex;
 
 	private TeclaHighlighter mTeclaHighlighter;
-	private TeclaController mTeclaController;
+	private TeclaHUDController mTeclaHUDController;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
@@ -68,14 +68,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHighlighter.show();
 		}
 
-		if(DEBUG) {
-			mTeclaController = new TeclaController(this);
-			mTeclaController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
-			mTeclaController.show();
+		if (mTeclaHUDController == null) {
+			mTeclaHUDController = new TeclaHUDController(this);
+			mTeclaHUDController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
+			mTeclaHUDController.show();
 		}
 
-		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		//SEPManager.start(this);
+		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		SEPManager.start(this);
 	}
 
 	@Override
@@ -166,6 +166,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 		nodes.clear();
 		nodes = sorted; 
+	}
+	
+	public static void selectNode(int direction ) {
+		selectNode(getInstance().mSelectedNode,  direction );
 	}
 	
 	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
@@ -326,10 +330,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	/**
 	 * Shuts down the infrastructure in case it has been initialized.
 	 */
-	public void shutdownInfrastructure() {		
-		if (mTeclaController != null) {
-			mTeclaController.hide();
-			mTeclaController = null;
+	public void shutdownInfrastructure() {	
+		Log.d(TAG, "Shutting down infrastructure  ...");
+		if(mTeclaHUDController != null) {
+			mTeclaHUDController.hide();
+			mTeclaHUDController = null;
 		}
 		if (mTeclaHighlighter != null) {
 			mTeclaHighlighter.hide();
