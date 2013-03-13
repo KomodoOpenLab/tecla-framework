@@ -65,7 +65,7 @@ public class TeclaHUD extends View {
         mHUDAssets.add(new TeclaHUDAsset("Right Side Button Background", bmp, 180, 320, 0)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_back_symbol);
         mHUDAssets.add(new TeclaHUDAsset("Back Symbol", bmp, -180, 340, 0)); 
-        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_home_symbol);
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_more_symbol);
         mHUDAssets.add(new TeclaHUDAsset("Home Symbol", bmp, 180, 340, 0)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
         mHUDAssets.add(new TeclaHUDAsset("Up Arrow", bmp, 0, -250, 0)); 
