@@ -34,8 +34,30 @@ public class TeclaHUD extends View {
         mCenterLocation[1] = size.y/2;
     
         Bitmap bmp;
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_background);
+        mHUDAssets.add(new TeclaHUDAsset("DPad Background", bmp, 0, 0, 0));  
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_center);
+        mHUDAssets.add(new TeclaHUDAsset("DPad Center", bmp, 0, 0, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_ok_symbol);
+        mHUDAssets.add(new TeclaHUDAsset("OK Symbol", bmp, 0, 0, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_ok_symbol);
+        mHUDAssets.add(new TeclaHUDAsset("OK Symbol", bmp, 0, 0, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_background);
+        mHUDAssets.add(new TeclaHUDAsset("Left Side Button Background", bmp, -180, 320, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.right_side_button_background);
+        mHUDAssets.add(new TeclaHUDAsset("Right Side Button Background", bmp, 180, 320, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_back_symbol);
+        mHUDAssets.add(new TeclaHUDAsset("Back Symbol", bmp, -180, 340, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_home_symbol);
+        mHUDAssets.add(new TeclaHUDAsset("Home Symbol", bmp, 180, 340, 0)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
-        mHUDAssets.add(new TeclaHUDAsset("Up", bmp, 0, 0, 0));        
+        mHUDAssets.add(new TeclaHUDAsset("Up Arrow", bmp, 0, -250, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
+        mHUDAssets.add(new TeclaHUDAsset("Down Arrow", bmp, 0, 250, 180)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
+        mHUDAssets.add(new TeclaHUDAsset("Left Arrow", bmp, -250, 0, -90)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
+        mHUDAssets.add(new TeclaHUDAsset("Right Arrow", bmp, 250, 0, 90)); 
     }
 
     @Override
@@ -46,9 +68,9 @@ public class TeclaHUD extends View {
     @Override
     public void onDraw(Canvas c) {
     	for (TeclaHUDAsset t: mHUDAssets) {
-    		matrix.setRotate(t.mAngleDegree, 
-    				mCenterLocation[0]+t.mScreenLocationOffset[0]+t.mBmp.getWidth()/2, 
-    				mCenterLocation[1]+t.mScreenLocationOffset[1]+t.mBmp.getHeight()/2);
+    		matrix.setRotate(t.mAngleDegree, t.mBmp.getWidth()/2, t.mBmp.getHeight()/2);
+    		matrix.postTranslate(mCenterLocation[0]+t.mScreenLocationOffset[0]-t.mBmp.getWidth()/2, 
+    				mCenterLocation[1]+t.mScreenLocationOffset[1]-t.mBmp.getHeight()/2);
     		paint.setAlpha(t.mAlpha);
     		c.drawBitmap(t.mBmp, matrix, paint);
     	}

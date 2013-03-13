@@ -63,9 +63,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHighlighter.show();
 		}
 
-		mTeclaHUDController = new TeclaHUDController(this);
-		mTeclaHUDController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
-		mTeclaHUDController.show();
+		
+		if (mTeclaHUDController == null) {
+			mTeclaHUDController = new TeclaHUDController(this);
+			mTeclaHUDController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
+			mTeclaHUDController.show();
+		}
+		
 		
 		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 		//SEPManager.start(this);

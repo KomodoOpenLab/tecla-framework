@@ -105,7 +105,7 @@ public class TeclaHUDController extends SimpleOverlay {
 				break;
 			case MotionEvent.ACTION_UP:
 				//Log.v("TeclaA11y", "Tecla Overlay Touch Up! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
-				performAction(TeclaAccessibilityService.sInstance.mSelectedNode);
+				//performAction(TeclaAccessibilityService.sInstance.mSelectedNode);
 			default:
 				break;
 			}
