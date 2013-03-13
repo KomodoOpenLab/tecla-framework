@@ -17,6 +17,17 @@ import android.view.WindowManager;
 public class TeclaHUD extends View {
 
 	protected ArrayList<TeclaHUDAsset> mHUDAssets = new ArrayList<TeclaHUDAsset>();
+	protected ArrayList<TeclaHUDAsset> mHUDScanAssets = new ArrayList<TeclaHUDAsset>();
+	
+	private byte mState = 0;
+	protected final static byte STATE_UP = 0;
+	protected final static byte STATE_RIGHT = 1;
+	protected final static byte STATE_DOWN = 2;
+	protected final static byte STATE_LEFT = 3;
+	protected final static byte STATE_OK = 4;
+	//protected final static byte STATE_BACK = 5;
+	//protected final static byte STATE_HOME = 6;
+	
 	private int[] mCenterLocation = new int[2];
 	
 	private Matrix matrix = new Matrix();
@@ -40,8 +51,6 @@ public class TeclaHUD extends View {
         mHUDAssets.add(new TeclaHUDAsset("DPad Center", bmp, 0, 0, 0)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_ok_symbol);
         mHUDAssets.add(new TeclaHUDAsset("OK Symbol", bmp, 0, 0, 0)); 
-        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_ok_symbol);
-        mHUDAssets.add(new TeclaHUDAsset("OK Symbol", bmp, 0, 0, 0)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_background);
         mHUDAssets.add(new TeclaHUDAsset("Left Side Button Background", bmp, -180, 320, 0)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.right_side_button_background);
@@ -57,7 +66,18 @@ public class TeclaHUD extends View {
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
         mHUDAssets.add(new TeclaHUDAsset("Left Arrow", bmp, -250, 0, -90)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
-        mHUDAssets.add(new TeclaHUDAsset("Right Arrow", bmp, 250, 0, 90)); 
+        mHUDAssets.add(new TeclaHUDAsset("Right Arrow", bmp, 250, 0, 90));
+        
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow_highlighted);
+        mHUDScanAssets.add(new TeclaHUDAsset("Arrow Highlight", bmp, 0, 0, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_highlight_background);
+        mHUDScanAssets.add(new TeclaHUDAsset("DPad Highlight Background", bmp, 0, 0, 0));  
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_highlight_border);
+        mHUDScanAssets.add(new TeclaHUDAsset("DPad Highlight Border", bmp, 0, 0, 0)); 
+        bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_center_highlight_border);
+        mHUDScanAssets.add(new TeclaHUDAsset("DPad Center Highlight", bmp, 0, 0, 0));  
+        
+        
     }
 
     @Override
