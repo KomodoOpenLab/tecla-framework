@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
@@ -22,7 +24,9 @@ public class TeclaHUD extends View {
 	private TeclaHUDAsset mHUDScanAsset_dpad_highlight_border;
 	private TeclaHUDAsset mHUDScanAsset_dpad_center_highlight_border;
 	
+	protected final static long SCAN_PERIOD = 1500;
 	private byte mState;
+	protected final static byte TOTAL_STATES = 5;
 	protected final static byte STATE_UP = 0;
 	protected final static byte STATE_RIGHT = 1;
 	protected final static byte STATE_DOWN = 2;
@@ -81,6 +85,7 @@ public class TeclaHUD extends View {
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_center_highlight_border);
         mHUDScanAsset_dpad_center_highlight_border = new TeclaHUDAsset("DPad Center Highlight Border", bmp, 0, 0, 0);  
                 
+        mAutoScanHandler.sleep(1000);
     }
 
     @Override
@@ -141,7 +146,7 @@ public class TeclaHUD extends View {
 			c.drawBitmap(mHUDScanAsset_arrow_highlight.mBmp, matrix, paint);
         	break; 
         case (STATE_DOWN):
-        	matrix.setRotate(-90, 
+        	matrix.setRotate(180, 
         			mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
         			mHUDScanAsset_dpad_highlight_background.mBmp.getHeight()/2);
 			matrix.postTranslate(mCenterLocation[0] + 0 - mHUDScanAsset_dpad_highlight_background.mBmp.getWidth()/2, 
@@ -211,4 +216,52 @@ public class TeclaHUD extends View {
     
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	}
+	
+	protected void scanForward() {
+		++mState;
+		mState %= TOTAL_STATES;
+		this.invalidate();
+		mAutoScanHandler.sleep(SCAN_PERIOD);
+	}
+
+	protected void scanTrigger() {
+		switch (mState) {
+		case(STATE_UP):
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+			break; 
+		case(STATE_RIGHT):
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
+			break; 
+		case(STATE_DOWN):
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+			break; 
+		case(STATE_LEFT):
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
+			break; 
+		case(STATE_OK):
+			TeclaAccessibilityService.clickActiveNode();
+			break; 
+		default: 
+			break; 
+		}
+		mAutoScanHandler.sleep(SCAN_PERIOD);
+	}
+	
+	class AutoScanHandler extends Handler {
+		public AutoScanHandler() {
+			
+		}
+
+        @Override
+        public void handleMessage(Message msg) {
+        	TeclaHUD.this.scanForward();
+        }
+
+        public void sleep(long delayMillis) {
+                removeMessages(0);
+                sendMessageDelayed(obtainMessage(0), delayMillis);
+        }
+	}
+	AutoScanHandler mAutoScanHandler = new AutoScanHandler();
+	 
 }

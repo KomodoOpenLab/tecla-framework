@@ -69,8 +69,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHUDController.show();
 		}
 		
-		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		//SEPManager.start(this);
+		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		SEPManager.start(this);
 	}
 
 	@Override
@@ -161,6 +161,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 		nodes.clear();
 		nodes = sorted; 
+	}
+	
+	public static void selectNode(int direction ) {
+		selectNode(getInstance().mSelectedNode,  direction );
 	}
 	
 	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
@@ -357,6 +361,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	 * Shuts down the infrastructure in case it has been initialized.
 	 */
 	public void shutdownInfrastructure() {	
+		Log.d(TAG, "Shutting down infrastructure  ...");
+		if(mTeclaHUDController != null) {
+			mTeclaHUDController.hide();
+			mTeclaHUDController = null;
+		}
 		if (mTeclaHighlighter != null) {
 			mTeclaHighlighter.hide();
 			mTeclaHighlighter = null;
