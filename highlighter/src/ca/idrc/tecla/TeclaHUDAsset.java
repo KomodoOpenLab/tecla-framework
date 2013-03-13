@@ -9,14 +9,15 @@ public class TeclaHUDAsset {
 	public int[] mScreenLocationOffset = new int[2];
     public float mAngleDegree;
     private boolean mSelected = false;
-    public int mAlpha = 255;
+    public int mAlpha;
     
-	public TeclaHUDAsset(String text, Bitmap bmp, int dx, int dy, float angle) {
+	public TeclaHUDAsset(String text, Bitmap bmp, int dx, int dy, float angle, int alpha) {
 		mText = text;
 		mBmp = bmp;
 		mScreenLocationOffset[0] = dx;
 		mScreenLocationOffset[1] = dy;
 		mAngleDegree = angle;
+		mAlpha = alpha;
 	}
 
 	public void setSelected(boolean b) {
