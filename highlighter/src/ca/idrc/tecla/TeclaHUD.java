@@ -24,6 +24,11 @@ public class TeclaHUD extends View {
 	private TeclaHUDAsset mHUDScanAsset_dpad_highlight_border;
 	private TeclaHUDAsset mHUDScanAsset_dpad_center_highlight_border;
 	
+	//TODO: Include sliders for alpha values inside accessibility service preferences
+	protected final static int ALPHA_BACKGROUND = 80;
+	protected final static int ALPHA_BORDER = 255;
+	protected final static int ALPHA_FOREGROUND = 255;
+	
 	protected final static long SCAN_PERIOD = 1500;
 	private byte mState;
 	protected final static byte TOTAL_STATES = 5;
@@ -54,36 +59,36 @@ public class TeclaHUD extends View {
     
         Bitmap bmp;
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_background);
-        mHUDAssets.add(new TeclaHUDAsset("DPad Background", bmp, 0, 0, 0));  
+        mHUDAssets.add(new TeclaHUDAsset("DPad Background", bmp, 0, 0, 0, ALPHA_BACKGROUND));  
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_center);
-        mHUDAssets.add(new TeclaHUDAsset("DPad Center", bmp, 0, 0, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("DPad Center", bmp, 0, 0, 0, ALPHA_BACKGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_ok_symbol);
-        mHUDAssets.add(new TeclaHUDAsset("OK Symbol", bmp, 0, 0, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("OK Symbol", bmp, 0, 0, 0, ALPHA_FOREGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_background);
-        mHUDAssets.add(new TeclaHUDAsset("Left Side Button Background", bmp, -180, 320, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("Left Side Button Background", bmp, -180, 320, 0, ALPHA_BACKGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.right_side_button_background);
-        mHUDAssets.add(new TeclaHUDAsset("Right Side Button Background", bmp, 180, 320, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("Right Side Button Background", bmp, 180, 320, 0, ALPHA_BACKGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_back_symbol);
-        mHUDAssets.add(new TeclaHUDAsset("Back Symbol", bmp, -180, 340, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("Back Symbol", bmp, -180, 340, 0, ALPHA_FOREGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.side_button_more_symbol);
-        mHUDAssets.add(new TeclaHUDAsset("Home Symbol", bmp, 180, 340, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("More Symbol", bmp, 180, 340, 0, ALPHA_FOREGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
-        mHUDAssets.add(new TeclaHUDAsset("Up Arrow", bmp, 0, -250, 0)); 
+        mHUDAssets.add(new TeclaHUDAsset("Up Arrow", bmp, 0, -250, 0, ALPHA_FOREGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
-        mHUDAssets.add(new TeclaHUDAsset("Down Arrow", bmp, 0, 250, 180)); 
+        mHUDAssets.add(new TeclaHUDAsset("Down Arrow", bmp, 0, 250, 180, ALPHA_FOREGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
-        mHUDAssets.add(new TeclaHUDAsset("Left Arrow", bmp, -250, 0, -90)); 
+        mHUDAssets.add(new TeclaHUDAsset("Left Arrow", bmp, -250, 0, -90, ALPHA_FOREGROUND)); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow);
-        mHUDAssets.add(new TeclaHUDAsset("Right Arrow", bmp, 250, 0, 90));
+        mHUDAssets.add(new TeclaHUDAsset("Right Arrow", bmp, 250, 0, 90, ALPHA_FOREGROUND));
         
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_arrow_highlighted);
-        mHUDScanAsset_arrow_highlight = new TeclaHUDAsset("Arrow Highlight", bmp, 0, 0, 0); 
+        mHUDScanAsset_arrow_highlight = new TeclaHUDAsset("Arrow Highlighted", bmp, 0, 0, 0, ALPHA_FOREGROUND); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_highlight_background);
-        mHUDScanAsset_dpad_highlight_background = new TeclaHUDAsset("DPad Highlight Background", bmp, 0, 0, 0);  
+        mHUDScanAsset_dpad_highlight_background = new TeclaHUDAsset("DPad Highlight Background", bmp, 0, 0, 0, ALPHA_BACKGROUND);  
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_highlight_border);
-        mHUDScanAsset_dpad_highlight_border = new TeclaHUDAsset("DPad Highlight Border", bmp, 0, 0, 0); 
+        mHUDScanAsset_dpad_highlight_border = new TeclaHUDAsset("DPad Highlight Border", bmp, 0, 0, 0, ALPHA_BORDER); 
         bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dpad_center_highlight_border);
-        mHUDScanAsset_dpad_center_highlight_border = new TeclaHUDAsset("DPad Center Highlight Border", bmp, 0, 0, 0);  
+        mHUDScanAsset_dpad_center_highlight_border = new TeclaHUDAsset("DPad Center Highlight Border", bmp, 0, 0, 0, ALPHA_BORDER);  
                 
         mAutoScanHandler.sleep(1000);
     }
