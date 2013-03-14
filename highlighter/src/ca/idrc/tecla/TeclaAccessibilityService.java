@@ -70,12 +70,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		if (mTeclaHUDController == null) {
 			mTeclaHUDController = new TeclaHUDController(this);
-			mTeclaHUDController.getRootView().setOnLongClickListener(mOverlayLongClickListener);
 			mTeclaHUDController.show();
 		}
 
-		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		SEPManager.start(this);
+		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		//SEPManager.start(this);
 	}
 
 	@Override
@@ -317,15 +316,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		shutdownInfrastructure();
 		unregisterReceiver(mReceiver);
 	}
-
-	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
-
-		@Override
-		public boolean onLongClick(View v) {
-			shutdownInfrastructure();
-			return true;
-		}
-	};
 
 	/**
 	 * Shuts down the infrastructure in case it has been initialized.
