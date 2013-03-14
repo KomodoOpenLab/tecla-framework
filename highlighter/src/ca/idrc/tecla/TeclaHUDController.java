@@ -23,7 +23,8 @@ public class TeclaHUDController extends SimpleOverlay {
 		setContentView(R.layout.tecla_controller);
 
 		mHUD = (TeclaHUD) findViewById(R.id.teclaHUD_control);
-		getRootView().setOnTouchListener(mOverlayTouchListener);
+		getRootView().setOnLongClickListener(mOverlayLongClickListener);
+		getRootView().setOnClickListener(mOverlayClickListener);
 	}
 
 	@Override
@@ -36,22 +37,23 @@ public class TeclaHUDController extends SimpleOverlay {
         sInstance = null;
 	}
 	
-	private View.OnTouchListener mOverlayTouchListener = new View.OnTouchListener() {
+	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			mHUD.scanTrigger();
+			
+		}
+	};	
+
+	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
 
 		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				//Log.v("TeclaA11y", "Tecla Overlay Touch Down! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
-				break;
-			case MotionEvent.ACTION_UP:
-				//Log.v("TeclaA11y", "Tecla Overlay Touch Up! " + Float.toString(logicalX) + " " + Float.toString(logicalY));
-				mHUD.scanTrigger();
-			default:
-				break;
-			}
+		public boolean onLongClick(View v) {
+			Log.v("TeclaA11y", "Long clicked.  ");
+			TeclaAccessibilityService.getInstance().shutdownInfrastructure();
 			return true;
 		}
-		
 	};
+
 }
