@@ -48,6 +48,8 @@ public class TeclaHighlighter extends SimpleOverlay {
 	public static void clearHighlight() {
         sInstance.mOuterBounds.clear();
         sInstance.mInnerBounds.clear();
+        sInstance.mOuterBounds.postInvalidate();
+        sInstance.mInnerBounds.postInvalidate();
 	}
 	
     public static void removeInvalidNodes() {
