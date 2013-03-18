@@ -235,6 +235,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	public static void clickActiveNode() {
+		if(sInstance.mActiveNodes.size() == 0) return;
+		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0); 
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 		TeclaHighlighter.clearHighlight();
 	}
