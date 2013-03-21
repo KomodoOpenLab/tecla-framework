@@ -14,15 +14,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
        
-        <service
-            android:name="ca.idrc.tecla.TeclaAccessibilityService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data android:name="android.accessibilityservice" android:resource="@xml/tecla_a11yservice_config" />
-        </service>
-        
     </application>
 
 </manifest>
