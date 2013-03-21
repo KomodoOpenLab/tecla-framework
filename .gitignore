@@ -20,3 +20,6 @@ local.properties
 .project
 .settings
 *project.properties
+
+#Other
+*android-support*.jar
