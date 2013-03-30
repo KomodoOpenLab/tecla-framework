@@ -1,15 +1,230 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
-    <ca.idrc.tecla.TeclaHUD
-        android:id="@+id/teclaHUD_control"
-        android:layout_width="wrap_content"
+    <TableLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="25dp" />
+        android:layout_centerVertical="true" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_upperleft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:rotation="180"
+                    android:src="@drawable/border_lowerright" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_upperleft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="180"
+                    android:src="@drawable/highlight_lowerright"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_up"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:rotation="270"
+                    android:src="@drawable/border_right" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_up"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="270"
+                    android:src="@drawable/highlight_right"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_upperright"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:rotation="270"
+                    android:src="@drawable/border_lowerright" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_upperright"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="270"
+                    android:src="@drawable/highlight_lowerright"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_left"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:rotation="180"
+                    android:src="@drawable/border_right" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_left"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="180"
+                    android:src="@drawable/highlight_right"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/center"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_right"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/border_right" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_right"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/highlight_right"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_lowerleft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:rotation="90"
+                    android:src="@drawable/border_lowerright" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_lowerleft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="90"
+                    android:src="@drawable/highlight_lowerright"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_down"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:rotation="90"
+                    android:src="@drawable/border_right" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_down"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rotation="90"
+                    android:src="@drawable/highlight_right"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/imageView_border_lowerright"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/border_lowerright" />
+
+                <ImageView
+                    android:id="@+id/imageView_highlight_lowerright"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/highlight_lowerright"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+        </TableRow>
+
+    </TableLayout>
 
 </RelativeLayout>

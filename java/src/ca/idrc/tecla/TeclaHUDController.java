@@ -9,7 +9,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaHUDController extends SimpleOverlay {
 
-	protected final TeclaHUD mHUD;
+	//protected final TeclaHUD mHUD;
 	private static TeclaHUDController sInstance;
 	
 	public TeclaHUDController(Context context) {
@@ -22,7 +22,7 @@ public class TeclaHUDController extends SimpleOverlay {
 
 		setContentView(R.layout.tecla_controller);
 
-		mHUD = (TeclaHUD) findViewById(R.id.teclaHUD_control);
+		// mHUD = (TeclaHUD) findViewById(R.id.teclaHUD_control);
 		getRootView().setOnLongClickListener(mOverlayLongClickListener);
 		getRootView().setOnClickListener(mOverlayClickListener);
 	}
@@ -41,7 +41,7 @@ public class TeclaHUDController extends SimpleOverlay {
 		
 		@Override
 		public void onClick(View v) {
-			mHUD.scanTrigger();
+			//mHUD.scanTrigger();
 			
 		}
 	};	

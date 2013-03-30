@@ -31,7 +31,6 @@ public class TeclaHUD extends View {
 	
     public TeclaHUD(Context context, AttributeSet attrs) {
         super(context, attrs);
-        
         mState = STATE_UP;
         
         mAutoScanHandler.sleep(1000);
