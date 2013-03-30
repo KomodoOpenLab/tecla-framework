@@ -2,6 +2,8 @@ package ca.idrc.tecla;
 
 import java.util.ArrayList;
 
+import ca.idrc.tecla.framework.TeclaIME;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -20,16 +22,6 @@ public class TeclaHUDController extends SimpleOverlay {
 	private ArrayList<ImageView> mHUDSymbolHighlight;
 	
 	protected final static long SCAN_PERIOD = 1500;
-	private byte mState;
-	protected final static byte TOTAL_STATES = 5;
-	protected final static byte STATE_UP = 0;
-	protected final static byte STATE_SELECT = 1;
-	protected final static byte STATE_RIGHT = 2;
-	protected final static byte STATE_FORWARD = 3;
-	protected final static byte STATE_DOWN = 4;
-	protected final static byte STATE_BACK = 5;
-	protected final static byte STATE_LEFT = 6;
-	protected final static byte STATE_HOME = 7;
 	
 	public TeclaHUDController(Context context) {
 		super(context);
@@ -84,7 +76,6 @@ public class TeclaHUDController extends SimpleOverlay {
 		mHUDSymbolHighlight.add((ImageView)findViewById(R.id.imageView_highlight_leftarrow));
 		mHUDSymbolHighlight.add((ImageView)findViewById(R.id.imageView_highlight_home));
 		
-        mState = STATE_HOME;
         mAutoScanHandler.sleep(1000);
 	}
 
@@ -118,36 +109,28 @@ public class TeclaHUDController extends SimpleOverlay {
 	};
 
 	protected void scanTrigger() {
-		switch (mState) {
-		case(STATE_UP):
+		ImageView img = (ImageView)mHUDSymbolHighlight.get(mHUDSymbolHighlight.size()-1);
+		int id = img.getId();
+		if(id == R.id.imageView_highlight_uparrow) {
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
-			break; 
-		case(STATE_SELECT):
-			break; 
-		case(STATE_RIGHT):
+		} else if(id == R.id.imageView_highlight_select) {
+			TeclaAccessibilityService.clickActiveNode();
+		} else if(id == R.id.imageView_highlight_rightarrow) {
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
-			break; 
-		case(STATE_FORWARD):
-			break; 
-		case(STATE_DOWN):
+		} else if(id == R.id.imageView_highlight_forward) {
+			
+		} else if(id == R.id.imageView_highlight_downarrow) {
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
-			break; 
-		case(STATE_BACK):
-			break; 
-		case(STATE_LEFT):
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
-			break; 
-		case(STATE_HOME):
-			break; 
-		default: 
-			break; 
+		} else if(id == R.id.imageView_highlight_back) {
+			TeclaIME.getInstance().pressBackKey();
+		} else if(id == R.id.imageView_highlight_rightarrow) {
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
+		} else if(id == R.id.imageView_highlight_home) {
+			
 		}
 		mAutoScanHandler.sleep(SCAN_PERIOD);
 	}
 	protected void scanForward() {
-		++mState;
-		mState %= TOTAL_STATES;
-
 		// update HUD graphics 
 		
 		ImageView img;
