@@ -84,6 +84,13 @@
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/border_home" />
 
+                            <ImageView
+                                android:id="@+id/imageView_highlight_home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/highlight_home"
+                                android:visibility="invisible" />
+
                         </FrameLayout>
 
                         <FrameLayout
@@ -162,6 +169,15 @@
                                 android:layout_weight="1"
                                 android:rotation="270"
                                 android:src="@drawable/border_rightarrow" />
+
+                            <ImageView
+                                android:id="@+id/imageView_highlight_uparrow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:rotation="270"
+                                android:src="@drawable/highlight_rightarrow"
+                                android:visibility="invisible" />
+
                         </FrameLayout>
 
                         <FrameLayout
@@ -242,6 +258,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/border_select" />
+
+                            <ImageView
+                                android:id="@+id/imageView_highlight_select"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:src="@drawable/highlight_select"
+                                android:visibility="invisible" />
 
                         </FrameLayout>
 
@@ -333,6 +357,14 @@
                                 android:rotation="180"
                                 android:src="@drawable/border_rightarrow" />
 
+                            <ImageView
+                                android:id="@+id/imageView_highlight_leftarrow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:rotation="180"
+                                android:src="@drawable/highlight_rightarrow"
+                                android:visibility="invisible" />
+
                         </FrameLayout>
 
                         <FrameLayout
@@ -412,6 +444,13 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/border_rightarrow" />
+
+                            <ImageView
+                                android:id="@+id/imageView_highlight_rightarrow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/highlight_rightarrow"
+                                android:visibility="invisible" />
 
                         </FrameLayout>
 
@@ -501,6 +540,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/border_back" />
+
+                            <ImageView
+                                android:id="@+id/imageView_highlight_back"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/highlight_back"
+                                android:visibility="invisible" />
+
                         </FrameLayout>
 
                         <FrameLayout
@@ -583,6 +630,14 @@
                                 android:rotation="90"
                                 android:src="@drawable/border_rightarrow" />
 
+                            <ImageView
+                                android:id="@+id/imageView_highlight_downarrow"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:rotation="90"
+                                android:src="@drawable/highlight_rightarrow"
+                                android:visibility="invisible" />
+
                         </FrameLayout>
 
                         <FrameLayout
@@ -655,6 +710,13 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/border_forward" />
+
+                            <ImageView
+                                android:id="@+id/imageView_highlight_forward"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/highlight_forward"
+                                android:visibility="invisible" />
 
                         </FrameLayout>
 
