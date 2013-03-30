@@ -35,6 +35,74 @@
                     android:src="@drawable/highlight_lowerright"
                     android:visibility="invisible" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+
+                            <ImageView
+                                android:id="@+id/imageView_border_home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/border_home" />
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </FrameLayout>
 
             <FrameLayout
@@ -68,18 +136,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/imageView1"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/imageView2"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/imageView3"
-                            android:src="@drawable/center" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -120,18 +176,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/imageView6"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/imageView7"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/imageView8"
-                            android:src="@drawable/center" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -157,6 +201,71 @@
                     android:rotation="270"
                     android:src="@drawable/highlight_lowerright"
                     android:visibility="invisible" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+
+                            <ImageView
+                                android:id="@+id/imageView_border_select"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/border_select" />
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+                </LinearLayout>
 
             </FrameLayout>
         </TableRow>
@@ -198,18 +307,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/ImageView07"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView08"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView11"
-                            android:src="@drawable/center" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -250,18 +347,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/ImageView09"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView10"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView12"
-                            android:src="@drawable/center" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -271,14 +356,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1" >
-
-                <ImageView
-                    android:id="@+id/imageView_center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/center"
-                    android:visibility="invisible" />
 
             </FrameLayout>
 
@@ -311,18 +388,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/ImageView13"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView14"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView17"
-                            android:src="@drawable/center" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -362,18 +427,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/ImageView15"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView16"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView18"
-                            android:src="@drawable/center" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -406,6 +459,70 @@
                     android:rotation="90"
                     android:src="@drawable/highlight_lowerright"
                     android:visibility="invisible" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+
+                            <ImageView
+                                android:id="@+id/ImageView_border_back"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/border_back" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+                </LinearLayout>
 
             </FrameLayout>
 
@@ -440,18 +557,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/ImageView01"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView02"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView05"
-                            android:src="@drawable/center" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -492,18 +597,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical" >
-
-                        <ImageView
-                            android:id="@+id/ImageView03"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView04"
-                            android:src="@drawable/center" />
-
-                        <ImageView
-                            android:id="@+id/ImageView06"
-                            android:src="@drawable/center" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -527,6 +620,71 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/highlight_lowerright"
                     android:visibility="invisible" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+
+                            <ImageView
+                                android:id="@+id/imageView_border_forward"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/border_forward" />
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+                </LinearLayout>
 
             </FrameLayout>
         </TableRow>
