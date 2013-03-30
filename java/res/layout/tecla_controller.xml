@@ -536,7 +536,7 @@
                             android:layout_weight="1" >
 
                             <ImageView
-                                android:id="@+id/ImageView_border_back"
+                                android:id="@+id/imageView_border_back"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/border_back" />
