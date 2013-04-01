@@ -10,7 +10,7 @@
 
         <TableRow
             android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" >
 
@@ -177,7 +177,6 @@
                                 android:rotation="270"
                                 android:src="@drawable/highlight_rightarrow"
                                 android:visibility="invisible" />
-
                         </FrameLayout>
 
                         <FrameLayout
@@ -194,7 +193,6 @@
                         android:orientation="vertical" >
                     </LinearLayout>
                 </LinearLayout>
-
             </FrameLayout>
 
             <FrameLayout
@@ -296,7 +294,7 @@
 
         <TableRow
             android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" >
 
@@ -308,7 +306,7 @@
                 <ImageView
                     android:id="@+id/imageView_border_left"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:rotation="180"
                     android:src="@drawable/border_right" />
@@ -352,15 +350,15 @@
 
                             <ImageView
                                 android:id="@+id/imageView_border_leftarrow"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:rotation="180"
                                 android:src="@drawable/border_rightarrow" />
 
                             <ImageView
                                 android:id="@+id/imageView_highlight_leftarrow"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:rotation="180"
                                 android:src="@drawable/highlight_rightarrow"
                                 android:visibility="invisible" />
@@ -399,7 +397,7 @@
                 <ImageView
                     android:id="@+id/imageView_border_right"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:src="@drawable/border_right" />
 
@@ -441,14 +439,14 @@
 
                             <ImageView
                                 android:id="@+id/imageView_border_rightarrow"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:src="@drawable/border_rightarrow" />
 
                             <ImageView
                                 android:id="@+id/imageView_highlight_rightarrow"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:src="@drawable/highlight_rightarrow"
                                 android:visibility="invisible" />
 
@@ -474,7 +472,7 @@
 
         <TableRow
             android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" >
 
@@ -537,14 +535,14 @@
 
                             <ImageView
                                 android:id="@+id/imageView_border_back"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:src="@drawable/border_back" />
 
                             <ImageView
                                 android:id="@+id/imageView_highlight_back"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:src="@drawable/highlight_back"
                                 android:visibility="invisible" />
 
@@ -707,14 +705,14 @@
 
                             <ImageView
                                 android:id="@+id/imageView_border_forward"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:src="@drawable/border_forward" />
 
                             <ImageView
                                 android:id="@+id/imageView_highlight_forward"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:src="@drawable/highlight_forward"
                                 android:visibility="invisible" />
 
