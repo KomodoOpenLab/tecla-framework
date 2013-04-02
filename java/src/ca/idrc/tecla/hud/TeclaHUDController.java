@@ -1,7 +1,10 @@
-package ca.idrc.tecla;
+package ca.idrc.tecla.hud;
 
 import java.util.ArrayList;
 
+import ca.idrc.tecla.R;
+import ca.idrc.tecla.R.id;
+import ca.idrc.tecla.R.layout;
 import ca.idrc.tecla.framework.TeclaIME;
 
 import android.content.Context;

@@ -1,5 +1,6 @@
-package ca.idrc.tecla;
+package ca.idrc.tecla.hud;
 
+import ca.idrc.tecla.R;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.WindowManager;

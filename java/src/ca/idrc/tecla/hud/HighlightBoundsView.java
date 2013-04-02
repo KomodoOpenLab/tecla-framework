@@ -15,7 +15,7 @@
  */
 
 // package com.google.android.marvin.utils;
-package ca.idrc.tecla;
+package ca.idrc.tecla.hud;
 
 import android.content.Context;
 import android.graphics.Canvas;

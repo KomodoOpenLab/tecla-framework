@@ -1,4 +1,4 @@
-package ca.idrc.tecla;
+package ca.idrc.tecla.hud;
 
 import android.graphics.Bitmap;
 
