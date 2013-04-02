@@ -1,101 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center" >
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="5" >
 
     <LinearLayout
-        android:id="@+id/hud_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="3" >
 
         <LinearLayout
-            android:id="@+id/hud_layout_left"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
+            android:layout_height="fill_parent"
             android:orientation="vertical" >
 
             <ImageButton
                 android:id="@+id/hud_btn_topleft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="@drawable/border_lowerright"
                 android:rotation="180"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/hud_btn_home_normal" />
 
             <ImageButton
                 android:id="@+id/hud_btn_left"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:background="@drawable/border_right"
                 android:rotation="180"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/hud_btn_right_normal" />
 
             <ImageButton
                 android:id="@+id/hud_btn_bottomleft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="@drawable/border_lowerright"
                 android:rotation="90"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/hud_btn_back_normal" />
         </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" >
+            android:layout_height="fill_parent"
+            android:layout_weight="2"
+            android:orientation="vertical" >
 
-            <ImageButton
-                android:id="@+id/imageButton1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/hud_btn_bkgnd_up_normal"
-                android:src="@android:drawable/btn_star" />
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
 
-            <ImageButton
-                android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:rotation="180"
-                android:background="@drawable/hud_btn_bkgnd_up_normal"
-                android:src="@android:drawable/btn_star" />
+                <ImageButton
+                    android:id="@+id/imageButton1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/hud_btn_bkgnd_up_normal"
+                    android:src="@drawable/hud_btn_up_normal" />
 
-        </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/imageButton2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/hud_btn_bkgnd_up_normal"
+                    android:rotation="180"
+                    android:src="@drawable/hud_btn_up_normal" />
+            </RelativeLayout>
+        </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/hud_layout_right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:gravity="right"
             android:orientation="vertical" >
 
             <ImageButton
                 android:id="@+id/hud_btn_topright"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="@drawable/border_lowerright"
                 android:rotation="270"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/hud_btn_select_normal" />
 
             <ImageButton
                 android:id="@+id/hud_btn_right"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:background="@drawable/border_right"
                 android:rotation="0"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/hud_btn_right_normal" />
 
             <ImageButton
                 android:id="@+id/hud_btn_bottomright"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:background="@drawable/border_lowerright"
                 android:rotation="0"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/hud_btn_more_normal" />
         </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+</LinearLayout>
