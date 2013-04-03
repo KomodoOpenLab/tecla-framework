@@ -131,7 +131,10 @@ public class TeclaHUDController extends SimpleOverlay {
 		} else if(id == R.id.imageView_highlight_rightarrow) {
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
 		} else if(id == R.id.imageView_highlight_home) {
-			
+			if(sLatinIMEInstance != null) {
+				Log.w(tag, "LatinIME is not null");
+				sLatinIMEInstance.pressHomeKey();
+			} else Log.w(tag, "LatinIME is null");
 		}
 		mAutoScanHandler.sleep(SCAN_PERIOD);
 	}

@@ -12,7 +12,11 @@ public class TeclaIME extends InputMethodService {
 		TeclaHUDController.sLatinIMEInstance = this;
 		
 	}    
-	
+
+	public void pressHomeKey() {
+		sendDownUpKeyEvents(KeyEvent.KEYCODE_HOME);
+	}
+
 	public void pressBackKey() {
 		sendDownUpKeyEvents(KeyEvent.KEYCODE_BACK);
 	}
