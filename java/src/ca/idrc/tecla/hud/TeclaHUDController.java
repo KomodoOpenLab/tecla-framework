@@ -17,7 +17,9 @@ import android.widget.ImageView;
 
 public class TeclaHUDController extends SimpleOverlay {
 
+	private final static String tag = "TeclaHUDController";
 	private static TeclaHUDController sInstance;
+	public static TeclaIME sLatinIMEInstance = null;
 
 	private ArrayList<ImageView> mHUDPad;
 	private ArrayList<ImageView> mHUDPadHighlight;
@@ -125,11 +127,17 @@ public class TeclaHUDController extends SimpleOverlay {
 		} else if(id == R.id.imageView_highlight_downarrow) {
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
 		} else if(id == R.id.imageView_highlight_back) {
-			TeclaIME.getInstance().pressBackKey();
+			if(sLatinIMEInstance != null) {
+				Log.w(tag, "LatinIME is not null");
+				sLatinIMEInstance.pressBackKey();
+			} else Log.w(tag, "LatinIME is null");
 		} else if(id == R.id.imageView_highlight_rightarrow) {
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
 		} else if(id == R.id.imageView_highlight_home) {
-			
+			if(sLatinIMEInstance != null) {
+				Log.w(tag, "LatinIME is not null");
+				sLatinIMEInstance.pressHomeKey();
+			} else Log.w(tag, "LatinIME is null");
 		}
 		mAutoScanHandler.sleep(SCAN_PERIOD);
 	}
