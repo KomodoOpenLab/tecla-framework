@@ -1,4 +1,4 @@
-package ca.idrc.tecla.hud;
+package ca.idrc.tecla.highlighter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
+import ca.idrc.tecla.hud.TeclaHUDController;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;

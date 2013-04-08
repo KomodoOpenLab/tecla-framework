@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ca.idrc.tecla.HighlightBoundsView
+    <ca.idrc.tecla.highlighter.HighlightBoundsView
         android:id="@+id/bounds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <ca.idrc.tecla.HighlightBoundsView
+    <ca.idrc.tecla.highlighter.HighlightBoundsView
         android:id="@+id/announce_bounds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

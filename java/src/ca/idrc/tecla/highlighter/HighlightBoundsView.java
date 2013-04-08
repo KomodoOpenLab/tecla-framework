@@ -15,7 +15,7 @@
  */
 
 // package com.google.android.marvin.utils;
-package ca.idrc.tecla.hud;
+package ca.idrc.tecla.highlighter;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -75,11 +75,12 @@ public class HighlightBoundsView extends View {
         c.setMatrix(mMatrix);
 
         mPaint.setColor(mHighlightColor);
-
-        for (AccessibilityNodeInfo node : mNodes) {
-            node.getBoundsInScreen(mTemp);
-            c.drawRect(mTemp, mPaint);
-        }
+        
+        /*This for loop should not be required*/
+//        for (AccessibilityNodeInfo node : mNodes) {
+//            node.getBoundsInScreen(mTemp);
+//            c.drawRect(mTemp, mPaint);
+//        }
 
         c.restoreToCount(saveCount);
     }

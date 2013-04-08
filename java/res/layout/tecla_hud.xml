@@ -16,12 +16,10 @@
             android:layout_height="fill_parent"
             android:orientation="vertical" >
 
-            <ImageButton
+            <ca.idrc.tecla.hud.TeclaHUDButtonView
                 android:id="@+id/hud_btn_topleft"
-                android:layout_width="100dp"
+                android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:background="@drawable/border_lowerright"
-                android:rotation="180"
                 android:src="@drawable/hud_btn_home_normal" />
 
             <ImageButton

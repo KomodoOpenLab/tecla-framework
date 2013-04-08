@@ -1,6 +1,7 @@
-package ca.idrc.tecla.hud;
+package ca.idrc.tecla.highlighter;
 
 import ca.idrc.tecla.R;
+import ca.idrc.tecla.framework.SimpleOverlay;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.WindowManager;

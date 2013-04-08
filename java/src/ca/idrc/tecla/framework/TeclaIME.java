@@ -1,6 +1,6 @@
 package ca.idrc.tecla.framework;
 
-import ca.idrc.tecla.TeclaHUDController;
+import ca.idrc.tecla.hud.TeclaHUDController;
 import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 
