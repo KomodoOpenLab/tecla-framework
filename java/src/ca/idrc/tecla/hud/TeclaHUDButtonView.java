@@ -4,9 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageButton;
 
 public class TeclaHUDButtonView extends ImageButton {
@@ -17,7 +16,7 @@ public class TeclaHUDButtonView extends ImageButton {
     private int mHeight;
     private int mInnerStrokeWidth;
     private int mOuterStrokeWidth;
-	private Rect mRect;
+	private Path mPath;
 
 	public TeclaHUDButtonView(Context context) {
 		super(context);
@@ -42,8 +41,8 @@ public class TeclaHUDButtonView extends ImageButton {
 	
     @Override
     public void onDraw(Canvas c) {
-    	c.drawRect(mRect, mOuterPaint);
-    	c.drawRect(mRect, mInnerPaint);
+    	c.drawPath(mPath, mOuterPaint);
+    	c.drawPath(mPath, mInnerPaint);
     }
 
 	@Override
@@ -51,20 +50,24 @@ public class TeclaHUDButtonView extends ImageButton {
 		mWidth = w;
 		mHeight = h;
 
-    	Log.d("TeclaJB", "Width: " + mWidth + " Height: " + mHeight);
-
     	mInnerStrokeWidth = (int) Math.round(0.01 * mWidth);
 		mOuterStrokeWidth = 2 * mInnerStrokeWidth;
     	mInnerPaint.setStrokeWidth(mInnerStrokeWidth);
     	mOuterPaint.setStrokeWidth(2 * mOuterStrokeWidth);
-    	mRect = new Rect();
-    	int left = (int) Math.round(mOuterStrokeWidth / 2.0);
-    	int top = (int) Math.round(mOuterStrokeWidth / 2.0);
-    	int width = mWidth - (int) Math.round(mOuterStrokeWidth / 2.0);
-    	int height = mHeight - (int) Math.round(mOuterStrokeWidth / 2.0);
-    	mRect.set(left, top, width, height);
+    	mPath = new Path();
+    	int left = mOuterStrokeWidth;
+    	int top = mOuterStrokeWidth;
+    	int width = mWidth - mOuterStrokeWidth;
+    	int height = mHeight - mOuterStrokeWidth;
+		float pad = 0.28f * width;
+		
+    	mPath.moveTo(left, height - pad);
+    	mPath.lineTo(width - pad, top);
+    	mPath.lineTo(width, height - pad);
+    	mPath.lineTo(width - pad, height);
+    	mPath.lineTo(left, height - pad);
 
-		invalidate();
+    	invalidate();
 		super.onSizeChanged(w, h, oldw, oldh);
 	}
 }
