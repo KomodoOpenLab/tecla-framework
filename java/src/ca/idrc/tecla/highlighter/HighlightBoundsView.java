@@ -77,10 +77,10 @@ public class HighlightBoundsView extends View {
         mPaint.setColor(mHighlightColor);
         
         /*This for loop should not be required*/
-//        for (AccessibilityNodeInfo node : mNodes) {
-//            node.getBoundsInScreen(mTemp);
-//            c.drawRect(mTemp, mPaint);
-//        }
+        for (AccessibilityNodeInfo node : mNodes) {
+            node.getBoundsInScreen(mTemp);
+            c.drawRect(mTemp, mPaint);
+        }
 
         c.restoreToCount(saveCount);
     }

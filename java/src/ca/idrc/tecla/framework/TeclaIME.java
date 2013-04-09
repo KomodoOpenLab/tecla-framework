@@ -1,6 +1,6 @@
 package ca.idrc.tecla.framework;
 
-import ca.idrc.tecla.hud.TeclaHUDController;
+import ca.idrc.tecla.hud.TeclaHUDOverlay;
 import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 
@@ -9,7 +9,7 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		TeclaHUDController.sLatinIMEInstance = this;
+		TeclaHUDOverlay.sLatinIMEInstance = this;
 		
 	}    
 

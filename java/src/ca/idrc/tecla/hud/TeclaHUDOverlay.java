@@ -10,18 +10,28 @@ import ca.idrc.tecla.framework.TeclaIME;
 import ca.idrc.tecla.highlighter.TeclaAccessibilityService;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
-public class TeclaHUDController extends SimpleOverlay {
+public class TeclaHUDOverlay extends SimpleOverlay {
 
 	private final static String tag = "TeclaHUDController";
-	private static TeclaHUDController sInstance;
+    private final WindowManager mWindowManager;
+	private static TeclaHUDOverlay sInstance;
 	public static TeclaIME sLatinIMEInstance = null;
+	
+	private TeclaHUDCornerView hudTopLeft;
+	private TeclaHUDCornerView hudTopRight;
+	private TeclaHUDCornerView hudBottomLeft;
+	private TeclaHUDCornerView hudBottomRight;
 
 	private ArrayList<ImageView> mHUDPad;
 	private ArrayList<ImageView> mHUDPadHighlight;
@@ -30,8 +40,11 @@ public class TeclaHUDController extends SimpleOverlay {
 	
 	protected final static long SCAN_PERIOD = 1500;
 	
-	public TeclaHUDController(Context context) {
+	public TeclaHUDOverlay(Context context) {
 		super(context);
+		
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
@@ -43,6 +56,13 @@ public class TeclaHUDController extends SimpleOverlay {
 		getRootView().setOnLongClickListener(mOverlayLongClickListener);
 		getRootView().setOnClickListener(mOverlayClickListener);
 		
+        hudTopLeft = (TeclaHUDCornerView) findViewById(R.id.hud_btn_topleft);
+        hudTopRight = (TeclaHUDCornerView) findViewById(R.id.hud_btn_topright);
+        hudBottomLeft = (TeclaHUDCornerView) findViewById(R.id.hud_btn_bottomleft);
+        hudBottomRight = (TeclaHUDCornerView) findViewById(R.id.hud_btn_bottomright);
+        
+        fixHUDCorners();
+        
 		mHUDPad = new ArrayList<ImageView>();
 //		mHUDPad.add((ImageView)findViewById(R.id.imageView_border_up));
 //		mHUDPad.add((ImageView)findViewById(R.id.imageView_border_upperright));
@@ -94,6 +114,45 @@ public class TeclaHUDController extends SimpleOverlay {
 	@Override
 	protected void onHide() {
         sInstance = null;
+	}
+	
+	private void fixHUDCorners () {
+        Display display = mWindowManager.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+        
+        int corner_size = 0;
+        if (width <= height) { // Portrait (use width)
+            corner_size = Math.round(width * 0.24f);
+        } else { // Landscape (use height)
+            corner_size = Math.round(height * 0.24f);
+        }
+
+        ViewGroup.LayoutParams params_topleft = hudTopLeft.getLayoutParams();
+        ViewGroup.LayoutParams params_topright = hudTopRight.getLayoutParams();
+        ViewGroup.LayoutParams params_bottomleft = hudBottomLeft.getLayoutParams();
+        ViewGroup.LayoutParams params_bottomright = hudBottomRight.getLayoutParams();
+        
+        params_topleft.width = corner_size;
+        params_topleft.height = corner_size;
+        params_topright.width = corner_size;
+        params_topright.height = corner_size;
+        params_bottomleft.width = corner_size;
+        params_bottomleft.height = corner_size;
+        params_bottomright.width = corner_size;
+        params_bottomright.height = corner_size;
+
+        hudTopLeft.setLayoutParams(params_topleft);
+        hudTopRight.setLayoutParams(params_topright);
+        hudBottomLeft.setLayoutParams(params_bottomleft);
+        hudBottomRight.setLayoutParams(params_bottomright);
+        
+        hudTopLeft.setBackgroundRotation(0);
+        hudTopRight.setBackgroundRotation(90);
+        hudBottomLeft.setBackgroundRotation(270);
+        hudBottomRight.setBackgroundRotation(180);
 	}
 	
 	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
@@ -187,7 +246,7 @@ public class TeclaHUDController extends SimpleOverlay {
 
         @Override
         public void handleMessage(Message msg) {
-        	TeclaHUDController.this.scanForward();
+        	TeclaHUDOverlay.this.scanForward();
         }
 
         public void sleep(long delayMillis) {

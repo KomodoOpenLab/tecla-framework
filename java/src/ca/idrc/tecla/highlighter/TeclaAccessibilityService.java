@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
-import ca.idrc.tecla.hud.TeclaHUDController;
+import ca.idrc.tecla.hud.TeclaHUDOverlay;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;
@@ -46,7 +46,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private int mNodeIndex;
 
 	private TeclaHighlighter mTeclaHighlighter;
-	private TeclaHUDController mTeclaHUDController;
+	private TeclaHUDOverlay mTeclaHUDController;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
@@ -70,7 +70,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 
 		if (mTeclaHUDController == null) {
-			mTeclaHUDController = new TeclaHUDController(this);
+			mTeclaHUDController = new TeclaHUDOverlay(this);
 			mTeclaHUDController.show();
 		}
 
