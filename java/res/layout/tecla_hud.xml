@@ -11,21 +11,19 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <ca.idrc.tecla.hud.TeclaHUDCornerView
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_topleft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/hud_btn_home_normal" />
 
-        <ImageButton
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_right"
-            android:rotation="180"
             android:src="@drawable/hud_btn_right_normal" />
 
-        <ca.idrc.tecla.hud.TeclaHUDCornerView
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_bottomleft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,20 +39,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
-            <ImageButton
-                android:id="@+id/imageButton1"
+            <ca.idrc.tecla.hud.TeclaHUDButtonView
+                android:id="@+id/hud_btn_top"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/hud_btn_bkgnd_up_normal"
+                android:layout_alignParentTop="true"
                 android:src="@drawable/hud_btn_up_normal" />
 
-            <ImageButton
-                android:id="@+id/imageButton2"
+            <ca.idrc.tecla.hud.TeclaHUDButtonView
+                android:id="@+id/hud_btn_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/hud_btn_bkgnd_up_normal"
-                android:rotation="180"
                 android:src="@drawable/hud_btn_up_normal" />
         </RelativeLayout>
     </LinearLayout>
@@ -66,21 +62,19 @@
         android:gravity="right"
         android:orientation="vertical" >
 
-        <ca.idrc.tecla.hud.TeclaHUDCornerView
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_topright"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/hud_btn_select_normal" />
 
-        <ImageButton
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_right"
-            android:rotation="0"
             android:src="@drawable/hud_btn_right_normal" />
 
-        <ca.idrc.tecla.hud.TeclaHUDCornerView
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_bottomright"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

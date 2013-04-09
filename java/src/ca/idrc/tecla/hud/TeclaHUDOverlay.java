@@ -23,15 +23,21 @@ import android.widget.LinearLayout;
 
 public class TeclaHUDOverlay extends SimpleOverlay {
 
+	private final static float SIDE_WIDTH_PROPORTION = 0.5f;
+	private final static float STROKE_WIDTH_PROPORTION = 0.018f;
 	private final static String tag = "TeclaHUDController";
     private final WindowManager mWindowManager;
 	private static TeclaHUDOverlay sInstance;
 	public static TeclaIME sLatinIMEInstance = null;
 	
-	private TeclaHUDCornerView hudTopLeft;
-	private TeclaHUDCornerView hudTopRight;
-	private TeclaHUDCornerView hudBottomLeft;
-	private TeclaHUDCornerView hudBottomRight;
+	private TeclaHUDButtonView btnTopLeft;
+	private TeclaHUDButtonView btnTopRight;
+	private TeclaHUDButtonView btnBottomLeft;
+	private TeclaHUDButtonView btnBottomRight;
+	private TeclaHUDButtonView btnLeft;
+	private TeclaHUDButtonView btnTop;
+	private TeclaHUDButtonView btnRight;
+	private TeclaHUDButtonView btnBottom;
 
 	private ArrayList<ImageView> mHUDPad;
 	private ArrayList<ImageView> mHUDPadHighlight;
@@ -56,12 +62,9 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		getRootView().setOnLongClickListener(mOverlayLongClickListener);
 		getRootView().setOnClickListener(mOverlayClickListener);
 		
-        hudTopLeft = (TeclaHUDCornerView) findViewById(R.id.hud_btn_topleft);
-        hudTopRight = (TeclaHUDCornerView) findViewById(R.id.hud_btn_topright);
-        hudBottomLeft = (TeclaHUDCornerView) findViewById(R.id.hud_btn_bottomleft);
-        hudBottomRight = (TeclaHUDCornerView) findViewById(R.id.hud_btn_bottomright);
+        findAllButtons();
         
-        fixHUDCorners();
+        fixHUDLayout();
         
 		mHUDPad = new ArrayList<ImageView>();
 //		mHUDPad.add((ImageView)findViewById(R.id.imageView_border_up));
@@ -116,43 +119,75 @@ public class TeclaHUDOverlay extends SimpleOverlay {
         sInstance = null;
 	}
 	
-	private void fixHUDCorners () {
+	private void findAllButtons() {
+        btnTopLeft = (TeclaHUDButtonView) findViewById(R.id.hud_btn_topleft);
+        btnTopRight = (TeclaHUDButtonView) findViewById(R.id.hud_btn_topright);
+        btnBottomLeft = (TeclaHUDButtonView) findViewById(R.id.hud_btn_bottomleft);
+        btnBottomRight = (TeclaHUDButtonView) findViewById(R.id.hud_btn_bottomright);        
+        btnLeft = (TeclaHUDButtonView) findViewById(R.id.hud_btn_left);
+        btnTop = (TeclaHUDButtonView) findViewById(R.id.hud_btn_top);
+        btnRight = (TeclaHUDButtonView) findViewById(R.id.hud_btn_right);
+        btnBottom = (TeclaHUDButtonView) findViewById(R.id.hud_btn_bottom);
+	}
+	
+	private void fixHUDLayout () {
         Display display = mWindowManager.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+        Point display_size = new Point();
+        display.getSize(display_size);
+        int display_width = display_size.x;
+        int display_height = display_size.y;
         
-        int corner_size = 0;
-        if (width <= height) { // Portrait (use width)
-            corner_size = Math.round(width * 0.24f);
+        int size_reference = 0;
+        if (display_width <= display_height) { // Portrait (use width)
+            size_reference = Math.round(display_width * 0.24f);
         } else { // Landscape (use height)
-            corner_size = Math.round(height * 0.24f);
+            size_reference = Math.round(display_height * 0.24f);
         }
 
-        ViewGroup.LayoutParams params_topleft = hudTopLeft.getLayoutParams();
-        ViewGroup.LayoutParams params_topright = hudTopRight.getLayoutParams();
-        ViewGroup.LayoutParams params_bottomleft = hudBottomLeft.getLayoutParams();
-        ViewGroup.LayoutParams params_bottomright = hudBottomRight.getLayoutParams();
+        ViewGroup.LayoutParams params_topleft = btnTopLeft.getLayoutParams();
+        ViewGroup.LayoutParams params_topright = btnTopRight.getLayoutParams();
+        ViewGroup.LayoutParams params_bottomleft = btnBottomLeft.getLayoutParams();
+        ViewGroup.LayoutParams params_bottomright = btnBottomRight.getLayoutParams();
+        ViewGroup.LayoutParams params_left = btnLeft.getLayoutParams();
+        ViewGroup.LayoutParams params_top = btnTop.getLayoutParams();
+        ViewGroup.LayoutParams params_right = btnRight.getLayoutParams();
+        ViewGroup.LayoutParams params_bottom = btnBottom.getLayoutParams();
         
-        params_topleft.width = corner_size;
-        params_topleft.height = corner_size;
-        params_topright.width = corner_size;
-        params_topright.height = corner_size;
-        params_bottomleft.width = corner_size;
-        params_bottomleft.height = corner_size;
-        params_bottomright.width = corner_size;
-        params_bottomright.height = corner_size;
+        params_topleft.width = size_reference;
+        params_topleft.height = size_reference;
+        params_topright.width = size_reference;
+        params_topright.height = size_reference;
+        params_bottomleft.width = size_reference;
+        params_bottomleft.height = size_reference;
+        params_bottomright.width = size_reference;
+        params_bottomright.height = size_reference;
+        params_left.width = Math.round(SIDE_WIDTH_PROPORTION * size_reference);
+        params_left.height = display_height - (2 * size_reference);
+        params_top.width = display_width - (2 * size_reference);
+        params_top.height = Math.round(SIDE_WIDTH_PROPORTION * size_reference);;
+        params_right.width = Math.round(SIDE_WIDTH_PROPORTION * size_reference);
+        params_right.height = display_height - (2 * size_reference);
+        params_bottom.width = display_width - (2 * size_reference);
+        params_bottom.height = Math.round(SIDE_WIDTH_PROPORTION * size_reference);;
 
-        hudTopLeft.setLayoutParams(params_topleft);
-        hudTopRight.setLayoutParams(params_topright);
-        hudBottomLeft.setLayoutParams(params_bottomleft);
-        hudBottomRight.setLayoutParams(params_bottomright);
+        btnTopLeft.setLayoutParams(params_topleft);
+        btnTopRight.setLayoutParams(params_topright);
+        btnBottomLeft.setLayoutParams(params_bottomleft);
+        btnBottomRight.setLayoutParams(params_bottomright);
+        btnLeft.setLayoutParams(params_left);
+        btnTop.setLayoutParams(params_top);
+        btnRight.setLayoutParams(params_right);
+        btnBottom.setLayoutParams(params_bottom);
         
-        hudTopLeft.setBackgroundRotation(0);
-        hudTopRight.setBackgroundRotation(90);
-        hudBottomLeft.setBackgroundRotation(270);
-        hudBottomRight.setBackgroundRotation(180);
+        int stroke_width = Math.round(STROKE_WIDTH_PROPORTION * size_reference);
+        btnTopLeft.setProperties(TeclaHUDButtonView.POSITION_TOP_LEFT, stroke_width);
+        btnTopRight.setProperties(TeclaHUDButtonView.POSITION_TOP_RIGHT, stroke_width);
+        btnBottomLeft.setProperties(TeclaHUDButtonView.POSITION_BOTTOM_LEFT, stroke_width);
+        btnBottomRight.setProperties(TeclaHUDButtonView.POSITION_BOTTOM_RIGHT, stroke_width);
+        btnLeft.setProperties(TeclaHUDButtonView.POSITION_LEFT, stroke_width);
+        btnTop.setProperties(TeclaHUDButtonView.POSITION_TOP, stroke_width);
+        btnRight.setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width);
+        btnBottom.setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width);
 	}
 	
 	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
