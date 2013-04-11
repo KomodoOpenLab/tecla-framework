@@ -6,4 +6,4 @@
     android:canRetrieveWindowContent="true"
     android:description="@string/tecla_service_description"
     android:notificationTimeout="0"
-    android:settingsActivity="ca.idrc.tecla.latin.SettingsActivity" />
+    android:settingsActivity="ca.idrc.tecla.framework.SettingsActivity" />
