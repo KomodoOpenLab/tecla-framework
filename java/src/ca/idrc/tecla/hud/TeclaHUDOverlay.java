@@ -106,7 +106,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 //		mHUDSymbolHighlight.add((ImageView)findViewById(R.id.imageView_highlight_leftarrow));
 //		mHUDSymbolHighlight.add((ImageView)findViewById(R.id.imageView_highlight_home));
 		
-        mAutoScanHandler.sleep(1000);
+        // mAutoScanHandler.sleep(1000);
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		
 		@Override
 		public void onClick(View v) {
-			scanTrigger();
+			//scanTrigger();
 			
 		}
 	};	
