@@ -317,7 +317,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		super.onDestroy();
 		SEPManager.stop(this);
 		shutdownInfrastructure();
-		unregisterReceiver(mReceiver);
+		try {
+			unregisterReceiver(mReceiver);
+		} catch (IllegalArgumentException e) {
+			Log.e(TAG, "Caught receiver not registered.");
+		}
 	}
 
 	/**
