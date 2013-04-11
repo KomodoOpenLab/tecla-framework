@@ -210,8 +210,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	};
 
 	protected void scanTrigger() {
-		//ImageView img = (ImageView)mHUDSymbolHighlight.get(mHUDSymbolHighlight.size()-1);
-		//int id = img.getId();
+		ImageView img = (ImageView)mHUDSymbolHighlight.get(mHUDSymbolHighlight.size()-1);
+		int id = img.getId();
 //		if(id == R.id.imageView_highlight_uparrow) {
 //			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
 //		} else if(id == R.id.imageView_highlight_select) {
