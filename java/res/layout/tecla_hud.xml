@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center_vertical" >
+
+    <LinearLayout
+        android:id="@+id/hud_left"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
+            android:id="@+id/hud_btn_topleft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hud_btn_home_normal" />
+
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
+            android:id="@+id/hud_btn_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hud_btn_right_normal" />
+
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
+            android:id="@+id/hud_btn_bottomleft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hud_btn_back_normal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ca.idrc.tecla.hud.TeclaHUDButtonView
+                android:id="@+id/hud_btn_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/hud_btn_up_normal" />
+
+            <ca.idrc.tecla.hud.TeclaHUDButtonView
+                android:id="@+id/hud_btn_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/hud_btn_up_normal" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/hud_right"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="right"
+        android:orientation="vertical" >
+
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
+            android:id="@+id/hud_btn_topright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hud_btn_select_normal" />
+
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
+            android:id="@+id/hud_btn_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hud_btn_right_normal" />
+
+        <ca.idrc.tecla.hud.TeclaHUDButtonView
+            android:id="@+id/hud_btn_bottomright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/hud_btn_more_normal" />
+    </LinearLayout>
+
+</LinearLayout>
