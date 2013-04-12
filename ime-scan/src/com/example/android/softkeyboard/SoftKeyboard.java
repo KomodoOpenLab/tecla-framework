@@ -40,7 +40,7 @@ import java.util.List;
  * a basic example for how you would get started writing an input method, to
  * be fleshed out as appropriate.
  */
-public class SoftKeyboard extends InputMethodService 
+public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME 
         implements KeyboardView.OnKeyboardActionListener {
     static final boolean DEBUG = false;
     
