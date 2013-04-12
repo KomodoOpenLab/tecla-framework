@@ -16,7 +16,6 @@
 
 package com.example.android.softkeyboard;
 
-import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.InputType;
@@ -33,6 +32,7 @@ import android.view.inputmethod.InputMethodSubtype;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Example of writing an input method for a soft keyboard.  This code is
  * focused on simplicity over completeness, so it should in no way be considered
@@ -43,6 +43,7 @@ import java.util.List;
 public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME 
         implements KeyboardView.OnKeyboardActionListener {
     static final boolean DEBUG = false;
+    static final String tag = "SoftKeyboard";
     
     /**
      * This boolean indicates the optional example code for performing
@@ -218,7 +219,7 @@ public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME
         
         // Update the label on the enter key, depending on what the application
         // says it will do.
-        mCurKeyboard.setImeOptions(getResources(), attribute.imeOptions);
+        mCurKeyboard.setImeOptions(getResources(), attribute.imeOptions); 
     }
 
     /**
@@ -250,7 +251,7 @@ public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME
         mInputView.setKeyboard(mCurKeyboard);
         mInputView.closing();
         final InputMethodSubtype subtype = mInputMethodManager.getCurrentInputMethodSubtype();
-        mInputView.setSubtypeOnSpaceKey(subtype);
+        mInputView.setSubtypeOnSpaceKey(subtype);        
     }
 
     @Override
