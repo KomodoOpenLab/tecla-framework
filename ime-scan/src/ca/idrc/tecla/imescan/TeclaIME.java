@@ -12,6 +12,8 @@ public class TeclaIME extends InputMethodService {
 		sInstancce = this;
 	}
 	
-	
+	public static TeclaIME getInstance() {
+		return sInstancce;
+	}
 	
 }
