@@ -3,17 +3,16 @@ package ca.idrc.tecla.imescan;
 import java.util.Iterator;
 import java.util.List;
 
-import com.example.android.softkeyboard.R;
-
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.Keyboard.Key;
 import android.inputmethodservice.KeyboardView;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 public class IMEAdapter {
 
+	private static final String tag = "IMEAdapter";
+	
 	private static Keyboard sKeyboard = null;
 	private static KeyboardView sKeyboardView = null;
 	private static List<Key> sKeys = null;
@@ -29,7 +28,11 @@ public class IMEAdapter {
 
 		@Override
 		public void handleMessage(Message msg) {
-			sKeyboardView.invalidateAllKeys();			
+			switch(msg.what) {
+			case(REDRAW_KEYBOARD):	sKeyboardView.invalidateAllKeys();
+									break;
+			default:				break;
+			}	
 			super.handleMessage(msg);
 		}
 		
@@ -49,11 +52,19 @@ public class IMEAdapter {
 		}
 		sKeyboard = kbv.getKeyboard();
 		sKeys = sKeyboard.getKeys();
+		reset();
+	}
+	
+	public static void reset() {
+		if(sKeyboard ==null) return;
+		highlightKeys(sRowStartIndex, sRowEndIndex, false);
 		sRowCount = getRowCount();
-		sCurrentRow = 0;
-		sCurrentKeyIndex = 0;
+		sCurrentRow = -1;
+		sCurrentKeyIndex = -1;
 		sRowStartIndex = getRowStart(0);
 		sRowEndIndex = getRowEnd(0);
+		invalidateKeys();
+		
 	}
 	
 	public static void sendCurrentKey() {
@@ -79,7 +90,7 @@ public class IMEAdapter {
 	private static void invalidateKeys() {
 		Message msg = new Message();
 		msg.what = IMEAdapter.REDRAW_KEYBOARD;
-		sHandler.dispatchMessage(msg);		
+		sHandler.sendMessageDelayed(msg, 0);		
 	}
 	
 	public static void highlightNextKey() {
