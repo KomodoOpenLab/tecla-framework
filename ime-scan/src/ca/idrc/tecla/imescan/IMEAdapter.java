@@ -35,18 +35,15 @@ public class IMEAdapter {
 		
 	};
 	
-	public static void setKeyboard(Keyboard kb) {
-		sKeyboard = kb;
-		sKeys = kb.getKeys();
+	public static void setKeyboardView(KeyboardView kbv) {
+		sKeyboardView = kbv;
+		sKeyboard = kbv.getKeyboard();
+		sKeys = sKeyboard.getKeys();
 		sRowCount = getRowCount();
 		sCurrentRow = 0;
 		sCurrentKeyIndex = 0;
 		sRowStartIndex = getRowStart(0);
 		sRowEndIndex = getRowEnd(0);
-	}
-
-	public static void setKeyboardView(KeyboardView kbv) {
-		sKeyboardView = kbv;
 	}
 	
 	private static void highlightKey(int key_index, boolean highlighted) {
