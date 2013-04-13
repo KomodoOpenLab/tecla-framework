@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class TeclaShieldSwitchCollection {
 
-	ArrayList<TeclaShieldSwitch> mSwitches;
+	ArrayList<GenericSwitch> mSwitches;
 
 	public TeclaShieldSwitchCollection() {
-		mSwitches = new ArrayList<TeclaShieldSwitch>();
+		mSwitches = new ArrayList<GenericSwitch>();
 		mSwitches.add(new TeclaShieldSwitch1(0x1234));
 	}
 	

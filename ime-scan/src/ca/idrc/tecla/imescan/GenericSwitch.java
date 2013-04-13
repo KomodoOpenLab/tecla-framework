@@ -1,10 +1,10 @@
 package ca.idrc.tecla.imescan;
 
-public abstract class TeclaShieldSwitch {
+public abstract class GenericSwitch {
 
 	private int mID;
 		
-	public TeclaShieldSwitch(int id) {
+	public GenericSwitch(int id) {
 		mID = id;
 	}
 

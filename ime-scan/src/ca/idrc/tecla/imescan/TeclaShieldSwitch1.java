@@ -1,6 +1,6 @@
 package ca.idrc.tecla.imescan;
 
-public class TeclaShieldSwitch1 extends TeclaShieldSwitch implements SwitchActivation {
+public class TeclaShieldSwitch1 extends GenericSwitch implements SwitchActivation {
 
 	
 	public TeclaShieldSwitch1(int id) {
