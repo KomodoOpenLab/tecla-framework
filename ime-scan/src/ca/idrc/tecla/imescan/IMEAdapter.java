@@ -37,6 +37,16 @@ public class IMEAdapter {
 	
 	public static void setKeyboardView(KeyboardView kbv) {
 		sKeyboardView = kbv;
+		if(kbv == null) {
+			sKeyboard = null;
+			sKeys = null;
+			sRowCount = 0;
+			sCurrentRow = -1;
+			sCurrentKeyIndex = -1;
+			sRowStartIndex = -1;
+			sRowEndIndex = -1;		
+			return;
+		}
 		sKeyboard = kbv.getKeyboard();
 		sKeys = sKeyboard.getKeys();
 		sRowCount = getRowCount();

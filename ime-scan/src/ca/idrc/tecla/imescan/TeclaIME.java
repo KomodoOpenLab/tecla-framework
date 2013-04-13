@@ -36,6 +36,7 @@ public class TeclaIME extends InputMethodService {
 			mSSI.hide();
 			mSSI = null;
 		}
+		IMEAdapter.setKeyboardView(null);
 		super.onFinishInputView(finishingInput);
 	}
 	
