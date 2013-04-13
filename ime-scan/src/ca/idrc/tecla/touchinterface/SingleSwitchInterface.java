@@ -3,6 +3,7 @@ package ca.idrc.tecla.touchinterface;
 import com.example.android.softkeyboard.R;
 
 import android.content.Context;
+import android.view.View;
 import android.view.WindowManager;
 
 public class SingleSwitchInterface extends SimpleOverlay {
@@ -19,6 +20,9 @@ public class SingleSwitchInterface extends SimpleOverlay {
 		setParams(params);
 		
 		setContentView(R.layout.switch_interface);
+		
+		getRootView().setOnLongClickListener(mOverlayLongClickListener);
+		getRootView().setOnClickListener(mOverlayClickListener);
 	}
 
 	@Override
@@ -37,4 +41,22 @@ public class SingleSwitchInterface extends SimpleOverlay {
             return;
         }
     }
+    
+	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			
+		}
+	};	
+
+
+	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
+
+		@Override
+		public boolean onLongClick(View v) {
+			return true;
+		}
+	};
+
 }
