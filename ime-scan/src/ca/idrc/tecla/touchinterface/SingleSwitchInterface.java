@@ -1,5 +1,7 @@
 package ca.idrc.tecla.touchinterface;
 
+import ca.idrc.tecla.imescan.IMEScanner;
+
 import com.example.android.softkeyboard.R;
 
 import android.content.Context;
@@ -46,7 +48,7 @@ public class SingleSwitchInterface extends SimpleOverlay {
 		
 		@Override
 		public void onClick(View v) {
-			
+			IMEScanner.activateSwitch(0x1234);
 		}
 	};	
 

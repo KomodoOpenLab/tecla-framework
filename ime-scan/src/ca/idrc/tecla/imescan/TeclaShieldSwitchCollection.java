@@ -8,8 +8,7 @@ public class TeclaShieldSwitchCollection {
 
 	public TeclaShieldSwitchCollection() {
 		mSwitches = new ArrayList<TeclaShieldSwitch>();
-		
-		// add switches here
+		mSwitches.add(new TeclaShieldSwitch1(0x1234));
 	}
 	
 }

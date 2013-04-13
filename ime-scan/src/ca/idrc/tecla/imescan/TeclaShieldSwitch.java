@@ -1,6 +1,6 @@
 package ca.idrc.tecla.imescan;
 
-public class TeclaShieldSwitch {
+public abstract class TeclaShieldSwitch {
 
 	private int mID;
 		
@@ -8,7 +8,10 @@ public class TeclaShieldSwitch {
 		mID = id;
 	}
 
-	public void activate() {
-		
+	public boolean checkID(int id) {
+		if(mID == id) return true;
+		return false;
 	}
+	
+	public abstract void activate();
 }

@@ -10,11 +10,13 @@ public class TeclaIME extends InputMethodService {
 
 	private static TeclaIME sInstance;
 	private SingleSwitchInterface mSSI = null;
+	private static IMEScanner sIMEScannner = null;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();		
 		sInstance = this;
+		sIMEScannner = new IMEScanner();
 	}
 	
 	public static TeclaIME getInstance() {

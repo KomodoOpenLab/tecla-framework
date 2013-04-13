@@ -56,6 +56,12 @@ public class IMEAdapter {
 		sRowEndIndex = getRowEnd(0);
 	}
 	
+	public static void sendCurrentKey() {
+		if(sKeyboard == null || sCurrentKeyIndex == -1) return;
+		Key key = sKeys.get(sCurrentKeyIndex);
+		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
+	}
+	
 	private static void highlightKey(int key_index, boolean highlighted) {
 		if(key_index<sRowStartIndex || key_index>sRowEndIndex) return;
         Key key = sKeys.get(key_index);
