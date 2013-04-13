@@ -11,4 +11,17 @@ public class TeclaShieldSwitchCollection {
 		mSwitches.add(new TeclaShieldSwitch1(0x1234));
 	}
 	
+	private class TeclaShieldSwitch1 extends GenericSwitch implements SwitchActivation {
+
+		public TeclaShieldSwitch1(int id) {
+			super(id);
+		}
+
+		@Override
+		public void activate() {
+			IMEAdapter.sendCurrentKey();
+			
+		}
+		
+	}
 }
