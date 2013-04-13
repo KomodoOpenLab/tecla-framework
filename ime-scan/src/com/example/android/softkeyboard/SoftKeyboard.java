@@ -32,6 +32,8 @@ import android.view.inputmethod.InputMethodSubtype;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.idrc.tecla.imescan.IMEAdapter;
+
 
 /**
  * Example of writing an input method for a soft keyboard.  This code is
@@ -251,7 +253,10 @@ public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME
         mInputView.setKeyboard(mCurKeyboard);
         mInputView.closing();
         final InputMethodSubtype subtype = mInputMethodManager.getCurrentInputMethodSubtype();
-        mInputView.setSubtypeOnSpaceKey(subtype);        
+        mInputView.setSubtypeOnSpaceKey(subtype);  
+  
+        // plug in IMEAdapter
+        IMEAdapter.setKeyboardView(mInputView);
     }
 
     @Override
