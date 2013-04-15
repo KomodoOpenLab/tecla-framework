@@ -48,7 +48,7 @@ public class SingleSwitchInterface extends SimpleOverlay {
 		
 		@Override
 		public void onClick(View v) {
-			IMEScanner.activateSwitch(0x1234);
+			IMEScanner.activateInput(0x1234);
 		}
 	};	
 
