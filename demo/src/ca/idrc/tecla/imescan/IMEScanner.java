@@ -2,12 +2,12 @@ package ca.idrc.tecla.imescan;
 
 public class IMEScanner {
 
-	private static TeclaShieldSwitchCollection mSwitchCollection = new TeclaShieldSwitchCollection();
+	private static InputCollection mInputCollection = new InputCollection();
 	
-	public static void activateSwitch(int id)  {
-		for(GenericSwitch ts_switch: mSwitchCollection.mSwitches) {
-			if(ts_switch.checkID(id) ) {
-				ts_switch.activate();
+	public static void activateInput(int id)  {
+		for(GenericInput ts_input: mInputCollection.mInputs) {
+			if(ts_input.checkID(id) ) {
+				ts_input.activate();
 				return;
 			}
 		}
