@@ -9,13 +9,13 @@ public class AutomaticScan {
 	private static final int TICK = 0x33;
 	
 	private static int sScanDelay = 1000;
-	private static int sActivateDelay = 1500;
 	
 	private static Handler sHandler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			if(msg.what == TICK) {
+				scan();
 			}
 			
 			super.handleMessage(msg);
@@ -24,6 +24,7 @@ public class AutomaticScan {
 	};
 	
 	private static void scan() {
+		sHandler.removeMessages(TICK);
 		IMEAdapter.scanNext();
 		Message msg = new Message();
 		msg.what = TICK;
