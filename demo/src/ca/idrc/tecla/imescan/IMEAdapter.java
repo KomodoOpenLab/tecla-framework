@@ -16,11 +16,6 @@ public class IMEAdapter {
 	private static Keyboard sKeyboard = null;
 	private static KeyboardView sKeyboardView = null;
 	private static List<Key> sKeys = null;
-	private static int sRowCount = 0;
-	private static int sCurrentRow =-1;
-	private static int sCurrentKeyIndex = -1; 
-	private static int sRowStartIndex = -1;
-	private static int sRowEndIndex = -1;
 		
 	private static final int REDRAW_KEYBOARD = 0x22;
 	
@@ -42,46 +37,36 @@ public class IMEAdapter {
 		sKeyboardView = kbv;
 		if(kbv == null) {
 			sKeyboard = null;
-			sKeys = null;
-			sRowCount = 0;
-			sCurrentRow = -1;
-			sCurrentKeyIndex = -1;
-			sRowStartIndex = -1;
-			sRowEndIndex = -1;		
+			sKeys = null;	
 			return;
 		}
 		sKeyboard = kbv.getKeyboard();
 		sKeys = sKeyboard.getKeys();
-		reset();
+		IMEStates.reset();
 	}
 	
-	public static void reset() {
-		if(sKeyboard ==null) return;
-		highlightKeys(sRowStartIndex, sRowEndIndex, false);
-		sRowCount = getRowCount();
-		sCurrentRow = -1;
-		sCurrentKeyIndex = -1;
-		sRowStartIndex = getRowStart(0);
-		sRowEndIndex = getRowEnd(0);
-		invalidateKeys();
-		
-	}
-	
-	public static void sendCurrentKey() {
-		if(sKeyboard == null || sCurrentKeyIndex == -1) return;
-		Key key = sKeys.get(sCurrentKeyIndex);
+	public static void selectHighlighted() {
+		Key key = IMEStates.getCurrentKey();
+		if(key == null) return; 
 		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
 	}
 	
+	public static void scanNext() {
+		
+	}
+	
+	public static void scanPrevious() {
+		
+	}
+	
 	private static void highlightKey(int key_index, boolean highlighted) {
-		if(key_index<sRowStartIndex || key_index>sRowEndIndex) return;
+		if(sKeys == null || key_index < 0 || key_index >= sKeys.size()) return; 
         Key key = sKeys.get(key_index);
 		key.pressed = highlighted;
 	}
 	
 	
 	private static void highlightKeys(int start_index, int end_index, boolean highlighted) {
-		if(start_index==-1 || end_index==-1) return;
 		for(int i=start_index; i<=end_index; ++i) {
 			highlightKey(i, highlighted);
 		}			
@@ -125,7 +110,7 @@ public class IMEAdapter {
 		if(sKeyboard ==null) return;
 		highlightKeys(sRowStartIndex, sRowEndIndex, false);
 		++sCurrentRow;
-		if(sCurrentRow >= sRowCount) sCurrentRow = -1;
+		if(sCurrentRow >= IMEStates.sRowCount) sCurrentRow = -1;
 		sRowStartIndex = getRowStart(sCurrentRow);
 		sRowEndIndex = getRowEnd(sCurrentRow);
 		sCurrentKeyIndex = -1;
@@ -136,7 +121,7 @@ public class IMEAdapter {
 	public static void highlightPreviousRow() {
 		if(sKeyboard ==null) return;
 		highlightKeys(sRowStartIndex, sRowEndIndex, false);
-		if(sCurrentRow < 0) sCurrentRow = sRowCount - 1;
+		if(sCurrentRow < 0) sCurrentRow = IMEStates.sRowCount - 1;
 		else --sCurrentRow;
 		sRowStartIndex = getRowStart(sCurrentRow);
 		sRowEndIndex = getRowEnd(sCurrentRow);
@@ -214,5 +199,60 @@ public class IMEAdapter {
 		}
 		return rowCounter;
 	}
+	
+
+	private static class IMEStates {
+
+		private static final int SCAN_STOPPED = 0xa0;
+		private static final int SCAN_ROW = 0xa1;
+		private static final int SCAN_COLUMN = 0xa2;
+		private static final int SCAN_CLICK = 0xa3;
+		private static final int SCAN_CLICKED = 0xa4;
+		private static int sState = SCAN_STOPPED;
+		
+		private static final int KEYPOINTER_NULL = -1;
+		private static int sRowCount = 0;
+		private static int sCurrentRow = KEYPOINTER_NULL;
+		private static int sCurrentKeyIndex = KEYPOINTER_NULL; 
+		private static int sRowStartIndex = KEYPOINTER_NULL;
+		private static int sRowEndIndex = KEYPOINTER_NULL;
+		
+		private static void reset() {
+			if(sKeyboard == null) return;
+			sRowCount = getRowCount();
+			sCurrentRow = KEYPOINTER_NULL;
+			sCurrentKeyIndex = KEYPOINTER_NULL;
+			sRowStartIndex = getRowStart(0);
+			sRowEndIndex = getRowEnd(0);
+		}
+		
+		private static Key getCurrentKey() {
+			if(sKeyboard == null || sCurrentKeyIndex == KEYPOINTER_NULL) return null;
+			return sKeys.get(sCurrentKeyIndex);
+		}
+		
+		private static void click() {
+			
+		}
+		
+		private static int scanNextKey() {
+			return -1;
+		}
+		
+		private static int scanPreviousKey() {
+			return  -1;
+		}
+		
+		private static int scanNextRow() {
+			return  -1;
+		}
+		
+		private static int scanPreviousRow() {
+			return  -1;
+		}
+		
+		
+	}
+
 	
 }
