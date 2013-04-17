@@ -59,6 +59,27 @@ public class IMEAdapter {
 	public static void scanPrevious() {
 		
 	}
+
+	public static void scanUp() {
+		
+	}
+
+	public static void scanDown() {
+		
+	}
+
+	public static void scanLeft() {
+		
+	}
+
+	public static void scanRight() {
+		
+	}
+
+	public static void stepOut() {
+		
+	}
+	
 	
 	private static void highlightKey(int key_index, boolean highlighted) {
 		if(sKeys == null || key_index < 0 || key_index >= sKeys.size()) return; 
