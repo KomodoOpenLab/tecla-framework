@@ -53,10 +53,28 @@ public class IMEAdapter {
 	}
 
 	public static void scanNext() {
-		
+		switch(IMEStates.sState) {
+		case(IMEStates.SCAN_STOPPED):	break;
+		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightNextRow();
+										break;
+		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightNextKey();
+										break;
+		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightNextKey();		
+										break;
+		default:						break;
+		}		
 	}
 	
 	public static void scanPrevious() {
+		switch(IMEStates.sState) {
+		case(IMEStates.SCAN_STOPPED):	break;
+		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightPreviousRow();
+										break;
+		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightPreviousKey();
+		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightPreviousKey();	
+										break;
+		default:						break;
+		}		
 		
 	}
 
