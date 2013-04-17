@@ -46,8 +46,9 @@ public class IMEAdapter {
 	}
 	
 	public static void selectHighlighted() {
-		Key key = IMEStates.getCurrentKey();
-		if(key == null) return; 
+		int index = IMEStates.getCurrentKeyIndex();
+		if(index < 0 || index >= sKeys.size()) return;
+		Key key = sKeys.get(index);
 		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
 	}
 	
@@ -78,129 +79,38 @@ public class IMEAdapter {
 		sHandler.sendMessageDelayed(msg, 0);		
 	}
 	
-	public static void highlightNextKey() {
+	private static void highlightNextKey() {
 		if(sKeyboard ==null) return;
-		if(sCurrentKeyIndex == -1) {
-			highlightKeys(sRowStartIndex, sRowEndIndex, false);
-			sCurrentKeyIndex = sRowStartIndex;
-		} else {
-			highlightKey(sCurrentKeyIndex, false);
-			++sCurrentKeyIndex;
-			if(sCurrentKeyIndex > sRowEndIndex) sCurrentKeyIndex = -1;
-		}
-		highlightKey(sCurrentKeyIndex, true);
+		highlightKey(IMEStates.getCurrentKeyIndex(), false);
+		highlightKey(IMEStates.scanNextKey(), true);
 		invalidateKeys();	
 	}
 	
-	public static void highlightPreviousKey() {
+	private static void highlightPreviousKey() {
 		if(sKeyboard ==null) return;
-		if(sCurrentKeyIndex == -1) {
-			highlightKeys(sRowStartIndex, sRowEndIndex, false);
-			sCurrentKeyIndex = sRowEndIndex;
-		} else {
-			highlightKey(sCurrentKeyIndex, false);
-			--sCurrentKeyIndex;
-			if(sCurrentKeyIndex < sRowStartIndex) sCurrentKeyIndex = -1;
-		}
-		highlightKey(sCurrentKeyIndex, true);
+		highlightKey(IMEStates.getCurrentKeyIndex(), false);
+		highlightKey(IMEStates.scanPreviousKey(), true);
 		invalidateKeys();		
 	}
 	
-	public static void highlightNextRow() {
+	private static void highlightNextRow() {
 		if(sKeyboard ==null) return;
-		highlightKeys(sRowStartIndex, sRowEndIndex, false);
-		++sCurrentRow;
-		if(sCurrentRow >= IMEStates.sRowCount) sCurrentRow = -1;
-		sRowStartIndex = getRowStart(sCurrentRow);
-		sRowEndIndex = getRowEnd(sCurrentRow);
-		sCurrentKeyIndex = -1;
-		highlightKeys(sRowStartIndex, sRowEndIndex, true);
+		int row = IMEStates.getCurrentRowIndex();
+		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), false);
+		row = IMEStates.scanNextRow();
+		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), true);
 		invalidateKeys();		
 	}
 	
-	public static void highlightPreviousRow() {
+	private static void highlightPreviousRow() {
 		if(sKeyboard ==null) return;
-		highlightKeys(sRowStartIndex, sRowEndIndex, false);
-		if(sCurrentRow < 0) sCurrentRow = IMEStates.sRowCount - 1;
-		else --sCurrentRow;
-		sRowStartIndex = getRowStart(sCurrentRow);
-		sRowEndIndex = getRowEnd(sCurrentRow);
-		highlightKeys(sRowStartIndex, sRowEndIndex, true);
-		invalidateKeys();
-		
+		int row = IMEStates.getCurrentRowIndex();
+		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), false);
+		row = IMEStates.scanPreviousRow();
+		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), true);
+		invalidateKeys();		
 	}
 	
-	private static int getRowStart(int rowNumber) {
-		if(sKeyboard == null || rowNumber == -1) return -1;
-		int keyCounter = 0;
-		if (rowNumber != 0) {
-			List<Key> keyList = sKeyboard.getKeys();
-			Key key;
-			int rowCounter = 0;
-			int prevCoord = keyList.get(0).y;
-			int thisCoord;
-			while (rowCounter != rowNumber) {
-				keyCounter++;
-				key = keyList.get(keyCounter);
-				thisCoord = key.y;
-				if (thisCoord != prevCoord) {
-					// Changed rows
-					rowCounter++;
-					prevCoord = thisCoord;
-				}
-			}
-		}
-		return keyCounter;
-	}
-
-	private static int getRowEnd(int rowNumber) {
-		if(sKeyboard == null || rowNumber == -1) return -1;
-		List<Key> keyList = sKeyboard.getKeys();
-		int totalKeys = keyList.size();
-		int keyCounter = 0;
-		if (rowNumber == (getRowCount() - 1)) {
-			keyCounter = totalKeys - 1;
-		} else {
-			Key key;
-			int rowCounter = 0;
-			int prevCoord = keyList.get(0).y;
-			int thisCoord;
-			while (rowCounter <= rowNumber) {
-				keyCounter++;
-				key = keyList.get(keyCounter);
-				thisCoord = key.y;
-				if (thisCoord != prevCoord) {
-					// Changed rows
-					rowCounter++;
-					prevCoord = thisCoord;
-				}
-			}
-			keyCounter--;
-		}
-		return keyCounter;
-	}
-
-	private static int getRowCount() {
-		if(sKeyboard == null) return 0;
-		List<Key> keyList = sKeyboard.getKeys();
-		Key key;
-		int rowCounter = 0;
-		int coord = 0;
-		for (Iterator<Key> i = keyList.iterator(); i.hasNext();) {
-			key = i.next();
-			if (rowCounter == 0) {
-				rowCounter++;
-				coord = key.y;
-			}
-			if (coord != key.y) {
-				rowCounter++;
-				coord = key.y;
-			}
-		}
-		return rowCounter;
-	}
-	
-
 	private static class IMEStates {
 
 		private static final int SCAN_STOPPED = 0xa0;
@@ -226,9 +136,12 @@ public class IMEAdapter {
 			sRowEndIndex = getRowEnd(0);
 		}
 		
-		private static Key getCurrentKey() {
-			if(sKeyboard == null || sCurrentKeyIndex == KEYPOINTER_NULL) return null;
-			return sKeys.get(sCurrentKeyIndex);
+		private static int getCurrentKeyIndex() {
+			return sCurrentKeyIndex;
+		}
+
+		private static int getCurrentRowIndex() {
+			return sCurrentRow;
 		}
 		
 		private static void click() {
@@ -236,23 +149,105 @@ public class IMEAdapter {
 		}
 		
 		private static int scanNextKey() {
-			return -1;
+			if(sCurrentKeyIndex == -1) sCurrentKeyIndex = sRowStartIndex;
+			else {
+				++sCurrentKeyIndex;
+				if(sCurrentKeyIndex > sRowEndIndex) sCurrentKeyIndex = -1;
+			}
+			return sCurrentKeyIndex;
 		}
 		
 		private static int scanPreviousKey() {
-			return  -1;
+			if(sCurrentKeyIndex == -1) sCurrentKeyIndex = sRowEndIndex;
+			else {
+				--sCurrentKeyIndex;
+				if(sCurrentKeyIndex < sRowStartIndex) sCurrentKeyIndex = -1;
+			}
+			return sCurrentKeyIndex;
 		}
 		
 		private static int scanNextRow() {
-			return  -1;
+			++sCurrentRow;
+			sCurrentRow %= sRowCount;
+			return sCurrentRow;
 		}
 		
 		private static int scanPreviousRow() {
-			return  -1;
+			if(sCurrentRow == 0) sCurrentRow = sRowCount - 1;
+			else --sCurrentRow;
+			return sCurrentRow;
 		}
 		
-		
-	}
+		private static int getRowStart(int rowNumber) {
+			if(sKeyboard == null || rowNumber == -1) return -1;
+			int keyCounter = 0;
+			if (rowNumber != 0) {
+				List<Key> keyList = sKeyboard.getKeys();
+				Key key;
+				int rowCounter = 0;
+				int prevCoord = keyList.get(0).y;
+				int thisCoord;
+				while (rowCounter != rowNumber) {
+					keyCounter++;
+					key = keyList.get(keyCounter);
+					thisCoord = key.y;
+					if (thisCoord != prevCoord) {
+						// Changed rows
+						rowCounter++;
+						prevCoord = thisCoord;
+					}
+				}
+			}
+			return keyCounter;
+		}
 
+		private static int getRowEnd(int rowNumber) {
+			if(sKeyboard == null || rowNumber == -1) return -1;
+			List<Key> keyList = sKeyboard.getKeys();
+			int totalKeys = keyList.size();
+			int keyCounter = 0;
+			if (rowNumber == (getRowCount() - 1)) {
+				keyCounter = totalKeys - 1;
+			} else {
+				Key key;
+				int rowCounter = 0;
+				int prevCoord = keyList.get(0).y;
+				int thisCoord;
+				while (rowCounter <= rowNumber) {
+					keyCounter++;
+					key = keyList.get(keyCounter);
+					thisCoord = key.y;
+					if (thisCoord != prevCoord) {
+						// Changed rows
+						rowCounter++;
+						prevCoord = thisCoord;
+					}
+				}
+				keyCounter--;
+			}
+			return keyCounter;
+		}
+
+		private static int getRowCount() {
+			if(sKeyboard == null) return 0;
+			List<Key> keyList = sKeyboard.getKeys();
+			Key key;
+			int rowCounter = 0;
+			int coord = 0;
+			for (Iterator<Key> i = keyList.iterator(); i.hasNext();) {
+				key = i.next();
+				if (rowCounter == 0) {
+					rowCounter++;
+					coord = key.y;
+				}
+				if (coord != key.y) {
+					rowCounter++;
+					coord = key.y;
+				}
+			}
+			return rowCounter;
+		}
+			
+	}
 	
 }
