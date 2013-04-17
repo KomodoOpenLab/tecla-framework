@@ -79,23 +79,120 @@ public class IMEAdapter {
 	}
 
 	public static void scanUp() {
-		
+		int index = IMEStates.getCurrentKeyIndex();
+		Key key = sKeys.get(index);
+		Key test_key;
+		int closest_key_index = -1;
+		float distance_sq, shortest_distance_sq;
+		shortest_distance_sq = Float.MAX_VALUE;
+		for(int i=0; i<sKeys.size(); ++i) {
+			if(i == index) continue;
+			test_key = sKeys.get(i);
+			if(test_key.y < key.y) {
+				distance_sq = (key.y - test_key.y)*(key.y - test_key.y) + 
+						(key.x - test_key.x)*(key.x - test_key.x); 
+				if(distance_sq < shortest_distance_sq) {
+					shortest_distance_sq = distance_sq;
+					closest_key_index = i;
+				}
+			}
+		}
+		if(closest_key_index != -1) {
+			IMEAdapter.highlightKey(index, false);
+			IMEStates.setKey(closest_key_index);
+			IMEAdapter.highlightKey(closest_key_index, true);
+		}
+		IMEAdapter.invalidateKeys();
 	}
 
 	public static void scanDown() {
-		
+		int index = IMEStates.getCurrentKeyIndex();
+		Key key = sKeys.get(index);
+		Key test_key;
+		int closest_key_index = -1;
+		float distance_sq, shortest_distance_sq;
+		shortest_distance_sq = Float.MAX_VALUE;
+		for(int i=0; i<sKeys.size(); ++i) {
+			if(i == index) continue;
+			test_key = sKeys.get(i);
+			if(test_key.y > key.y) {
+				distance_sq = (key.y - test_key.y)*(key.y - test_key.y) + 
+						(key.x - test_key.x)*(key.x - test_key.x); 
+				if(distance_sq < shortest_distance_sq) {
+					shortest_distance_sq = distance_sq;
+					closest_key_index = i;
+				}
+			}
+		}
+		if(closest_key_index != -1) {
+			IMEAdapter.highlightKey(index, false);
+			IMEStates.setKey(closest_key_index);
+			IMEAdapter.highlightKey(closest_key_index, true);
+		}
+		IMEAdapter.invalidateKeys();
 	}
 
 	public static void scanLeft() {
-		
+		int index = IMEStates.getCurrentKeyIndex();
+		Key key = sKeys.get(index);
+		Key test_key;
+		int closest_key_index = -1;
+		int distance;
+		int shortest_distance = Integer.MAX_VALUE;
+		for(int i=0; i<sKeys.size(); ++i) {
+			if(i == index) continue;
+			test_key = sKeys.get(i);
+			if(test_key.y == key.y && test_key.x < key.x) {
+				distance = key.x - test_key.x;
+				if(distance < shortest_distance) {
+					shortest_distance = distance;
+					closest_key_index = i;
+				}
+			}
+		}
+		if(closest_key_index != -1) {
+			IMEAdapter.highlightKey(index, false);
+			IMEStates.setKey(closest_key_index);
+			IMEAdapter.highlightKey(closest_key_index, true);
+		}
+		IMEAdapter.invalidateKeys();
 	}
 
 	public static void scanRight() {
-		
+		int index = IMEStates.getCurrentKeyIndex();
+		Key key = sKeys.get(index);
+		Key test_key;
+		int closest_key_index = -1;
+		int distance;
+		int shortest_distance = Integer.MAX_VALUE;
+		for(int i=0; i<sKeys.size(); ++i) {
+			if(i == index) continue;
+			test_key = sKeys.get(i);
+			if(test_key.y == key.y && test_key.x > key.x) {
+				distance = test_key.x - key.x;
+				if(distance < shortest_distance) {
+					shortest_distance = distance;
+					closest_key_index = i;
+				}
+			}
+		}
+		if(closest_key_index != -1) {
+			IMEAdapter.highlightKey(index, false);
+			IMEStates.setKey(closest_key_index);
+			IMEAdapter.highlightKey(closest_key_index, true);
+		}
+		IMEAdapter.invalidateKeys();
 	}
 
 	public static void stepOut() {
-		
+		if(IMEStates.sState != IMEStates.SCAN_ROW) {
+			int index = IMEStates.getCurrentKeyIndex();
+			IMEAdapter.highlightKey(index, false);
+			IMEStates.sState = IMEStates.SCAN_ROW;
+			IMEStates.reset();
+			IMEAdapter.highlightKeys(IMEStates.getRowStart(0), 
+					IMEStates.getRowEnd(0), true);
+		}
 	}
 	
 	
@@ -156,23 +253,21 @@ public class IMEAdapter {
 		private static final int SCAN_ROW = 0xa1;
 		private static final int SCAN_COLUMN = 0xa2;
 		private static final int SCAN_CLICK = 0xa3;
-		private static final int SCAN_CLICKED = 0xa4;
 		private static int sState = SCAN_STOPPED;
 		
-		private static final int KEYPOINTER_NULL = -1;
 		private static int sRowCount = 0;
-		private static int sCurrentRow = KEYPOINTER_NULL;
-		private static int sCurrentKeyIndex = KEYPOINTER_NULL; 
-		private static int sRowStartIndex = KEYPOINTER_NULL;
-		private static int sRowEndIndex = KEYPOINTER_NULL;
+		private static int sCurrentRow = -1;
+		private static int sCurrentColumn = -1; 
+		private static int sKeyStartIndex = -1;
+		private static int sKeyEndIndex = -1;
 		
 		private static void reset() {
 			if(sKeyboard == null) return;
 			sRowCount = getRowCount();
-			sCurrentRow = KEYPOINTER_NULL;
-			sCurrentKeyIndex = KEYPOINTER_NULL;
-			sRowStartIndex = getRowStart(0);
-			sRowEndIndex = getRowEnd(0);
+			sCurrentRow = 0;
+			sCurrentColumn = -1;
+			sKeyStartIndex = getRowStart(0);
+			sKeyEndIndex = getRowEnd(0);
 		}
 
 		private static void click() {
@@ -195,29 +290,41 @@ public class IMEAdapter {
 		}
 		
 		private static int getCurrentKeyIndex() {
-			return sCurrentKeyIndex;
+			return sCurrentColumn;
 		}
 
 		private static int getCurrentRowIndex() {
 			return sCurrentRow;
 		}
 		
+		private static boolean setKey(int index) {
+			if(index < 0 || index >= sKeys.size()) return false;
+			sCurrentColumn = index;
+			return true;
+		}
+
+		private static boolean setKeyRow(int index) {
+			if(index < 0 || index >= IMEStates.sRowCount) return false;
+			sCurrentRow = index;
+			return true;
+		}
+		
 		private static int scanNextKey() {
-			if(sCurrentKeyIndex == -1) sCurrentKeyIndex = sRowStartIndex;
+			if(sCurrentColumn == -1) sCurrentColumn = sKeyStartIndex;
 			else {
-				++sCurrentKeyIndex;
-				if(sCurrentKeyIndex > sRowEndIndex) sCurrentKeyIndex = -1;
+				++sCurrentColumn;
+				if(sCurrentColumn > sKeyEndIndex) sCurrentColumn = -1;
 			}
-			return sCurrentKeyIndex;
+			return sCurrentColumn;
 		}
 		
 		private static int scanPreviousKey() {
-			if(sCurrentKeyIndex == -1) sCurrentKeyIndex = sRowEndIndex;
+			if(sCurrentColumn == -1) sCurrentColumn = sKeyEndIndex;
 			else {
-				--sCurrentKeyIndex;
-				if(sCurrentKeyIndex < sRowStartIndex) sCurrentKeyIndex = -1;
+				--sCurrentColumn;
+				if(sCurrentColumn < sKeyStartIndex) sCurrentColumn = -1;
 			}
-			return sCurrentKeyIndex;
+			return sCurrentColumn;
 		}
 		
 		private static int scanNextRow() {
