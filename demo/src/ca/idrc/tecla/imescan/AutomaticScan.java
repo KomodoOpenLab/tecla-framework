@@ -16,7 +16,7 @@ public class AutomaticScan {
 		@Override
 		public void handleMessage(Message msg) {
 			if(msg.what == TICK) {
-				scan();
+				tick();
 			}
 			
 			super.handleMessage(msg);
@@ -24,7 +24,7 @@ public class AutomaticScan {
 		
 	};
 	
-	private static void scan() {
+	private static void tick() {
 		sHandler.removeMessages(TICK);
 		IMEAdapter.scanNext();
 		Message msg = new Message();
@@ -45,5 +45,23 @@ public class AutomaticScan {
 		sHandler.removeMessages(TICK);
 		sIsScsanning = false;
 	}
+	
+	public static void resetTimer() {
+		if(!sIsScsanning) return;
+		sHandler.removeMessages(TICK);
+		Message msg = new Message();
+		msg.what = TICK;
+		sHandler.sendMessageDelayed(msg, sScanDelay);
+	}
+
+	public static void setExtendedTimer() {
+		if(!sIsScsanning) return;
+		sHandler.removeMessages(TICK);
+		Message msg = new Message();
+		msg.what = TICK;
+		sHandler.sendMessageDelayed(msg, sScanDelay*3/2);
+	}
+	
+	
 	
 }

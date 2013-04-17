@@ -51,7 +51,7 @@ public class IMEAdapter {
 		Key key = sKeys.get(index);
 		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
 	}
-	
+
 	public static void scanNext() {
 		
 	}
@@ -135,6 +135,25 @@ public class IMEAdapter {
 			sRowStartIndex = getRowStart(0);
 			sRowEndIndex = getRowEnd(0);
 		}
+
+		private static void click() {
+			switch(sState) {
+			case(SCAN_STOPPED):	sState = SCAN_ROW;
+								AutomaticScan.startAutoScan();
+								break;
+			case(SCAN_ROW):		sState = SCAN_COLUMN;
+								AutomaticScan.resetTimer();
+								break;
+			case(SCAN_COLUMN):	sState = SCAN_CLICK;
+								IMEAdapter.selectHighlighted();
+								AutomaticScan.setExtendedTimer();
+								break;
+			case(SCAN_CLICK):	IMEAdapter.selectHighlighted();
+								AutomaticScan.setExtendedTimer();
+								break;
+			default:			break;
+			}
+		}
 		
 		private static int getCurrentKeyIndex() {
 			return sCurrentKeyIndex;
@@ -142,10 +161,6 @@ public class IMEAdapter {
 
 		private static int getCurrentRowIndex() {
 			return sCurrentRow;
-		}
-		
-		private static void click() {
-			
 		}
 		
 		private static int scanNextKey() {
