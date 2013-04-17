@@ -9,6 +9,7 @@ public class AutomaticScan {
 	private static final int TICK = 0x33;
 	
 	private static int sScanDelay = 1000;
+	private static boolean sIsScsanning = false;
 	
 	private static Handler sHandler = new Handler() {
 
@@ -32,13 +33,17 @@ public class AutomaticScan {
 	}
 	
 	public static void startAutoScan() {
+		if(sIsScsanning) return;
+		sIsScsanning = true;
 		Message msg = new Message();
 		msg.what = TICK;
 		sHandler.sendMessageDelayed(msg, sScanDelay);
 	}
 	
 	public static void stopAutoScan() {
+		if(!sIsScsanning) return;
 		sHandler.removeMessages(TICK);
+		sIsScsanning = false;
 	}
 	
 }
