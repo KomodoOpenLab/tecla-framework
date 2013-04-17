@@ -19,7 +19,7 @@ public class TeclaShieldSwitchCollection {
 
 		@Override
 		public void activate() {
-			IMEAdapter.sendCurrentKey();
+			IMEAdapter.selectHighlighted();
 			
 		}
 		
