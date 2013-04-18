@@ -501,7 +501,7 @@ public class SoftKeyboard extends ca.idrc.tecla.framework.TeclaIME
     // Implementation of KeyboardViewListener
 
     public void onKey(int primaryCode, int[] keyCodes) {    
-    	
+    	IMEAdapter.selectScanHighlighted();
     	/*
         if (isWordSeparator(primaryCode)) {
             // Handle separator
