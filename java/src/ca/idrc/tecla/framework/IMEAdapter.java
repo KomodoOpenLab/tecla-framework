@@ -1,4 +1,4 @@
-package ca.idrc.tecla.imescan;
+package ca.idrc.tecla.framework;
 
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +49,12 @@ public class IMEAdapter {
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.size()) return;
 		Key key = sKeys.get(index);
-		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
+		TeclaIME.getInstance().getCurrentInputConnection()
+			.commitText(String.valueOf((char)key.codes[0]), 1);		
+	}
+
+	public static void selectScanHighlighted() {
+		IMEStates.click();
 	}
 
 	public static void scanNext() {
@@ -59,7 +64,10 @@ public class IMEAdapter {
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightNextKey();
 										break;
-		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightNextKey();		
+		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
+										IMEAdapter.highlightKey(IMEStates.sCurrentColumn, false);
+										IMEStates.reset();
+										IMEAdapter.highlightNextRow();		
 										break;
 		default:						break;
 		}		
@@ -231,19 +239,17 @@ public class IMEAdapter {
 	
 	private static void highlightNextRow() {
 		if(sKeyboard ==null) return;
-		int row = IMEStates.getCurrentRowIndex();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), false);
-		row = IMEStates.scanNextRow();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), true);
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+		IMEStates.scanNextRow();
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		invalidateKeys();		
 	}
 	
 	private static void highlightPreviousRow() {
 		if(sKeyboard ==null) return;
-		int row = IMEStates.getCurrentRowIndex();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), false);
-		row = IMEStates.scanPreviousRow();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), true);
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+		IMEStates.scanPreviousRow();
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		invalidateKeys();		
 	}
 	
@@ -264,7 +270,7 @@ public class IMEAdapter {
 		private static void reset() {
 			if(sKeyboard == null) return;
 			sRowCount = getRowCount();
-			sCurrentRow = 0;
+			sCurrentRow = -1;
 			sCurrentColumn = -1;
 			sKeyStartIndex = getRowStart(0);
 			sKeyEndIndex = getRowEnd(0);
@@ -276,6 +282,7 @@ public class IMEAdapter {
 								AutomaticScan.startAutoScan();
 								break;
 			case(SCAN_ROW):		sState = SCAN_COLUMN;
+								highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
 								AutomaticScan.resetTimer();
 								break;
 			case(SCAN_COLUMN):	sState = SCAN_CLICK;
@@ -327,16 +334,21 @@ public class IMEAdapter {
 			return sCurrentColumn;
 		}
 		
-		private static int scanNextRow() {
+		private static void scanNextRow() {
 			++sCurrentRow;
 			sCurrentRow %= sRowCount;
-			return sCurrentRow;
+			updateRowKeyIndices();
 		}
 		
-		private static int scanPreviousRow() {
+		private static void scanPreviousRow() {
 			if(sCurrentRow == 0) sCurrentRow = sRowCount - 1;
 			else --sCurrentRow;
-			return sCurrentRow;
+			updateRowKeyIndices();
+		}
+		
+		private static void updateRowKeyIndices() {
+			sKeyStartIndex = getRowStart(sCurrentRow);
+			sKeyEndIndex = getRowEnd(sCurrentRow);			
 		}
 		
 		private static int getRowStart(int rowNumber) {
