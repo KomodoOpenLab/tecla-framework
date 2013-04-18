@@ -52,6 +52,10 @@ public class IMEAdapter {
 		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
 	}
 
+	public static void selectScanHighlighted() {
+		IMEStates.click();
+	}
+
 	public static void scanNext() {
 		switch(IMEStates.sState) {
 		case(IMEStates.SCAN_STOPPED):	break;
