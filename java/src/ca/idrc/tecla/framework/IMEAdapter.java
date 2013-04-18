@@ -64,10 +64,7 @@ public class IMEAdapter {
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightNextKey();
 										break;
-		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
-										IMEAdapter.highlightKey(IMEStates.sCurrentColumn, false);
-										IMEStates.reset();
-										IMEAdapter.highlightNextRow();		
+		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightNextKey();		
 										break;
 		default:						break;
 		}		
@@ -270,7 +267,7 @@ public class IMEAdapter {
 		private static void reset() {
 			if(sKeyboard == null) return;
 			sRowCount = getRowCount();
-			sCurrentRow = -1;
+			sCurrentRow = 0;
 			sCurrentColumn = -1;
 			sKeyStartIndex = getRowStart(0);
 			sKeyEndIndex = getRowEnd(0);
