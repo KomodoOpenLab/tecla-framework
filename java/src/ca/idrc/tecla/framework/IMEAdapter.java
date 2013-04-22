@@ -235,19 +235,17 @@ public class IMEAdapter {
 	
 	private static void highlightNextRow() {
 		if(sKeyboard ==null) return;
-		int row = IMEStates.getCurrentRowIndex();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), false);
-		row = IMEStates.scanNextRow();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), true);
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+		IMEStates.scanNextRow();
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		invalidateKeys();		
 	}
 	
 	private static void highlightPreviousRow() {
 		if(sKeyboard ==null) return;
-		int row = IMEStates.getCurrentRowIndex();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), false);
-		row = IMEStates.scanPreviousRow();
-		highlightKeys(IMEStates.getRowStart(row), IMEStates.getRowEnd(row), true);
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+		IMEStates.scanPreviousRow();
+		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		invalidateKeys();		
 	}
 	
@@ -280,6 +278,7 @@ public class IMEAdapter {
 								AutomaticScan.startAutoScan();
 								break;
 			case(SCAN_ROW):		sState = SCAN_COLUMN;
+								highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
 								AutomaticScan.resetTimer();
 								break;
 			case(SCAN_COLUMN):	sState = SCAN_CLICK;
@@ -331,16 +330,21 @@ public class IMEAdapter {
 			return sCurrentColumn;
 		}
 		
-		private static int scanNextRow() {
+		private static void scanNextRow() {
 			++sCurrentRow;
 			sCurrentRow %= sRowCount;
-			return sCurrentRow;
+			updateRowKeyIndices();
 		}
 		
-		private static int scanPreviousRow() {
+		private static void scanPreviousRow() {
 			if(sCurrentRow == 0) sCurrentRow = sRowCount - 1;
 			else --sCurrentRow;
-			return sCurrentRow;
+			updateRowKeyIndices();
+		}
+		
+		private static void updateRowKeyIndices() {
+			sKeyStartIndex = getRowStart(sCurrentRow);
+			sKeyEndIndex = getRowEnd(sCurrentRow);			
 		}
 		
 		private static int getRowStart(int rowNumber) {
