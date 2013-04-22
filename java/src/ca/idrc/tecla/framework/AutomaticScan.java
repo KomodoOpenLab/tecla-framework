@@ -1,4 +1,4 @@
-package ca.idrc.tecla.imescan;
+package ca.idrc.tecla.framework;
 
 import android.os.Handler;
 import android.os.Message;

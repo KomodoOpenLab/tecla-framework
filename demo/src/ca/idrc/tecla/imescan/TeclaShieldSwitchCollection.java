@@ -2,6 +2,8 @@ package ca.idrc.tecla.imescan;
 
 import java.util.ArrayList;
 
+import ca.idrc.tecla.framework.IMEAdapter;
+
 public class TeclaShieldSwitchCollection {
 
 	ArrayList<GenericSwitch> mSwitches;

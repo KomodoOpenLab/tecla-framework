@@ -1,23 +1,34 @@
 package ca.idrc.tecla.framework;
 
-import ca.idrc.tecla.hud.TeclaHUDOverlay;
 import android.inputmethodservice.InputMethodService;
-import android.view.KeyEvent;
+import android.inputmethodservice.Keyboard;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
 
 public class TeclaIME extends InputMethodService {
-	
+
+	private static TeclaIME sInstance;
+
 	@Override
 	public void onCreate() {
-		super.onCreate();
-		TeclaHUDOverlay.sLatinIMEInstance = this;
-		
-	}    
-
-	public void pressHomeKey() {
-		sendDownUpKeyEvents(KeyEvent.KEYCODE_HOME);
+		super.onCreate();		
+		sInstance = this;
+	}
+	
+	public static TeclaIME getInstance() {
+		return sInstance;
 	}
 
-	public void pressBackKey() {
-		sendDownUpKeyEvents(KeyEvent.KEYCODE_BACK);
+	@Override
+	public void onStartInputView(EditorInfo info, boolean restarting) {
+		super.onStartInputView(info, restarting);
 	}
+
+	@Override
+	public void onFinishInputView(boolean finishingInput) {
+		IMEAdapter.setKeyboardView(null);
+		super.onFinishInputView(finishingInput);
+	}
+	
+	
 }
