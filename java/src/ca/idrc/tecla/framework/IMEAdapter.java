@@ -1,4 +1,4 @@
-package ca.idrc.tecla.imescan;
+package ca.idrc.tecla.framework;
 
 import java.util.Iterator;
 import java.util.List;

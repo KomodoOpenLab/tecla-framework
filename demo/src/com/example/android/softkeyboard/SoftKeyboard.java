@@ -32,7 +32,7 @@ import android.view.inputmethod.InputMethodSubtype;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.idrc.tecla.imescan.IMEAdapter;
+import ca.idrc.tecla.framework.IMEAdapter;
 
 
 /**
@@ -42,7 +42,7 @@ import ca.idrc.tecla.imescan.IMEAdapter;
  * a basic example for how you would get started writing an input method, to
  * be fleshed out as appropriate.
  */
-public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME 
+public class SoftKeyboard extends ca.idrc.tecla.framework.TeclaIME 
         implements KeyboardView.OnKeyboardActionListener {
     static final boolean DEBUG = false;
     static final String tag = "SoftKeyboard";
@@ -501,7 +501,7 @@ public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME
     // Implementation of KeyboardViewListener
 
     public void onKey(int primaryCode, int[] keyCodes) {    
-    	
+    	IMEAdapter.selectScanHighlighted();
     	/*
         if (isWordSeparator(primaryCode)) {
             // Handle separator
