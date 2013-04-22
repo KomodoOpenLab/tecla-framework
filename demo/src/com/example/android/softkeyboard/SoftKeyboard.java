@@ -500,7 +500,9 @@ public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME
 
     // Implementation of KeyboardViewListener
 
-    public void onKey(int primaryCode, int[] keyCodes) {
+    public void onKey(int primaryCode, int[] keyCodes) {    
+    	
+    	/*
         if (isWordSeparator(primaryCode)) {
             // Handle separator
             if (mComposing.length() > 0) {
@@ -532,6 +534,7 @@ public class SoftKeyboard extends ca.idrc.tecla.imescan.TeclaIME
         } else {
             handleCharacter(primaryCode, keyCodes);
         }
+        */
     }
 
     public void onText(CharSequence text) {
