@@ -49,7 +49,8 @@ public class IMEAdapter {
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.size()) return;
 		Key key = sKeys.get(index);
-		TeclaIME.getInstance().sendDownUpKeyEvents(key.codes[0]);		
+		TeclaIME.getInstance().getCurrentInputConnection()
+			.commitText(String.valueOf((char)key.codes[0]), 1);		
 	}
 
 	public static void selectScanHighlighted() {
