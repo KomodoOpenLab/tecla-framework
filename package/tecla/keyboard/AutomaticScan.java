@@ -1,4 +1,4 @@
-package ca.idrc.tecla.framework;
+package com.android.tecla.keyboard;
 
 import android.os.Handler;
 import android.os.Message;

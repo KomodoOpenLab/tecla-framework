@@ -1,4 +1,4 @@
-package ca.idrc.tecla.framework;
+package com.android.tecla.keyboard;
 
 import java.util.Iterator;
 import java.util.List;

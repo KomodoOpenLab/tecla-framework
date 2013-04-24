@@ -6,11 +6,11 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.R.id;
 import ca.idrc.tecla.R.layout;
 import ca.idrc.tecla.framework.SimpleOverlay;
-import ca.idrc.tecla.framework.TeclaIME;
 import ca.idrc.tecla.highlighter.TeclaAccessibilityService;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -28,7 +28,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private final static String tag = "TeclaHUDController";
     private final WindowManager mWindowManager;
 	private static TeclaHUDOverlay sInstance;
-	public static TeclaIME sLatinIMEInstance = null;
+	//public static TeclaIME sLatinIMEInstance = null;
 	
 	private TeclaHUDButtonView btnTopLeft;
 	private TeclaHUDButtonView btnTopRight;
