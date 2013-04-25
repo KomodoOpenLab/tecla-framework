@@ -39,8 +39,58 @@ public class IMEAdapter {
 			return;
 		}
 		sKeyboard = kbv.getKeyboard();
-		sKeys = sKeyboard.mKeys;
+		sKeys = sortKeys(sKeyboard.mKeys);
 		IMEStates.reset();
+	}
+	
+	private static Key[] sortKeys(Key[] keys) {
+		Key[] sorted_keys = keys.clone();
+		
+		// sort rows
+		for(int i=1; i<sorted_keys.length; ++i) {
+			Key key = sorted_keys[i];
+			boolean inserted = false;
+			for(int j=i; j>0 && !inserted; --j) {
+				if(key.mY >= sorted_keys[j-1].mY) {
+					sorted_keys[j] = key; 
+					inserted = true;
+				} else if(j==1) {
+					sorted_keys[j] = sorted_keys[j-1]; 
+					sorted_keys[j-1] = key;
+				} else {
+					sorted_keys[j] = sorted_keys[j-1]; 
+				}
+			}
+		}
+		
+		// sort columns
+		int start_index = 0;
+		int end_index = 0;
+		while(start_index < sorted_keys.length) {
+			while(end_index<sorted_keys.length ) {
+				if(sorted_keys[start_index].mY != sorted_keys[end_index].mY) break;
+				++end_index;
+			}
+			for(int i=start_index + 1; i<end_index; ++i) {
+				Key key = sorted_keys[i];
+				boolean inserted = false;
+				for(int j=i; j>start_index && !inserted; --j) {
+					if(key.mX >= sorted_keys[j-1].mX) {
+						sorted_keys[j] = key; 
+						inserted = true;
+					} else if(j==start_index+1) {
+						sorted_keys[j] = sorted_keys[j-1]; 
+						sorted_keys[j-1] = key;
+					} else {
+						sorted_keys[j] = sorted_keys[j-1]; 
+					}
+				}
+			}
+			start_index = end_index;
+		}
+		
+		return sorted_keys;
+		
 	}
 	
 	public static void selectHighlighted() {
