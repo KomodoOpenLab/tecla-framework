@@ -31,16 +31,18 @@ public class IMEAdapter {
 		
 	};
 	
-	public static void setKeyboardView(KeyboardView kbv) {
+	public static boolean setKeyboardView(KeyboardView kbv) {
 		sKeyboardView = kbv;
 		if(kbv == null) {
 			sKeyboard = null;
 			sKeys = null;	
-			return;
+			return false;
 		}
 		sKeyboard = kbv.getKeyboard();
+		if(sKeyboard == null || sKeyboard.mKeys == null) return false;
 		sKeys = sortKeys(sKeyboard.mKeys);
 		IMEStates.reset();
+		return true;
 	}
 	
 	private static Key[] sortKeys(Key[] keys) {
