@@ -1,8 +1,5 @@
 package com.android.tecla.keyboard;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.android.inputmethod.keyboard.Key;
 import com.android.inputmethod.keyboard.Keyboard;
 import com.android.inputmethod.keyboard.KeyboardView;
@@ -16,7 +13,7 @@ public class IMEAdapter {
 	
 	private static Keyboard sKeyboard = null;
 	private static KeyboardView sKeyboardView = null;
-	private static List<Key> sKeys = null;
+	private static Key[] sKeys = null;
 		
 	private static final int REDRAW_KEYBOARD = 0x22;
 	
@@ -42,16 +39,16 @@ public class IMEAdapter {
 			return;
 		}
 		sKeyboard = kbv.getKeyboard();
-		sKeys = sKeyboard.getKeys();
+		sKeys = sKeyboard.mKeys;
 		IMEStates.reset();
 	}
 	
 	public static void selectHighlighted() {
 		int index = IMEStates.getCurrentKeyIndex();
-		if(index < 0 || index >= sKeys.size()) return;
-		Key key = sKeys.get(index);
+		if(index < 0 || index >= sKeys.length) return;
+		Key key = sKeys[index];
 		TeclaIME.getInstance().getCurrentInputConnection()
-			.commitText(String.valueOf((char)key.codes[0]), 1);		
+			.commitText(String.valueOf((char)key.mCode), 1);		
 	}
 
 	public static void selectScanHighlighted() {
@@ -86,17 +83,17 @@ public class IMEAdapter {
 
 	public static void scanUp() {
 		int index = IMEStates.getCurrentKeyIndex();
-		Key key = sKeys.get(index);
+		Key key = sKeys[index];
 		Key test_key;
 		int closest_key_index = -1;
 		float distance_sq, shortest_distance_sq;
 		shortest_distance_sq = Float.MAX_VALUE;
-		for(int i=0; i<sKeys.size(); ++i) {
+		for(int i=0; i<sKeys.length; ++i) {
 			if(i == index) continue;
-			test_key = sKeys.get(i);
-			if(test_key.y < key.y) {
-				distance_sq = (key.y - test_key.y)*(key.y - test_key.y) + 
-						(key.x - test_key.x)*(key.x - test_key.x); 
+			test_key = sKeys[i];
+			if(test_key.mY < key.mY) {
+				distance_sq = (key.mY - test_key.mY)*(key.mY - test_key.mY) + 
+						(key.mX - test_key.mX)*(key.mX - test_key.mX); 
 				if(distance_sq < shortest_distance_sq) {
 					shortest_distance_sq = distance_sq;
 					closest_key_index = i;
@@ -113,17 +110,17 @@ public class IMEAdapter {
 
 	public static void scanDown() {
 		int index = IMEStates.getCurrentKeyIndex();
-		Key key = sKeys.get(index);
+		Key key = sKeys[index];
 		Key test_key;
 		int closest_key_index = -1;
 		float distance_sq, shortest_distance_sq;
 		shortest_distance_sq = Float.MAX_VALUE;
-		for(int i=0; i<sKeys.size(); ++i) {
+		for(int i=0; i<sKeys.length; ++i) {
 			if(i == index) continue;
-			test_key = sKeys.get(i);
-			if(test_key.y > key.y) {
-				distance_sq = (key.y - test_key.y)*(key.y - test_key.y) + 
-						(key.x - test_key.x)*(key.x - test_key.x); 
+			test_key = sKeys[i];
+			if(test_key.mY > key.mY) {
+				distance_sq = (key.mY - test_key.mY)*(key.mY - test_key.mY) + 
+						(key.mX - test_key.mX)*(key.mX - test_key.mX); 
 				if(distance_sq < shortest_distance_sq) {
 					shortest_distance_sq = distance_sq;
 					closest_key_index = i;
@@ -140,16 +137,16 @@ public class IMEAdapter {
 
 	public static void scanLeft() {
 		int index = IMEStates.getCurrentKeyIndex();
-		Key key = sKeys.get(index);
+		Key key = sKeys[index];
 		Key test_key;
 		int closest_key_index = -1;
 		int distance;
 		int shortest_distance = Integer.MAX_VALUE;
-		for(int i=0; i<sKeys.size(); ++i) {
+		for(int i=0; i<sKeys.length; ++i) {
 			if(i == index) continue;
-			test_key = sKeys.get(i);
-			if(test_key.y == key.y && test_key.x < key.x) {
-				distance = key.x - test_key.x;
+			test_key = sKeys[i];
+			if(test_key.mY == key.mY && test_key.mX < key.mX) {
+				distance = key.mX - test_key.mX;
 				if(distance < shortest_distance) {
 					shortest_distance = distance;
 					closest_key_index = i;
@@ -166,16 +163,16 @@ public class IMEAdapter {
 
 	public static void scanRight() {
 		int index = IMEStates.getCurrentKeyIndex();
-		Key key = sKeys.get(index);
+		Key key = sKeys[index];
 		Key test_key;
 		int closest_key_index = -1;
 		int distance;
 		int shortest_distance = Integer.MAX_VALUE;
-		for(int i=0; i<sKeys.size(); ++i) {
+		for(int i=0; i<sKeys.length; ++i) {
 			if(i == index) continue;
-			test_key = sKeys.get(i);
-			if(test_key.y == key.y && test_key.x > key.x) {
-				distance = test_key.x - key.x;
+			test_key = sKeys[i];
+			if(test_key.mY == key.mY && test_key.mX > key.mX) {
+				distance = test_key.mX - key.mX;
 				if(distance < shortest_distance) {
 					shortest_distance = distance;
 					closest_key_index = i;
@@ -203,11 +200,11 @@ public class IMEAdapter {
 	
 	
 	private static void highlightKey(int key_index, boolean highlighted) {
-		if(sKeys == null || key_index < 0 || key_index >= sKeys.size()) return; 
-        Key key = sKeys.get(key_index);
-		key.pressed = highlighted;
-	}
-	
+		if(sKeys == null || key_index < 0 || key_index >= sKeys.length) return; 
+        Key key = sKeys[key_index];
+        if(highlighted) key.onPressed();
+        else key.onReleased();
+	}	
 	
 	private static void highlightKeys(int start_index, int end_index, boolean highlighted) {
 		for(int i=start_index; i<=end_index; ++i) {
@@ -303,7 +300,7 @@ public class IMEAdapter {
 		}
 		
 		private static boolean setKey(int index) {
-			if(index < 0 || index >= sKeys.size()) return false;
+			if(index < 0 || index >= sKeys.length) return false;
 			sCurrentColumn = index;
 			return true;
 		}
@@ -353,15 +350,15 @@ public class IMEAdapter {
 			if(sKeyboard == null || rowNumber == -1) return -1;
 			int keyCounter = 0;
 			if (rowNumber != 0) {
-				List<Key> keyList = sKeyboard.getKeys();
+				Key[] keyList = sKeyboard.mKeys;
 				Key key;
 				int rowCounter = 0;
-				int prevCoord = keyList.get(0).y;
+				int prevCoord = keyList[0].mY;
 				int thisCoord;
 				while (rowCounter != rowNumber) {
 					keyCounter++;
-					key = keyList.get(keyCounter);
-					thisCoord = key.y;
+					key = keyList[keyCounter];
+					thisCoord = key.mY;
 					if (thisCoord != prevCoord) {
 						// Changed rows
 						rowCounter++;
@@ -374,20 +371,20 @@ public class IMEAdapter {
 
 		private static int getRowEnd(int rowNumber) {
 			if(sKeyboard == null || rowNumber == -1) return -1;
-			List<Key> keyList = sKeyboard.getKeys();
-			int totalKeys = keyList.size();
+			Key[] keyList = sKeyboard.mKeys;
+			int totalKeys = keyList.length;
 			int keyCounter = 0;
 			if (rowNumber == (getRowCount() - 1)) {
 				keyCounter = totalKeys - 1;
 			} else {
 				Key key;
 				int rowCounter = 0;
-				int prevCoord = keyList.get(0).y;
+				int prevCoord = keyList[0].mY;
 				int thisCoord;
 				while (rowCounter <= rowNumber) {
 					keyCounter++;
-					key = keyList.get(keyCounter);
-					thisCoord = key.y;
+					key = keyList[keyCounter];
+					thisCoord = key.mY;
 					if (thisCoord != prevCoord) {
 						// Changed rows
 						rowCounter++;
@@ -401,19 +398,19 @@ public class IMEAdapter {
 
 		private static int getRowCount() {
 			if(sKeyboard == null) return 0;
-			List<Key> keyList = sKeyboard.getKeys();
+			Key[] keyList = sKeyboard.mKeys;
 			Key key;
 			int rowCounter = 0;
 			int coord = 0;
-			for (Iterator<Key> i = keyList.iterator(); i.hasNext();) {
-				key = i.next();
+			for(int i=0; i<keyList.length; ++i) {
+				key = keyList[i];
 				if (rowCounter == 0) {
 					rowCounter++;
-					coord = key.y;
+					coord = key.mY;
 				}
-				if (coord != key.y) {
+				if (coord != key.mY) {
 					rowCounter++;
-					coord = key.y;
+					coord = key.mY;
 				}
 			}
 			return rowCounter;
