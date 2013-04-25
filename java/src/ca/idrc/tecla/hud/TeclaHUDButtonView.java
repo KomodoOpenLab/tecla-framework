@@ -14,13 +14,13 @@ import android.widget.ImageButton;
 public class TeclaHUDButtonView extends ImageButton {
 	
 	public final static byte POSITION_LEFT = 4;
-	public final static byte POSITION_TOP_LEFT = 5;
+	public final static byte POSITION_TOPLEFT = 5;
 	public final static byte POSITION_TOP = 6;
-	public final static byte POSITION_TOP_RIGHT = 7;
+	public final static byte POSITION_TOPRIGHT = 7;
 	public final static byte POSITION_RIGHT = 8;
-	public final static byte POSITION_BOTTOM_RIGHT = 9;
+	public final static byte POSITION_BOTTOMRIGHT = 9;
 	public final static byte POSITION_BOTTOM = 10;
-	public final static byte POSITION_BOTTOM_LEFT = 11;
+	public final static byte POSITION_BOTTOMLEFT = 11;
 	public final static float CORNER_PADDING_FRACTION = 0.16f;
 	
     private final Paint mInnerPaint = new Paint();
@@ -83,16 +83,16 @@ public class TeclaHUDButtonView extends ImageButton {
 		case POSITION_BOTTOM:
 	    	setPadding(0, 0, 0, 0);
 			break;
-		case POSITION_TOP_LEFT:
+		case POSITION_TOPLEFT:
 	    	setPadding(xpad, ypad, 0, 0);
 			break;
-		case POSITION_TOP_RIGHT:
+		case POSITION_TOPRIGHT:
 	    	setPadding(0, ypad, xpad, 0);
 			break;
-		case POSITION_BOTTOM_LEFT:
+		case POSITION_BOTTOMLEFT:
 	    	setPadding(xpad, 0, 0, ypad);
 			break;
-		case POSITION_BOTTOM_RIGHT:
+		case POSITION_BOTTOMRIGHT:
 	    	setPadding(0, 0, xpad, ypad);
 			break;
 		}
@@ -114,10 +114,10 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	int bottom = mHeight - outer_stroke_width;
 			float pad;
 
-			if (mPosition == POSITION_TOP_LEFT ||
-					mPosition == POSITION_TOP_RIGHT ||
-					mPosition == POSITION_BOTTOM_LEFT ||
-					mPosition == POSITION_BOTTOM_RIGHT) {				
+			if (mPosition == POSITION_TOPLEFT ||
+					mPosition == POSITION_TOPRIGHT ||
+					mPosition == POSITION_BOTTOMLEFT ||
+					mPosition == POSITION_BOTTOMRIGHT) {				
 				pad = 0.28f * right;
 				mPath.moveTo(left, bottom - pad);
 		    	mPath.lineTo(right - pad, top);
@@ -126,13 +126,13 @@ public class TeclaHUDButtonView extends ImageButton {
 		    	mPath.lineTo(left, bottom - pad);
 		    	float background_rotation = 0.0f;
 				switch(mPosition) {
-				case POSITION_TOP_RIGHT:
+				case POSITION_TOPRIGHT:
 					background_rotation = 90.0f;
 			    	break;
-				case POSITION_BOTTOM_LEFT:
+				case POSITION_BOTTOMLEFT:
 					background_rotation = 270.0f;
 			    	break;
-				case POSITION_BOTTOM_RIGHT:
+				case POSITION_BOTTOMRIGHT:
 					background_rotation = 180.0f;
 			    	break;
 				}		    	
