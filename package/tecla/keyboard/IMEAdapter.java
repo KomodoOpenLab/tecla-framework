@@ -3,9 +3,10 @@ package com.android.tecla.keyboard;
 import java.util.Iterator;
 import java.util.List;
 
-import android.inputmethodservice.Keyboard;
-import android.inputmethodservice.Keyboard.Key;
-import android.inputmethodservice.KeyboardView;
+import com.android.inputmethod.keyboard.Key;
+import com.android.inputmethod.keyboard.Keyboard;
+import com.android.inputmethod.keyboard.KeyboardView;
+
 import android.os.Handler;
 import android.os.Message;
 
