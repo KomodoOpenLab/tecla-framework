@@ -8,7 +8,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 
@@ -22,6 +21,7 @@ public class TeclaHUDButtonView extends ImageButton {
 	public final static byte POSITION_BOTTOM_RIGHT = 9;
 	public final static byte POSITION_BOTTOM = 10;
 	public final static byte POSITION_BOTTOM_LEFT = 11;
+	public final static float CORNER_PADDING_FRACTION = 0.16f;
 	
     private final Paint mInnerPaint = new Paint();
     private final Paint mOuterPaint = new Paint();
@@ -55,16 +55,47 @@ public class TeclaHUDButtonView extends ImageButton {
 		mWidth = w;
 		mHeight = h;
 
-		updateBackground();		
-    	invalidate();
+		updateDrawables();
     	
 	}
 	
 	public void setProperties(byte position, int stroke_width) {
 		mPosition = position;
 		mStrokeWidth = stroke_width;
+		updateDrawables();
+	}
+	
+	private void updateDrawables() {
 		updateBackground();
+		updatePadding();
 		invalidate();
+	}
+	
+	private void updatePadding () {
+		int w = getWidth();
+		int h = getHeight();
+		int ypad = Math.round(h * CORNER_PADDING_FRACTION);
+		int xpad = Math.round(w * CORNER_PADDING_FRACTION);
+		switch(mPosition) {
+		case POSITION_LEFT:
+		case POSITION_RIGHT:
+		case POSITION_TOP:
+		case POSITION_BOTTOM:
+	    	setPadding(0, 0, 0, 0);
+			break;
+		case POSITION_TOP_LEFT:
+	    	setPadding(xpad, ypad, 0, 0);
+			break;
+		case POSITION_TOP_RIGHT:
+	    	setPadding(0, ypad, xpad, 0);
+			break;
+		case POSITION_BOTTOM_LEFT:
+	    	setPadding(xpad, 0, 0, ypad);
+			break;
+		case POSITION_BOTTOM_RIGHT:
+	    	setPadding(0, 0, xpad, ypad);
+			break;
+		}
 	}
 	
 	private void updateBackground () {
