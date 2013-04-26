@@ -8,7 +8,7 @@ public class WordPredictionAdapter {
 
 	private static final int[] SUGGESTIONSVIEWINDICES = {0,2,4};
 	private static final int BACKGROUND_HIGHLIGHT_COLOR = Color.BLUE;
-	private static final int BACKGROUND_NORMAL_COLOR = Color.LTGRAY;
+	private static final int BACKGROUND_NORMAL_COLOR = Color.DKGRAY;
 	
 	private static ViewGroup sSuggestionsViewGroup = null;
 	

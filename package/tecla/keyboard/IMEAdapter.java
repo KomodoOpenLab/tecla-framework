@@ -114,7 +114,9 @@ public class IMEAdapter {
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightNextKey();
 										break;
-		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightNextKey();		
+		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
+										IMEStates.reset();
+										IMEAdapter.highlightNextRow();		
 										break;
 		default:						break;
 		}		
@@ -126,7 +128,9 @@ public class IMEAdapter {
 		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightPreviousRow();
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightPreviousKey();
-		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightPreviousKey();	
+		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
+										IMEStates.reset();
+										IMEAdapter.highlightPreviousRow();	
 										break;
 		default:						break;
 		}		
