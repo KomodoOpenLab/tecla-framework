@@ -39,8 +39,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private final static float SIDE_WIDTH_PROPORTION = 0.5f;
 	private final static float STROKE_WIDTH_PROPORTION = 0.018f;
 
-	public static final float SCAN_ALPHA_HIGH = 0.6f;
-	public static final float SCAN_ALPHA_LOW = 0.05f;
+	private float scan_alpha_max;
+	private float scan_alpha_min;
 
 	private Context mContext;
 	private final WindowManager mWindowManager;
@@ -59,6 +59,9 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mContext = context;
 		mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
+		scan_alpha_max = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_max));
+		scan_alpha_min = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_min));
+		
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
@@ -79,7 +82,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		mHUDPad.get(mScanIndex).setAlpha(1.0f);
 		for (int i = 1; i < mHUDPad.size(); i++) {
-			mHUDPad.get(i).setAlpha(SCAN_ALPHA_HIGH - ((i-1) * ((SCAN_ALPHA_HIGH - SCAN_ALPHA_LOW) / (mHUDPad.size() - 1))));
+			mHUDPad.get(i).setAlpha(scan_alpha_max - ((i-1) * ((scan_alpha_max - scan_alpha_min) / (mHUDPad.size() - 1))));
 		}
 
 		mHUDAnimators = new ArrayList<AnimatorSet>();
@@ -154,15 +157,20 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	}
 	protected void scanForward() {
 
+		// Move highlight out of previous button
 		if (mHUDAnimators.get(mScanIndex).isRunning()) {
 			mHUDAnimators.get(mScanIndex).cancel();
 		}
-		mHUDPad.get(mScanIndex).setAlpha(SCAN_ALPHA_LOW);
+		mHUDPad.get(mScanIndex).setHighlighted(false);
 		AnimatorSet hud_animator = (AnimatorSet) AnimatorInflater.loadAnimator(mContext, R.animator.hud_alpha_animator);
+		long duration = SCAN_PERIOD * mHUDPad.size();
+		hud_animator.getChildAnimations().get(0).setDuration(Math.round(0.1 * duration));
+		hud_animator.getChildAnimations().get(1).setDuration(Math.round(0.9 * duration));
 		hud_animator.setTarget(mHUDPad.get(mScanIndex));
-		hud_animator.setDuration(SCAN_PERIOD * mHUDPad.size());
 		mHUDAnimators.set(mScanIndex, hud_animator);
 		mHUDAnimators.get(mScanIndex).start();
+//		mHUDPad.get(mScanIndex).setAlpha(SCAN_ALPHA_LOW);
+		// Proceed to highlight next button
 		if (mScanIndex == mHUDPad.size()-1) {
 			mScanIndex = 0;
 		} else {
@@ -171,6 +179,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		if (mHUDAnimators.get(mScanIndex).isRunning()) {
 			mHUDAnimators.get(mScanIndex).cancel();
 		}
+		mHUDPad.get(mScanIndex).setHighlighted(true);
 		mHUDPad.get(mScanIndex).setAlpha(1.0f);
 
 		mAutoScanHandler.sleep(SCAN_PERIOD);
@@ -232,14 +241,14 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		int stroke_width = Math.round(STROKE_WIDTH_PROPORTION * size_reference);
 
-		mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width);
-		mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width);
-		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMLEFT, stroke_width);
-		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMRIGHT, stroke_width);
-		mHUDPad.get(HUD_BTN_LEFT).setProperties(TeclaHUDButtonView.POSITION_LEFT, stroke_width);
-		mHUDPad.get(HUD_BTN_TOP).setProperties(TeclaHUDButtonView.POSITION_TOP, stroke_width);
-		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width);
-		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width);
+		mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMLEFT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMRIGHT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_LEFT).setProperties(TeclaHUDButtonView.POSITION_LEFT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_TOP).setProperties(TeclaHUDButtonView.POSITION_TOP, stroke_width, true);
+		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
 	}
 
 	class AutoScanHandler extends Handler {
