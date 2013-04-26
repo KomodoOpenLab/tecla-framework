@@ -6,7 +6,6 @@ import com.android.inputmethod.keyboard.KeyboardView;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 public class IMEAdapter {
 
