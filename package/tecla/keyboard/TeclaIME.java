@@ -27,8 +27,8 @@ public class TeclaIME extends InputMethodService {
 					if(msg.arg1 < 10) {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
+				} else {
 				}
-				
 			}
 			super.handleMessage(msg);
 		}

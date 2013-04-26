@@ -6,6 +6,7 @@ import com.android.inputmethod.keyboard.KeyboardView;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 public class IMEAdapter {
 
@@ -317,7 +318,7 @@ public class IMEAdapter {
 		private static void reset() {
 			if(sKeyboard == null) return;
 			sRowCount = getRowCount();
-			sCurrentRow = 0;
+			sCurrentRow = -1;
 			sCurrentColumn = -1;
 			sKeyStartIndex = getRowStart(0);
 			sKeyEndIndex = getRowEnd(0);
@@ -402,7 +403,7 @@ public class IMEAdapter {
 			if(sKeyboard == null || rowNumber == -1) return -1;
 			int keyCounter = 0;
 			if (rowNumber != 0) {
-				Key[] keyList = sKeyboard.mKeys;
+				Key[] keyList = sKeys;
 				Key key;
 				int rowCounter = 0;
 				int prevCoord = keyList[0].mY;
@@ -423,7 +424,7 @@ public class IMEAdapter {
 
 		private static int getRowEnd(int rowNumber) {
 			if(sKeyboard == null || rowNumber == -1) return -1;
-			Key[] keyList = sKeyboard.mKeys;
+			Key[] keyList = sKeys;
 			int totalKeys = keyList.length;
 			int keyCounter = 0;
 			if (rowNumber == (getRowCount() - 1)) {
@@ -450,7 +451,7 @@ public class IMEAdapter {
 
 		private static int getRowCount() {
 			if(sKeyboard == null) return 0;
-			Key[] keyList = sKeyboard.mKeys;
+			Key[] keyList = sKeys;
 			Key key;
 			int rowCounter = 0;
 			int coord = 0;
