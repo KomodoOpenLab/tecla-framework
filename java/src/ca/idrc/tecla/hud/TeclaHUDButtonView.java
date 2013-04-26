@@ -23,8 +23,9 @@ public class TeclaHUDButtonView extends ImageButton {
 	public final static byte POSITION_BOTTOMLEFT = 11;
 	public final static float CORNER_PADDING_FRACTION = 0.16f;
 	
-    private final Paint mInnerPaint = new Paint();
-    private final Paint mOuterPaint = new Paint();
+    private final Paint mInnerFillPaint = new Paint();
+    private final Paint mInnerStrokePaint = new Paint();
+    private final Paint mOuterStrokePaint = new Paint();
     private int mWidth;
     private int mHeight;
     private int mStrokeWidth;
@@ -32,6 +33,7 @@ public class TeclaHUDButtonView extends ImageButton {
 	private Bitmap mBackground;
 	private Canvas mBackgroundCanvas;
 	private byte mPosition;
+	private boolean isHighlighted;
 
 	public TeclaHUDButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,10 +43,12 @@ public class TeclaHUDButtonView extends ImageButton {
 	private void init() {
 		
 		mStrokeWidth = 1;
-    	mInnerPaint.setColor(Color.argb(0xFF, 0x2F, 0xE6, 0xFF));
-    	mOuterPaint.setColor(Color.argb(0xFF, 0x29, 0x58, 0x75));
-    	mInnerPaint.setStyle(Paint.Style.STROKE);
-    	mOuterPaint.setStyle(Paint.Style.STROKE);
+		mInnerFillPaint.setColor(Color.argb(0x7F, 0x2F, 0xE6, 0xFF));
+    	mInnerStrokePaint.setColor(Color.argb(0xFF, 0x2F, 0xE6, 0xFF));
+    	mOuterStrokePaint.setColor(Color.argb(0xFF, 0x29, 0x58, 0x75));
+    	mInnerFillPaint.setStyle(Paint.Style.FILL);
+    	mInnerStrokePaint.setStyle(Paint.Style.STROKE);
+    	mOuterStrokePaint.setStyle(Paint.Style.STROKE);
 
 	}
 	
@@ -59,9 +63,15 @@ public class TeclaHUDButtonView extends ImageButton {
     	
 	}
 	
-	public void setProperties(byte position, int stroke_width) {
+	public void setProperties(byte position, int stroke_width, boolean highlighted) {
 		mPosition = position;
 		mStrokeWidth = stroke_width;
+		isHighlighted = highlighted;
+		updateDrawables();
+	}
+	
+	public void setHighlighted(boolean highlighted) {
+		isHighlighted = highlighted;
 		updateDrawables();
 	}
 	
@@ -105,8 +115,8 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	mBackgroundCanvas = new Canvas(mBackground);
 	    	
 	    	int outer_stroke_width = 2 * mStrokeWidth;
-	    	mInnerPaint.setStrokeWidth(mStrokeWidth);
-	    	mOuterPaint.setStrokeWidth(outer_stroke_width);
+	    	mInnerStrokePaint.setStrokeWidth(mStrokeWidth);
+	    	mOuterStrokePaint.setStrokeWidth(outer_stroke_width);
 	    	mPath = new Path();
 	    	int left = outer_stroke_width;
 	    	int top = outer_stroke_width;
@@ -176,8 +186,11 @@ public class TeclaHUDButtonView extends ImageButton {
 				}		    	
 			}
 	    	
-	    	mBackgroundCanvas.drawPath(mPath, mOuterPaint);
-	    	mBackgroundCanvas.drawPath(mPath, mInnerPaint);
+	    	if (isHighlighted) {
+	    		mBackgroundCanvas.drawPath(mPath, mInnerFillPaint);
+	    	}
+	    	mBackgroundCanvas.drawPath(mPath, mOuterStrokePaint);
+	    	mBackgroundCanvas.drawPath(mPath, mInnerStrokePaint);
 	    	setBackground(new BitmapDrawable(getResources(), mBackground));
 		}
 	}
