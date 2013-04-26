@@ -319,7 +319,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		super.onDestroy();
 		SEPManager.stop(this);
 		shutdownInfrastructure();
-		unregisterReceiver(mReceiver);
+//		unregisterReceiver(mReceiver);
 	}
 
 	/**
