@@ -115,6 +115,7 @@ public class IMEAdapter {
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightNextKey();
 										break;
 		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
+										highlightKey(IMEStates.getCurrentKeyIndex(), false);
 										IMEStates.reset();
 										IMEAdapter.highlightNextRow();		
 										break;
