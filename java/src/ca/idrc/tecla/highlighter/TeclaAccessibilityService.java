@@ -266,17 +266,17 @@ public class TeclaAccessibilityService extends AccessibilityService {
 //	}
 //
 	
-	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-
-			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
-				handleSwitchEvent(intent.getExtras());
-			}
-		}
-	};
+//	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			String action = intent.getAction();
+//
+//			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
+//				handleSwitchEvent(intent.getExtras());
+//			}
+//		}
+//	};
 
 	private void handleSwitchEvent(Bundle extras) {
 		SwitchEvent event = new SwitchEvent(extras);
@@ -319,7 +319,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		super.onDestroy();
 		SEPManager.stop(this);
 		shutdownInfrastructure();
-		unregisterReceiver(mReceiver);
+//		unregisterReceiver(mReceiver);
 	}
 
 	/**
