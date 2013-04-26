@@ -10,21 +10,27 @@ public class WordPredictionAdapter {
 	private static final int BACKGROUND_HIGHLIGHT_COLOR = Color.BLUE;
 	private static final int BACKGROUND_NORMAL_COLOR = Color.LTGRAY;
 	
-	private static ViewGroup sSuggestionsViewGroup;
+	private static ViewGroup sSuggestionsViewGroup = null;
 	
 	public static void setSuggestionsViewGroup(ViewGroup vg) {
 		sSuggestionsViewGroup = vg;
 	}
 	
 	public static void selectHighlighted() {
+		if(sSuggestionsViewGroup == null) return;
+		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return;
 		WordPredictionStates.click();
 	}
 
 	public static void highlightNext() {
+		if(sSuggestionsViewGroup == null) return;
+		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return;
 		WordPredictionStates.scanNext();
 	}
 
 	public static void highlightPrevious() {
+		if(sSuggestionsViewGroup == null) return;
+		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return;
 		WordPredictionStates.scanPrevious();
 	}
 	
@@ -49,12 +55,17 @@ public class WordPredictionAdapter {
 		private static int sCurrentIndex = -1;
 		
 		private static void reset() {
-			sState = WPSCAN_NONE;
-			
+			sState = WPSCAN_HIGHLIGHTED;
+			sCurrentIndex = -1;
 		}
 		
 		private static void scanNext() {
 			switch(sState) {
+			case(WPSCAN_NONE):		highlightSuggestion(0, true);
+									highlightSuggestion(1, true);
+									highlightSuggestion(2, true);
+									sState = WPSCAN_HIGHLIGHTED;
+									break;
 			case(WPSCAN_HIGHLIGHTED):		highlightSuggestion(0, false);
 											highlightSuggestion(1, false);
 											highlightSuggestion(2, false);
@@ -70,6 +81,11 @@ public class WordPredictionAdapter {
 		
 		private static void scanPrevious() {
 			switch(sState) {
+			case(WPSCAN_NONE):		highlightSuggestion(0, true);
+									highlightSuggestion(1, true);
+									highlightSuggestion(2, true);
+									sState = WPSCAN_HIGHLIGHTED;
+									break;
 			case(WPSCAN_HIGHLIGHTED):		highlightSuggestion(0, false);
 											highlightSuggestion(1, false);
 											highlightSuggestion(2, false);
