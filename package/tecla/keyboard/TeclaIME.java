@@ -1,7 +1,6 @@
 package com.android.tecla.keyboard;
 
 import android.inputmethodservice.InputMethodService;
-import android.inputmethodservice.Keyboard;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
