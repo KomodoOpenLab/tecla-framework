@@ -36,13 +36,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private final static byte HUD_BTN_LEFT = 6;
 	private final static byte HUD_BTN_TOPLEFT = 7;
 
-	private final static float SIDE_WIDTH_PROPORTION = 0.5f;
-	private final static float STROKE_WIDTH_PROPORTION = 0.018f;
-
+	private Context mContext;
+	private float side_width_proportion;
+	private float stroke_width_proportion;
 	private float scan_alpha_max;
 	private float scan_alpha_min;
 
-	private Context mContext;
 	private final WindowManager mWindowManager;
 	private static TeclaHUDOverlay sInstance;
 	//public static TeclaIME sLatinIMEInstance = null;
@@ -61,6 +60,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		scan_alpha_max = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_max));
 		scan_alpha_min = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_min));
+		side_width_proportion = Float.parseFloat(mContext.getResources().getString(R.string.side_width_proportion));
+		stroke_width_proportion = Float.parseFloat(mContext.getResources().getString(R.string.stroke_width_proportion));
 
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
@@ -80,19 +81,14 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		mScanIndex = 0;
 
-		mHUDPad.get(mScanIndex).setAlpha(1.0f);
-		for (int i = 1; i < mHUDPad.size(); i++) {
-			mHUDPad.get(i).setAlpha(scan_alpha_max - ((i-1) * ((scan_alpha_max - scan_alpha_min) / (mHUDPad.size() - 1))));
+		for (int i = 0; i < mHUDPad.size(); i++) {
+			mHUDPad.get(i).setAlpha(scan_alpha_max);
 		}
 
 		mHUDAnimators = new ArrayList<AnimatorSet>();
 		for (int i = 0; i < mHUDPad.size(); i++) {
 			mHUDAnimators.add((AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.hud_alpha_animator));
-			mHUDAnimators.get(i).setDuration(SCAN_PERIOD * mHUDPad.size());
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
-			if (i > 0) {
-				mHUDAnimators.get(i).start();
-			}
 		}
 
 		mAutoScanHandler.sleep(SCAN_PERIOD);
@@ -233,20 +229,20 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		hudParams.get(HUD_BTN_BOTTOMLEFT).height = size_reference;
 		hudParams.get(HUD_BTN_BOTTOMRIGHT).width = size_reference;
 		hudParams.get(HUD_BTN_BOTTOMRIGHT).height = size_reference;
-		hudParams.get(HUD_BTN_LEFT).width = Math.round(SIDE_WIDTH_PROPORTION * size_reference);
+		hudParams.get(HUD_BTN_LEFT).width = Math.round(side_width_proportion * size_reference);
 		hudParams.get(HUD_BTN_LEFT).height = display_height - (2 * size_reference);
 		hudParams.get(HUD_BTN_TOP).width = display_width - (2 * size_reference);
-		hudParams.get(HUD_BTN_TOP).height = Math.round(SIDE_WIDTH_PROPORTION * size_reference);
-		hudParams.get(HUD_BTN_RIGHT).width = Math.round(SIDE_WIDTH_PROPORTION * size_reference);
+		hudParams.get(HUD_BTN_TOP).height = Math.round(side_width_proportion * size_reference);
+		hudParams.get(HUD_BTN_RIGHT).width = Math.round(side_width_proportion * size_reference);
 		hudParams.get(HUD_BTN_RIGHT).height = display_height - (2 * size_reference);
 		hudParams.get(HUD_BTN_BOTTOM).width = display_width - (2 * size_reference);
-		hudParams.get(HUD_BTN_BOTTOM).height = Math.round(SIDE_WIDTH_PROPORTION * size_reference);
+		hudParams.get(HUD_BTN_BOTTOM).height = Math.round(side_width_proportion * size_reference);
 
 		for (int i = 0; i < mHUDPad.size(); i++) {
 			mHUDPad.get(i).setLayoutParams(hudParams.get(i));
 		}
 
-		int stroke_width = Math.round(STROKE_WIDTH_PROPORTION * size_reference);
+		int stroke_width = Math.round(stroke_width_proportion * size_reference);
 
 		mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width, false);
