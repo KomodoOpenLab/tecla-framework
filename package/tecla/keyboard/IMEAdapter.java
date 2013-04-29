@@ -3,9 +3,11 @@ package com.android.tecla.keyboard;
 import com.android.inputmethod.keyboard.Key;
 import com.android.inputmethod.keyboard.Keyboard;
 import com.android.inputmethod.keyboard.KeyboardView;
+import com.android.inputmethod.latin.LatinIME;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 public class IMEAdapter {
 
@@ -99,8 +101,10 @@ public class IMEAdapter {
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.length) return;
 		Key key = sKeys[index];
-		TeclaIME.getInstance().getCurrentInputConnection()
-			.commitText(String.valueOf((char)key.mCode), 1);		
+		LatinIME ime = (LatinIME)TeclaIME.getInstance();
+		ime.onCodeInput(key.mCode, key.mX, key.mY);
+		//TeclaIME.getInstance().getCurrentInputConnection()
+		//	.commitText(String.valueOf((char)key.mCode), 1);		
 	}
 
 	public static void selectScanHighlighted() {
