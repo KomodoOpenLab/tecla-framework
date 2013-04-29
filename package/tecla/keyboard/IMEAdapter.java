@@ -411,7 +411,7 @@ public class IMEAdapter {
 		}
 		
 		private static int getRowStart(int rowNumber) {
-			if(sKeyboard == null || rowNumber == -1 || rowNumber == sRowCount) return -1;
+			if(sKeyboard == null || rowNumber == -1 || rowNumber >= sRowCount) return -1;
 			int keyCounter = 0;
 			if (rowNumber != 0) {
 				Key[] keyList = sKeys;
@@ -434,7 +434,7 @@ public class IMEAdapter {
 		}
 
 		private static int getRowEnd(int rowNumber) {
-			if(sKeyboard == null || rowNumber == -1 || rowNumber == sRowCount) return -1;
+			if(sKeyboard == null || rowNumber == -1 || rowNumber >= sRowCount) return -1;
 			Key[] keyList = sKeys;
 			int totalKeys = keyList.length;
 			int keyCounter = 0;
