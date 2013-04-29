@@ -61,7 +61,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		scan_alpha_max = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_max));
 		scan_alpha_min = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_min));
-		
+
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
@@ -130,31 +130,38 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	protected void scanTrigger() {
 		/*		ImageView img = (ImageView)mHUDSymbolHighlight.get(mHUDSymbolHighlight.size()-1);
 		int id = img.getId();*/
-		//		if(id == R.id.imageView_highlight_uparrow) {
-		//			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
-		//		} else if(id == R.id.imageView_highlight_select) {
-		//			TeclaAccessibilityService.clickActiveNode();
-		//		} else if(id == R.id.imageView_highlight_rightarrow) {
-		//			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
-		//		} else if(id == R.id.imageView_highlight_forward) {
-		//			
-		//		} else if(id == R.id.imageView_highlight_downarrow) {
-		//			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
-		//		} else if(id == R.id.imageView_highlight_back) {
-		//			if(sLatinIMEInstance != null) {
-		//				Log.w(tag, "LatinIME is not null");
-		//				sLatinIMEInstance.pressBackKey();
-		//			} else Log.w(tag, "LatinIME is null");
-		//		} else if(id == R.id.imageView_highlight_rightarrow) {
-		//			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
-		//		} else if(id == R.id.imageView_highlight_home) {
-		//			if(sLatinIMEInstance != null) {
-		//				Log.w(tag, "LatinIME is not null");
-		//				sLatinIMEInstance.pressHomeKey();
-		//			} else Log.w(tag, "LatinIME is null");
-		//		}
+		switch (mScanIndex){
+		case HUD_BTN_TOP:
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+			break;
+		case HUD_BTN_BOTTOM:
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+			break;
+		case HUD_BTN_LEFT:
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
+			break;
+		case HUD_BTN_RIGHT:
+			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
+			break;
+		case HUD_BTN_TOPRIGHT:
+			TeclaAccessibilityService.clickActiveNode();
+			break;
+		case HUD_BTN_BOTTOMLEFT:
+			/*			if(sLatinIMEInstance != null) {
+				Log.w(tag, "LatinIME is not null");
+				sLatinIMEInstance.pressBackKey();
+			} else Log.w(tag, "LatinIME is null");*/
+			break;
+		case HUD_BTN_TOPLEFT:
+			//			if(sLatinIMEInstance != null) {
+			//				Log.w(tag, "LatinIME is not null");
+			//				sLatinIMEInstance.pressHomeKey();
+			//			} else Log.w(tag, "LatinIME is null");
+			break;
+		}
 		mAutoScanHandler.sleep(SCAN_PERIOD);
 	}
+	
 	protected void scanForward() {
 
 		// Move highlight out of previous button
@@ -169,7 +176,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		hud_animator.setTarget(mHUDPad.get(mScanIndex));
 		mHUDAnimators.set(mScanIndex, hud_animator);
 		mHUDAnimators.get(mScanIndex).start();
-//		mHUDPad.get(mScanIndex).setAlpha(SCAN_ALPHA_LOW);
+		//		mHUDPad.get(mScanIndex).setAlpha(SCAN_ALPHA_LOW);
 		// Proceed to highlight next button
 		if (mScanIndex == mHUDPad.size()-1) {
 			mScanIndex = 0;
