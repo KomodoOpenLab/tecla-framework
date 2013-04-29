@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
+import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.hud.TeclaHUDOverlay;
 
 import android.accessibilityservice.AccessibilityService;
@@ -17,14 +18,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaAccessibilityService extends AccessibilityService {
 
-	private final static String TAG = "TeclaJB";
+	private final static String CLASS_TAG = "TeclaA11yService";
 	private final static boolean DEBUG = false;
 
 	public final static int DIRECTION_UP = 0;
@@ -57,7 +57,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
-		Log.d(TAG, "Tecla Accessibility Service Connected!");
+		TeclaStatic.logD(CLASS_TAG, "Tecla Accessibility Service Connected!");
 
 		sInstance = this;
 		mOriginalNode = null;
@@ -80,33 +80,35 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		int event_type = event.getEventType();
-		Log.d(TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
+		if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
+			int event_type = event.getEventType();
+			TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
 
-		AccessibilityNodeInfo node = event.getSource();
-		if (node != null) {
-			if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-				mPreviousOriginalNode = mOriginalNode;
-				mOriginalNode = node;				
-				mNodeIndex = 0;
-				searchAndUpdateNodes();
-			} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
-				mPreviousOriginalNode = mOriginalNode;
-				mOriginalNode = node;				
-				mNodeIndex = 0;
-				searchAndUpdateNodes();
-			} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-				//searchAndUpdateNodes();
-			} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
-				//searchAndUpdateNodes();
-			} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-				mPreviousOriginalNode = mOriginalNode;
-				mOriginalNode = node;				
-				mNodeIndex = 0;
-				searchAndUpdateNodes();
+			AccessibilityNodeInfo node = event.getSource();
+			if (node != null) {
+				if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+					mPreviousOriginalNode = mOriginalNode;
+					mOriginalNode = node;				
+					mNodeIndex = 0;
+					searchAndUpdateNodes();
+				} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
+					mPreviousOriginalNode = mOriginalNode;
+					mOriginalNode = node;				
+					mNodeIndex = 0;
+					searchAndUpdateNodes();
+				} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+					//searchAndUpdateNodes();
+				} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
+					//searchAndUpdateNodes();
+				} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+					mPreviousOriginalNode = mOriginalNode;
+					mOriginalNode = node;				
+					mNodeIndex = 0;
+					searchAndUpdateNodes();
+				}
+			} else {
+				TeclaStatic.logD(CLASS_TAG, "Node is null!");
 			}
-		} else {
-			Log.e(TAG, "Node is null!");
 		}
 	}
 
@@ -264,17 +266,17 @@ public class TeclaAccessibilityService extends AccessibilityService {
 //	}
 //
 	
-	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-
-			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
-				handleSwitchEvent(intent.getExtras());
-			}
-		}
-	};
+//	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			String action = intent.getAction();
+//
+//			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
+//				handleSwitchEvent(intent.getExtras());
+//			}
+//		}
+//	};
 
 	private void handleSwitchEvent(Bundle extras) {
 		SwitchEvent event = new SwitchEvent(extras);
@@ -317,21 +319,21 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		super.onDestroy();
 		SEPManager.stop(this);
 		shutdownInfrastructure();
-		unregisterReceiver(mReceiver);
+//		unregisterReceiver(mReceiver);
 	}
 
 	/**
 	 * Shuts down the infrastructure in case it has been initialized.
 	 */
 	public void shutdownInfrastructure() {	
-		Log.d(TAG, "Shutting down infrastructure  ...");
+		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
 		if(mTeclaHUDController != null) {
 			mTeclaHUDController.hide();
-			mTeclaHUDController = null;
+//			mTeclaHUDController = null;
 		}
 		if (mTeclaHighlighter != null) {
 			mTeclaHighlighter.hide();
-			mTeclaHighlighter = null;
+//			mTeclaHighlighter = null;
 		}
 	}
 	

@@ -8,23 +8,24 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 
 public class TeclaHUDButtonView extends ImageButton {
 	
 	public final static byte POSITION_LEFT = 4;
-	public final static byte POSITION_TOP_LEFT = 5;
+	public final static byte POSITION_TOPLEFT = 5;
 	public final static byte POSITION_TOP = 6;
-	public final static byte POSITION_TOP_RIGHT = 7;
+	public final static byte POSITION_TOPRIGHT = 7;
 	public final static byte POSITION_RIGHT = 8;
-	public final static byte POSITION_BOTTOM_RIGHT = 9;
+	public final static byte POSITION_BOTTOMRIGHT = 9;
 	public final static byte POSITION_BOTTOM = 10;
-	public final static byte POSITION_BOTTOM_LEFT = 11;
+	public final static byte POSITION_BOTTOMLEFT = 11;
+	public final static float CORNER_PADDING_FRACTION = 0.16f;
 	
-    private final Paint mInnerPaint = new Paint();
-    private final Paint mOuterPaint = new Paint();
+    private final Paint mInnerFillPaint = new Paint();
+    private final Paint mInnerStrokePaint = new Paint();
+    private final Paint mOuterStrokePaint = new Paint();
     private int mWidth;
     private int mHeight;
     private int mStrokeWidth;
@@ -32,6 +33,7 @@ public class TeclaHUDButtonView extends ImageButton {
 	private Bitmap mBackground;
 	private Canvas mBackgroundCanvas;
 	private byte mPosition;
+	private boolean isHighlighted;
 
 	public TeclaHUDButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,10 +43,12 @@ public class TeclaHUDButtonView extends ImageButton {
 	private void init() {
 		
 		mStrokeWidth = 1;
-    	mInnerPaint.setColor(Color.argb(0xFF, 0x2F, 0xE6, 0xFF));
-    	mOuterPaint.setColor(Color.argb(0xFF, 0x29, 0x58, 0x75));
-    	mInnerPaint.setStyle(Paint.Style.STROKE);
-    	mOuterPaint.setStyle(Paint.Style.STROKE);
+		mInnerFillPaint.setColor(Color.argb(0x7F, 0x2F, 0xE6, 0xFF));
+    	mInnerStrokePaint.setColor(Color.argb(0xFF, 0x2F, 0xE6, 0xFF));
+    	mOuterStrokePaint.setColor(Color.argb(0xFF, 0x29, 0x58, 0x75));
+    	mInnerFillPaint.setStyle(Paint.Style.FILL);
+    	mInnerStrokePaint.setStyle(Paint.Style.STROKE);
+    	mOuterStrokePaint.setStyle(Paint.Style.STROKE);
 
 	}
 	
@@ -55,16 +59,53 @@ public class TeclaHUDButtonView extends ImageButton {
 		mWidth = w;
 		mHeight = h;
 
-		updateBackground();		
-    	invalidate();
+		updateDrawables();
     	
 	}
 	
-	public void setProperties(byte position, int stroke_width) {
+	public void setProperties(byte position, int stroke_width, boolean highlighted) {
 		mPosition = position;
 		mStrokeWidth = stroke_width;
+		isHighlighted = highlighted;
+		updateDrawables();
+	}
+	
+	public void setHighlighted(boolean highlighted) {
+		isHighlighted = highlighted;
+		updateDrawables();
+	}
+	
+	private void updateDrawables() {
 		updateBackground();
+		updatePadding();
 		invalidate();
+	}
+	
+	private void updatePadding () {
+		int w = getWidth();
+		int h = getHeight();
+		int ypad = Math.round(h * CORNER_PADDING_FRACTION);
+		int xpad = Math.round(w * CORNER_PADDING_FRACTION);
+		switch(mPosition) {
+		case POSITION_LEFT:
+		case POSITION_RIGHT:
+		case POSITION_TOP:
+		case POSITION_BOTTOM:
+	    	setPadding(0, 0, 0, 0);
+			break;
+		case POSITION_TOPLEFT:
+	    	setPadding(xpad, ypad, 0, 0);
+			break;
+		case POSITION_TOPRIGHT:
+	    	setPadding(0, ypad, xpad, 0);
+			break;
+		case POSITION_BOTTOMLEFT:
+	    	setPadding(xpad, 0, 0, ypad);
+			break;
+		case POSITION_BOTTOMRIGHT:
+	    	setPadding(0, 0, xpad, ypad);
+			break;
+		}
 	}
 	
 	private void updateBackground () {
@@ -74,8 +115,8 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	mBackgroundCanvas = new Canvas(mBackground);
 	    	
 	    	int outer_stroke_width = 2 * mStrokeWidth;
-	    	mInnerPaint.setStrokeWidth(mStrokeWidth);
-	    	mOuterPaint.setStrokeWidth(outer_stroke_width);
+	    	mInnerStrokePaint.setStrokeWidth(mStrokeWidth);
+	    	mOuterStrokePaint.setStrokeWidth(outer_stroke_width);
 	    	mPath = new Path();
 	    	int left = outer_stroke_width;
 	    	int top = outer_stroke_width;
@@ -83,10 +124,10 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	int bottom = mHeight - outer_stroke_width;
 			float pad;
 
-			if (mPosition == POSITION_TOP_LEFT ||
-					mPosition == POSITION_TOP_RIGHT ||
-					mPosition == POSITION_BOTTOM_LEFT ||
-					mPosition == POSITION_BOTTOM_RIGHT) {				
+			if (mPosition == POSITION_TOPLEFT ||
+					mPosition == POSITION_TOPRIGHT ||
+					mPosition == POSITION_BOTTOMLEFT ||
+					mPosition == POSITION_BOTTOMRIGHT) {				
 				pad = 0.28f * right;
 				mPath.moveTo(left, bottom - pad);
 		    	mPath.lineTo(right - pad, top);
@@ -95,13 +136,13 @@ public class TeclaHUDButtonView extends ImageButton {
 		    	mPath.lineTo(left, bottom - pad);
 		    	float background_rotation = 0.0f;
 				switch(mPosition) {
-				case POSITION_TOP_RIGHT:
+				case POSITION_TOPRIGHT:
 					background_rotation = 90.0f;
 			    	break;
-				case POSITION_BOTTOM_LEFT:
+				case POSITION_BOTTOMLEFT:
 					background_rotation = 270.0f;
 			    	break;
-				case POSITION_BOTTOM_RIGHT:
+				case POSITION_BOTTOMRIGHT:
 					background_rotation = 180.0f;
 			    	break;
 				}		    	
@@ -145,8 +186,11 @@ public class TeclaHUDButtonView extends ImageButton {
 				}		    	
 			}
 	    	
-	    	mBackgroundCanvas.drawPath(mPath, mOuterPaint);
-	    	mBackgroundCanvas.drawPath(mPath, mInnerPaint);
+	    	if (isHighlighted) {
+	    		mBackgroundCanvas.drawPath(mPath, mInnerFillPaint);
+	    	}
+	    	mBackgroundCanvas.drawPath(mPath, mOuterStrokePaint);
+	    	mBackgroundCanvas.drawPath(mPath, mInnerStrokePaint);
 	    	setBackground(new BitmapDrawable(getResources(), mBackground));
 		}
 	}

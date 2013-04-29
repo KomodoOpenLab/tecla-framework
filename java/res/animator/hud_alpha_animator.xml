@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+    <objectAnimator
+        android:duration="2000"
+        android:propertyName="alpha"
+        android:valueTo="@string/scan_alpha_min" />
+
+    <objectAnimator
+        android:duration="8000"
+        android:propertyName="alpha"
+        android:valueTo="@string/scan_alpha_max" />
+</set>
