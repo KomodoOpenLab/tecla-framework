@@ -1,17 +1,17 @@
-package ca.idrc.tecla.hud;
+package com.android.tecla.keyboard;
 
 import java.util.ArrayList;
 
 import ca.idrc.tecla.R;
-import ca.idrc.tecla.R.id;
-import ca.idrc.tecla.R.layout;
+import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.SimpleOverlay;
 import ca.idrc.tecla.framework.TeclaStatic;
-import ca.idrc.tecla.highlighter.TeclaAccessibilityService;
+import ca.idrc.tecla.hud.TeclaHUDButtonView;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +19,8 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+
+import com.android.tecla.keyboard.TeclaApp;
 
 public class TeclaHUDOverlay extends SimpleOverlay {
 
@@ -40,11 +42,9 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private float side_width_proportion;
 	private float stroke_width_proportion;
 	private float scan_alpha_max;
-	private float scan_alpha_min;
 
 	private final WindowManager mWindowManager;
 	private static TeclaHUDOverlay sInstance;
-	//public static TeclaIME sLatinIMEInstance = null;
 
 	private ArrayList<TeclaHUDButtonView> mHUDPad;
 	private ArrayList<AnimatorSet> mHUDAnimators;
@@ -59,7 +59,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
 		scan_alpha_max = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_max));
-		scan_alpha_min = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_min));
 		side_width_proportion = Float.parseFloat(mContext.getResources().getString(R.string.side_width_proportion));
 		stroke_width_proportion = Float.parseFloat(mContext.getResources().getString(R.string.stroke_width_proportion));
 
@@ -124,8 +123,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	};
 
 	protected void scanTrigger() {
-		/*		ImageView img = (ImageView)mHUDSymbolHighlight.get(mHUDSymbolHighlight.size()-1);
-		int id = img.getId();*/
 		switch (mScanIndex){
 		case HUD_BTN_TOP:
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
@@ -143,21 +140,21 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			TeclaAccessibilityService.clickActiveNode();
 			break;
 		case HUD_BTN_BOTTOMLEFT:
-			/*			if(sLatinIMEInstance != null) {
-				Log.w(tag, "LatinIME is not null");
-				sLatinIMEInstance.pressBackKey();
-			} else Log.w(tag, "LatinIME is null");*/
+			if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+				TeclaApp.ime.pressBackKey();
+			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");
 			break;
 		case HUD_BTN_TOPLEFT:
-			//			if(sLatinIMEInstance != null) {
-			//				Log.w(tag, "LatinIME is not null");
-			//				sLatinIMEInstance.pressHomeKey();
-			//			} else Log.w(tag, "LatinIME is null");
+			if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+				TeclaApp.ime.pressHomeKey();
+			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");
 			break;
 		}
 		mAutoScanHandler.sleep(SCAN_PERIOD);
 	}
-	
+
 	protected void scanForward() {
 
 		// Move highlight out of previous button
@@ -172,7 +169,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		hud_animator.setTarget(mHUDPad.get(mScanIndex));
 		mHUDAnimators.set(mScanIndex, hud_animator);
 		mHUDAnimators.get(mScanIndex).start();
-		//		mHUDPad.get(mScanIndex).setAlpha(SCAN_ALPHA_LOW);
 		// Proceed to highlight next button
 		if (mScanIndex == mHUDPad.size()-1) {
 			mScanIndex = 0;

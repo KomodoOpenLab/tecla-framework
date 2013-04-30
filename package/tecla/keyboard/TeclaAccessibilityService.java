@@ -1,31 +1,26 @@
-package ca.idrc.tecla.highlighter;
+package com.android.tecla.keyboard;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
+import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
-import ca.idrc.tecla.hud.TeclaHUDOverlay;
+import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.accessibilityservice.AccessibilityService;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static String CLASS_TAG = "TeclaA11yService";
-	private final static boolean DEBUG = false;
 
 	public final static int DIRECTION_UP = 0;
 	public final static int DIRECTION_LEFT = 1;
@@ -60,6 +55,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		TeclaStatic.logD(CLASS_TAG, "Tecla Accessibility Service Connected!");
 
 		sInstance = this;
+
 		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
