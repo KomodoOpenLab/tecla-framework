@@ -1,5 +1,6 @@
 package ca.idrc.tecla.hud;
 
+import ca.idrc.tecla.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -23,6 +24,8 @@ public class TeclaHUDButtonView extends ImageButton {
 	public final static byte POSITION_BOTTOMLEFT = 11;
 	public final static float CORNER_PADDING_FRACTION = 0.16f;
 	
+	private Context mContext;
+	
     private final Paint mInnerFillPaint = new Paint();
     private final Paint mInnerStrokePaint = new Paint();
     private final Paint mOuterStrokePaint = new Paint();
@@ -37,16 +40,17 @@ public class TeclaHUDButtonView extends ImageButton {
 
 	public TeclaHUDButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
 		init();
 	}
 
 	private void init() {
 		
 		mStrokeWidth = 1;
-		mInnerFillPaint.setColor(Color.argb(0x7F, 0x2F, 0xE6, 0xFF));
-    	mInnerStrokePaint.setColor(Color.argb(0xFF, 0x2F, 0xE6, 0xFF));
-    	mOuterStrokePaint.setColor(Color.argb(0xFF, 0x29, 0x58, 0x75));
-    	mInnerFillPaint.setStyle(Paint.Style.FILL);
+		mInnerFillPaint.setColor(mContext.getResources().getColor(R.color.hud_btn_inner_fill_color));
+    	mInnerStrokePaint.setColor(mContext.getResources().getColor(R.color.hud_btn_inner_stroke_color));
+    	mOuterStrokePaint.setColor(mContext.getResources().getColor(R.color.hud_btn_outer_stroke_color));
+    	mInnerFillPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     	mInnerStrokePaint.setStyle(Paint.Style.STROKE);
     	mOuterStrokePaint.setStyle(Paint.Style.STROKE);
 
@@ -186,10 +190,10 @@ public class TeclaHUDButtonView extends ImageButton {
 				}		    	
 			}
 	    	
+	    	mBackgroundCanvas.drawPath(mPath, mOuterStrokePaint);
 	    	if (isHighlighted) {
 	    		mBackgroundCanvas.drawPath(mPath, mInnerFillPaint);
 	    	}
-	    	mBackgroundCanvas.drawPath(mPath, mOuterStrokePaint);
 	    	mBackgroundCanvas.drawPath(mPath, mInnerStrokePaint);
 	    	setBackground(new BitmapDrawable(getResources(), mBackground));
 		}
