@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="side_width_proportion" format="float" type="string">0.5</item>
+    <item name="stroke_width_proportion" format="float" type="string">0.02</item>
+    <item name="inner_fill_alpha" format="integer" type="string">190</item>
+    <item name="scan_alpha_max" format="float" type="string">0.8</item>
+    <item name="scan_alpha_min" format="float" type="string">0.05</item>
+</resources>
