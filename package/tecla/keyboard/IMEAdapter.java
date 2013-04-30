@@ -1,11 +1,18 @@
 package com.android.tecla.keyboard;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.android.inputmethod.keyboard.Key;
 import com.android.inputmethod.keyboard.Keyboard;
 import com.android.inputmethod.keyboard.KeyboardView;
+import com.android.inputmethod.latin.LatinIME;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.ViewGroup;
 
 public class IMEAdapter {
 
@@ -31,24 +38,78 @@ public class IMEAdapter {
 		
 	};
 	
-	public static void setKeyboardView(KeyboardView kbv) {
+	public static boolean setKeyboardView(KeyboardView kbv) {
 		sKeyboardView = kbv;
 		if(kbv == null) {
 			sKeyboard = null;
 			sKeys = null;	
-			return;
+			return false;
 		}
 		sKeyboard = kbv.getKeyboard();
-		sKeys = sKeyboard.mKeys;
+		if(sKeyboard == null || sKeyboard.mKeys == null) return false;
+		sKeys = sortKeys(sKeyboard.mKeys);
 		IMEStates.reset();
+		return true;
+	}
+	
+	private static Key[] sortKeys(Key[] keys) {
+		Key[] sorted_keys = keys.clone();
+		
+		// sort rows
+		for(int i=1; i<sorted_keys.length; ++i) {
+			Key key = sorted_keys[i];
+			boolean inserted = false;
+			for(int j=i; j>0 && !inserted; --j) {
+				if(key.mY >= sorted_keys[j-1].mY) {
+					sorted_keys[j] = key; 
+					inserted = true;
+				} else if(j==1) {
+					sorted_keys[j] = sorted_keys[j-1]; 
+					sorted_keys[j-1] = key;
+				} else {
+					sorted_keys[j] = sorted_keys[j-1]; 
+				}
+			}
+		}
+		
+		// sort columns
+		int start_index = 0;
+		int end_index = 0;
+		while(start_index < sorted_keys.length) {
+			while(end_index<sorted_keys.length ) {
+				if(sorted_keys[start_index].mY != sorted_keys[end_index].mY) break;
+				++end_index;
+			}
+			for(int i=start_index + 1; i<end_index; ++i) {
+				Key key = sorted_keys[i];
+				boolean inserted = false;
+				for(int j=i; j>start_index && !inserted; --j) {
+					if(key.mX >= sorted_keys[j-1].mX) {
+						sorted_keys[j] = key; 
+						inserted = true;
+					} else if(j==start_index+1) {
+						sorted_keys[j] = sorted_keys[j-1]; 
+						sorted_keys[j-1] = key;
+					} else {
+						sorted_keys[j] = sorted_keys[j-1]; 
+					}
+				}
+			}
+			start_index = end_index;
+		}
+		
+		return sorted_keys;
+		
 	}
 	
 	public static void selectHighlighted() {
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.length) return;
 		Key key = sKeys[index];
-		TeclaIME.getInstance().getCurrentInputConnection()
-			.commitText(String.valueOf((char)key.mCode), 1);		
+		LatinIME ime = (LatinIME)TeclaIME.getInstance();
+		ime.onCodeInput(key.mCode, key.mX, key.mY);
+		//TeclaIME.getInstance().getCurrentInputConnection()
+		//	.commitText(String.valueOf((char)key.mCode), 1);		
 	}
 
 	public static void selectScanHighlighted() {
@@ -56,16 +117,32 @@ public class IMEAdapter {
 	}
 
 	public static void scanNext() {
+		try {
+			if(!IMEStates.sScanStateLock.tryLock(500, TimeUnit.MILLISECONDS)) return;
+		} catch (InterruptedException e) {
+			Log.e(tag, e.toString());
+			e.printStackTrace();
+		}
 		switch(IMEStates.sState) {
 		case(IMEStates.SCAN_STOPPED):	break;
 		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightNextRow();
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightNextKey();
 										break;
-		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightNextKey();		
+		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
+										highlightKey(IMEStates.getCurrentKeyIndex(), false);
+										IMEStates.reset();
+										IMEAdapter.highlightNextRow();		
 										break;
+		case(IMEStates.SCAN_WORDPREDICTION):if(!WordPredictionAdapter.highlightNext()) {
+												IMEStates.sState = IMEStates.SCAN_ROW;
+												IMEStates.reset();
+												IMEAdapter.highlightNextRow();	
+											}
+											break;
 		default:						break;
-		}		
+		}	
+		IMEStates.sScanStateLock.unlock();
 	}
 	
 	public static void scanPrevious() {
@@ -74,7 +151,9 @@ public class IMEAdapter {
 		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightPreviousRow();
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightPreviousKey();
-		case(IMEStates.SCAN_CLICK):		IMEAdapter.highlightPreviousKey();	
+		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
+										IMEStates.reset();
+										IMEAdapter.highlightPreviousRow();	
 										break;
 		default:						break;
 		}		
@@ -234,9 +313,13 @@ public class IMEAdapter {
 	
 	private static void highlightNextRow() {
 		if(sKeyboard ==null) return;
-		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+		if(IMEStates.sCurrentRow == IMEStates.sRowCount)
+			WordPredictionAdapter.highlightNext();
+		else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 		IMEStates.scanNextRow();
-		highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
+		if(IMEStates.sCurrentRow == IMEStates.sRowCount)
+			WordPredictionAdapter.highlightNext();
+		else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		invalidateKeys();		
 	}
 	
@@ -254,7 +337,10 @@ public class IMEAdapter {
 		private static final int SCAN_ROW = 0xa1;
 		private static final int SCAN_COLUMN = 0xa2;
 		private static final int SCAN_CLICK = 0xa3;
+		private static final int SCAN_WORDPREDICTION = 0xa4;
 		private static int sState = SCAN_STOPPED;
+		
+		private static Lock sScanStateLock = new ReentrantLock();
 		
 		private static int sRowCount = 0;
 		private static int sCurrentRow = -1;
@@ -265,30 +351,51 @@ public class IMEAdapter {
 		private static void reset() {
 			if(sKeyboard == null) return;
 			sRowCount = getRowCount();
-			sCurrentRow = 0;
+			sCurrentRow = -1;
 			sCurrentColumn = -1;
 			sKeyStartIndex = getRowStart(0);
 			sKeyEndIndex = getRowEnd(0);
 		}
 
 		private static void click() {
+			try {
+				if(!sScanStateLock.tryLock(500, TimeUnit.MILLISECONDS)) return;
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				Log.e(tag, e.toString());
+				e.printStackTrace();
+			}
 			switch(sState) {
-			case(SCAN_STOPPED):	sState = SCAN_ROW;
-								AutomaticScan.startAutoScan();
-								break;
-			case(SCAN_ROW):		sState = SCAN_COLUMN;
-								highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
-								AutomaticScan.resetTimer();
-								break;
-			case(SCAN_COLUMN):	sState = SCAN_CLICK;
-								IMEAdapter.selectHighlighted();
-								AutomaticScan.setExtendedTimer();
-								break;
-			case(SCAN_CLICK):	IMEAdapter.selectHighlighted();
-								AutomaticScan.setExtendedTimer();
-								break;
+			case(SCAN_STOPPED):		sState = SCAN_ROW;
+									AutomaticScan.startAutoScan();
+									break;
+			case(SCAN_ROW):			if(sCurrentRow == sRowCount) {
+										sState = SCAN_WORDPREDICTION;
+										WordPredictionAdapter.selectHighlighted();
+									} else {
+										sState = SCAN_COLUMN;
+										highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
+									}
+									AutomaticScan.resetTimer();
+									break;
+			case(SCAN_COLUMN):		sState = SCAN_CLICK;
+									IMEAdapter.selectHighlighted();
+									AutomaticScan.setExtendedTimer();
+									break;
+			case(SCAN_CLICK):		AutomaticScan.setExtendedTimer();
+									if(getCurrentRowIndex() == getRowCount())
+										WordPredictionAdapter.selectHighlighted();
+									else
+										IMEAdapter.selectHighlighted();
+									break;
+			case(SCAN_WORDPREDICTION):	if(!WordPredictionAdapter.selectHighlighted()) {
+												sState = SCAN_CLICK;
+										}
+										AutomaticScan.setExtendedTimer();
+										break;
 			default:			break;
 			}
+			sScanStateLock.unlock();
 		}
 		
 		private static int getCurrentKeyIndex() {
@@ -331,12 +438,12 @@ public class IMEAdapter {
 		
 		private static void scanNextRow() {
 			++sCurrentRow;
-			sCurrentRow %= sRowCount;
+			sCurrentRow %= sRowCount + 1;
 			updateRowKeyIndices();
 		}
 		
 		private static void scanPreviousRow() {
-			if(sCurrentRow == 0) sCurrentRow = sRowCount - 1;
+			if(sCurrentRow == -1) sCurrentRow = sRowCount;
 			else --sCurrentRow;
 			updateRowKeyIndices();
 		}
@@ -347,10 +454,10 @@ public class IMEAdapter {
 		}
 		
 		private static int getRowStart(int rowNumber) {
-			if(sKeyboard == null || rowNumber == -1) return -1;
+			if(sKeyboard == null || rowNumber == -1 || rowNumber >= sRowCount) return -1;
 			int keyCounter = 0;
 			if (rowNumber != 0) {
-				Key[] keyList = sKeyboard.mKeys;
+				Key[] keyList = sKeys;
 				Key key;
 				int rowCounter = 0;
 				int prevCoord = keyList[0].mY;
@@ -370,8 +477,8 @@ public class IMEAdapter {
 		}
 
 		private static int getRowEnd(int rowNumber) {
-			if(sKeyboard == null || rowNumber == -1) return -1;
-			Key[] keyList = sKeyboard.mKeys;
+			if(sKeyboard == null || rowNumber == -1 || rowNumber >= sRowCount) return -1;
+			Key[] keyList = sKeys;
 			int totalKeys = keyList.length;
 			int keyCounter = 0;
 			if (rowNumber == (getRowCount() - 1)) {
@@ -398,7 +505,7 @@ public class IMEAdapter {
 
 		private static int getRowCount() {
 			if(sKeyboard == null) return 0;
-			Key[] keyList = sKeyboard.mKeys;
+			Key[] keyList = sKeys;
 			Key key;
 			int rowCounter = 0;
 			int coord = 0;
