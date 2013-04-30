@@ -1,6 +1,7 @@
 package com.android.tecla.keyboard;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -9,23 +10,27 @@ public class WordPredictionAdapter {
 	private static final int[] SUGGESTIONSVIEWINDICES = {0,2,4};
 	private static final int BACKGROUND_HIGHLIGHT_COLOR = Color.BLUE;
 	private static final int BACKGROUND_NORMAL_COLOR = Color.DKGRAY;
+	public static final String tag = "WordPredictionAdapter";
 	
-	private static ViewGroup sSuggestionsViewGroup = null;
+	public static ViewGroup sSuggestionsViewGroup = null;
 	
 	public static void setSuggestionsViewGroup(ViewGroup vg) {
 		sSuggestionsViewGroup = vg;
 	}
 	
-	public static void selectHighlighted() {
-		if(sSuggestionsViewGroup == null) return;
-		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return;
+	public static boolean selectHighlighted() {
+		if(sSuggestionsViewGroup == null) return false;
+		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return false;
 		WordPredictionStates.click();
+		return WordPredictionStates.sState != WordPredictionStates.WPSCAN_NONE;
 	}
 
-	public static void highlightNext() {
-		if(sSuggestionsViewGroup == null) return;
-		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return;
+	public static boolean highlightNext() {
+		if(sSuggestionsViewGroup == null) return false;
+		if(sSuggestionsViewGroup.getVisibility() != ViewGroup.VISIBLE) return false;
 		WordPredictionStates.scanNext();
+		if(WordPredictionStates.sState == WordPredictionStates.WPSCAN_NONE) return false;
+		else return true;
 	}
 
 	public static void highlightPrevious() {
@@ -44,12 +49,16 @@ public class WordPredictionAdapter {
 		}
 	}
 	
+	private static void invalidateKeys() {
+		sSuggestionsViewGroup.invalidate();
+	}
+	
 	private static class WordPredictionStates {
-		private static final int WPSCAN_NONE = 0x6666;
-		private static final int WPSCAN_HIGHLIGHTED = 0x7777;
-		private static final int WPSCAN_SUGGESTIONS = 0x8888;
-		private static final int WPSCAN_MORESUGGESTIONS = 0x9999;
-		private static final int WPSCAN_CLICK = 0xaaaa;
+		private static final int WPSCAN_NONE = 0x66;
+		private static final int WPSCAN_HIGHLIGHTED = 0x77;
+		private static final int WPSCAN_SUGGESTIONS = 0x88;
+		private static final int WPSCAN_MORESUGGESTIONS = 0x99;
+		private static final int WPSCAN_CLICK = 0xaa;
 		private static int sState = WPSCAN_NONE;
 		
 		private static int sCurrentIndex = -1;
@@ -75,8 +84,12 @@ public class WordPredictionAdapter {
 											sCurrentIndex %= SUGGESTIONSVIEWINDICES.length + 1;
 											highlightSuggestion(sCurrentIndex, true);
 											break;
-			default:						break;
+			case(WPSCAN_CLICK):		highlightSuggestion(sCurrentIndex, false);
+									sState = WPSCAN_NONE;
+									break;
+			default:				break;
 			}
+			invalidateKeys();
 		}
 		
 		private static void scanPrevious() {
@@ -90,6 +103,7 @@ public class WordPredictionAdapter {
 											highlightSuggestion(1, false);
 											highlightSuggestion(2, false);
 											sState = WPSCAN_NONE;
+											break;
 			case(WPSCAN_SUGGESTIONS):		highlightSuggestion(sCurrentIndex--, false);
 											if (sCurrentIndex < 0)
 												sCurrentIndex = SUGGESTIONSVIEWINDICES.length;
@@ -107,8 +121,10 @@ public class WordPredictionAdapter {
 											sState = WPSCAN_SUGGESTIONS;
 											sCurrentIndex = 0;
 											highlightSuggestion(sCurrentIndex, true);
+											invalidateKeys();
 											break;
 			case(WPSCAN_SUGGESTIONS):		highlightSuggestion(sCurrentIndex, false);
+											invalidateKeys();
 											sState = WPSCAN_NONE;
 											// TODO: choose word
 											break;
