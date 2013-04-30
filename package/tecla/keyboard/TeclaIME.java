@@ -14,8 +14,6 @@ public class TeclaIME extends InputMethodService {
 
 	private static final int IMESCAN_SETUP = 0x2244;
 	
-	private static TeclaIME sInstance;
-
 	private Handler mHandler = new Handler() {
 
 		@Override
@@ -38,15 +36,10 @@ public class TeclaIME extends InputMethodService {
 	
 	@Override
 	public void onCreate() {
-		super.onCreate();		
-		sInstance = this;
-		TeclaApp.setIMEInstance(sInstance);
+		super.onCreate();	
+		TeclaApp.setIMEInstance(this);
 	}
 	
-	public static TeclaIME getInstance() {
-		return sInstance;
-	}
-
 	@Override
 	public void onStartInputView(EditorInfo info, boolean restarting) {
 		Message msg = new Message();
