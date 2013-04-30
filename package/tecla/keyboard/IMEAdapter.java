@@ -102,6 +102,11 @@ public class IMEAdapter {
 		
 	}
 	
+	public static boolean isShowingKeyboard() {
+		if(sKeyboardView == null) return false;
+		return true;
+	}
+	
 	public static void selectHighlighted() {
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.length) return;
