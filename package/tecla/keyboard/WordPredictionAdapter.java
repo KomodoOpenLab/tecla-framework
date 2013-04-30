@@ -126,7 +126,8 @@ public class WordPredictionAdapter {
 			case(WPSCAN_SUGGESTIONS):		highlightSuggestion(sCurrentIndex, false);
 											invalidateKeys();
 											sState = WPSCAN_NONE;
-											// TODO: choose word
+											View view = sSuggestionsViewGroup.getChildAt(SUGGESTIONSVIEWINDICES[sCurrentIndex]);
+											view.callOnClick();
 											break;
 			default:						break;
 			}
