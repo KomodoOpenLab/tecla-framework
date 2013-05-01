@@ -10,11 +10,14 @@ import ca.idrc.tecla.hud.TeclaHUDButtonView;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +54,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private byte mScanIndex;
 
 	protected final static long SCAN_PERIOD = 1500;
+
 
 	public TeclaHUDOverlay(Context context) {
 		super(context);
@@ -103,6 +107,19 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		sInstance = null;
 	}
 
+	protected BroadcastReceiver mConfigChangeReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Configuration conf = context.getResources().getConfiguration();
+			if(conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				
+			} else {
+				
+			}
+		}		
+	};
+	
 	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
 
 		@Override
