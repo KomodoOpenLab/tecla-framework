@@ -76,12 +76,6 @@ public class TeclaIME extends InputMethodService {
 				new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
 		getCurrentInputConnection().sendKeyEvent(
 				new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
-	}
+	}	
 
-	// use for scan debugging
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		IMEAdapter.selectScanHighlighted();
-		return true;
-	}
 }
