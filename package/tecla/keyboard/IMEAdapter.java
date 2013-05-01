@@ -113,6 +113,8 @@ public class IMEAdapter {
 		if(index < 0 || index >= sKeys.length) return;
 		Key key = sKeys[index];
 		LatinIME ime = (LatinIME)TeclaApp.ime;
+		ime.onPressKey(key.mCode);
+		ime.onReleaseKey(key.mCode, false);
 		ime.onCodeInput(key.mCode, key.mX, key.mY);
 		//TeclaIME.getInstance().getCurrentInputConnection()
 		//	.commitText(String.valueOf((char)key.mCode), 1);		
