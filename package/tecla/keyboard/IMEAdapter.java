@@ -102,11 +102,16 @@ public class IMEAdapter {
 		
 	}
 	
+	public static boolean isShowingKeyboard() {
+		if(sKeyboardView == null) return false;
+		return true;
+	}
+	
 	public static void selectHighlighted() {
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.length) return;
 		Key key = sKeys[index];
-		LatinIME ime = (LatinIME)TeclaIME.getInstance();
+		LatinIME ime = (LatinIME)TeclaApp.ime;
 		ime.onCodeInput(key.mCode, key.mX, key.mY);
 		//TeclaIME.getInstance().getCurrentInputConnection()
 		//	.commitText(String.valueOf((char)key.mCode), 1);		

@@ -107,8 +107,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		@Override
 		public void onClick(View v) {
-			scanTrigger();
-
+			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+			else scanTrigger();
 		}
 	};	
 
