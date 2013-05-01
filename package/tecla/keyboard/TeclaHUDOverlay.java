@@ -112,10 +112,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Configuration conf = context.getResources().getConfiguration();
+			
+			// fixHUDLayout() resizes properly for both orientations
 			if(conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				
+				fixHUDLayout();
 			} else {
-				
+				fixHUDLayout();
 			}
 		}		
 	};
