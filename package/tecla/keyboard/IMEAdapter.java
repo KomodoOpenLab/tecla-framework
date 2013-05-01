@@ -108,10 +108,13 @@ public class IMEAdapter {
 	}
 	
 	public static void selectHighlighted() {
+		if(sKeyboard != sKeyboardView.getKeyboard()) return;		
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.length) return;
 		Key key = sKeys[index];
 		LatinIME ime = (LatinIME)TeclaApp.ime;
+		ime.onPressKey(key.mCode);
+		ime.onReleaseKey(key.mCode, false);
 		ime.onCodeInput(key.mCode, key.mX, key.mY);
 		//TeclaIME.getInstance().getCurrentInputConnection()
 		//	.commitText(String.valueOf((char)key.mCode), 1);		
@@ -128,6 +131,17 @@ public class IMEAdapter {
 			Log.e(tag, e.toString());
 			e.printStackTrace();
 		}
+
+		if(sKeyboardView == null){
+			IMEStates.sScanStateLock.unlock();
+			return;
+		}
+		Keyboard keyboard = sKeyboardView.getKeyboard();
+		if(sKeyboard != keyboard) {
+			setKeyboardView(sKeyboardView);
+			IMEStates.sState = IMEStates.SCAN_ROW;
+		}
+		
 		switch(IMEStates.sState) {
 		case(IMEStates.SCAN_STOPPED):	break;
 		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightNextRow();
@@ -303,7 +317,7 @@ public class IMEAdapter {
 	}
 	
 	private static void highlightNextKey() {
-		if(sKeyboard ==null) return;
+		if(sKeyboard == null) return;
 		highlightKey(IMEStates.getCurrentKeyIndex(), false);
 		highlightKey(IMEStates.scanNextKey(), true);
 		invalidateKeys();	
