@@ -13,6 +13,8 @@ import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
@@ -68,6 +70,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mTeclaHUDController == null) {
 			mTeclaHUDController = new TeclaHUDOverlay(this);
 			mTeclaHUDController.show();
+			registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
+					new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
 		}
 
 		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
