@@ -132,6 +132,10 @@ public class IMEAdapter {
 			e.printStackTrace();
 		}
 
+		if(sKeyboardView == null){
+			IMEStates.sScanStateLock.unlock();
+			return;
+		}
 		Keyboard keyboard = sKeyboardView.getKeyboard();
 		if(sKeyboard != keyboard) {
 			setKeyboardView(sKeyboardView);
