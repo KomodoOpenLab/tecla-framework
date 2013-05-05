@@ -15,19 +15,22 @@
             android:id="@+id/hud_btn_topleft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/hud_btn_home_normal" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/hud_icon_home_normal" />
 
         <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/hud_btn_right_normal" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/hud_icon_left_normal" />
 
         <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_bottomleft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/hud_btn_back_normal" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/hud_icon_undo_normal" />
     </LinearLayout>
 
     <LinearLayout
@@ -44,14 +47,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:src="@drawable/hud_btn_up_normal" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/hud_icon_up_normal" />
 
             <ca.idrc.tecla.hud.TeclaHUDButtonView
                 android:id="@+id/hud_btn_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:src="@drawable/hud_btn_up_normal" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/hud_icon_down_normal" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -66,19 +71,22 @@
             android:id="@+id/hud_btn_topright"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/hud_btn_select_normal" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/hud_icon_select_normal" />
 
         <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/hud_btn_right_normal" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/hud_icon_right_normal" />
 
         <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_bottomright"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/hud_btn_more_normal" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/hud_icon_page1_normal" />
     </LinearLayout>
 
 </LinearLayout>
