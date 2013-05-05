@@ -98,16 +98,16 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	setPadding(0, 0, 0, 0);
 			break;
 		case POSITION_TOPLEFT:
-	    	setPadding(xpad, ypad, 0, 0);
+	    	setPadding(2 * xpad, 2 * ypad, xpad, ypad);
 			break;
 		case POSITION_TOPRIGHT:
-	    	setPadding(0, ypad, xpad, 0);
+	    	setPadding(xpad, 2 * ypad, 2 * xpad, ypad);
 			break;
 		case POSITION_BOTTOMLEFT:
-	    	setPadding(xpad, 0, 0, ypad);
+	    	setPadding(2 * xpad, ypad, xpad, 2 * ypad);
 			break;
 		case POSITION_BOTTOMRIGHT:
-	    	setPadding(0, 0, xpad, ypad);
+	    	setPadding(xpad, ypad, 2 * xpad, 2 * ypad);
 			break;
 		}
 	}
