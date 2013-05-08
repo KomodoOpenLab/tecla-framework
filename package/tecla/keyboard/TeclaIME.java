@@ -48,12 +48,14 @@ public class TeclaIME extends InputMethodService {
 		mHandler.sendMessageDelayed(msg, 250);
 		super.onStartInputView(info, restarting);
 		TeclaApp.persistence.setIMEShowing(true);
+		TeclaAccessibilityService.getInstance().mTeclaHUDController.hide();
 	}
 
 	@Override
 	public void onFinishInputView(boolean finishingInput) {
 		IMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
+		TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
 		super.onFinishInputView(finishingInput);
 	}
 	
