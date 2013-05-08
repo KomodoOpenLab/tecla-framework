@@ -43,7 +43,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private int mNodeIndex;
 
 	private TeclaHighlighter mTeclaHighlighter;
-	private TeclaHUDOverlay mTeclaHUDController;
+	protected TeclaHUDOverlay mTeclaHUDController;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
