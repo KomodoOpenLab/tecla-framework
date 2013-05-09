@@ -8,7 +8,6 @@ public class AutomaticScan {
 	
 	private static final int TICK = 0x33;
 	
-	private static int sScanDelay = 1000;
 	private static boolean sIsScsanning = false;
 	
 	private static Handler sHandler = new Handler() {
@@ -29,7 +28,7 @@ public class AutomaticScan {
 		IMEAdapter.scanNext();
 		Message msg = new Message();
 		msg.what = TICK;
-		sHandler.sendMessageDelayed(msg, sScanDelay);		
+		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay());		
 	}
 	
 	public static void startAutoScan() {
@@ -37,7 +36,7 @@ public class AutomaticScan {
 		sIsScsanning = true;
 		Message msg = new Message();
 		msg.what = TICK;
-		sHandler.sendMessageDelayed(msg, sScanDelay);
+		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay());
 	}
 	
 	public static void stopAutoScan() {
@@ -51,7 +50,7 @@ public class AutomaticScan {
 		sHandler.removeMessages(TICK);
 		Message msg = new Message();
 		msg.what = TICK;
-		sHandler.sendMessageDelayed(msg, sScanDelay);
+		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay());
 	}
 
 	public static void setExtendedTimer() {
@@ -59,7 +58,7 @@ public class AutomaticScan {
 		sHandler.removeMessages(TICK);
 		Message msg = new Message();
 		msg.what = TICK;
-		sHandler.sendMessageDelayed(msg, sScanDelay*3/2);
+		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay()*3/2);
 	}
 	
 	
