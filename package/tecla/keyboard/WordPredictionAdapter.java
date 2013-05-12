@@ -1,5 +1,7 @@
 package com.android.tecla.keyboard;
 
+import java.util.ArrayList;
+
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -13,9 +15,17 @@ public class WordPredictionAdapter {
 	public static final String tag = "WordPredictionAdapter";
 	
 	public static ViewGroup sSuggestionsViewGroup = null;
+	private static ArrayList<View> sWordChoices = new ArrayList<View>(); 
 	
 	public static void setSuggestionsViewGroup(ViewGroup vg) {
 		sSuggestionsViewGroup = vg;
+	}
+	
+	private static void populateWordChoices() {
+		sWordChoices.clear();
+		for(int i=0; i<sSuggestionsViewGroup.getChildCount(); i+=2) {
+			sWordChoices.add(sSuggestionsViewGroup.getChildAt(i));
+		}
 	}
 	
 	public static boolean selectHighlighted() {
@@ -40,12 +50,18 @@ public class WordPredictionAdapter {
 	}
 	
 	private static void highlightSuggestion(int index, boolean highlight) {
-		if(index < 0 || index >= SUGGESTIONSVIEWINDICES.length) return;
-		View view = sSuggestionsViewGroup.getChildAt(SUGGESTIONSVIEWINDICES[index]);
+		if(index < 0 || index >= sWordChoices.size()) return;
+		View view = sWordChoices.get(index);
 		if(highlight) {
 			view.setBackgroundColor(BACKGROUND_HIGHLIGHT_COLOR);
 		} else {
 			view.setBackgroundColor(BACKGROUND_NORMAL_COLOR);
+		}
+	}
+	
+	private static void highlightSuggestions(boolean highlight) {
+		for(int i=0; i<sWordChoices.size(); ++i) {
+			highlightSuggestion(i, highlight);
 		}
 	}
 	
@@ -70,21 +86,21 @@ public class WordPredictionAdapter {
 		
 		private static void scanNext() {
 			switch(sState) {
-			case(WPSCAN_NONE):		highlightSuggestion(0, true);
-									highlightSuggestion(1, true);
-									highlightSuggestion(2, true);
+			case(WPSCAN_NONE):		populateWordChoices();
+									highlightSuggestions(true);
 									sState = WPSCAN_HIGHLIGHTED;
 									break;
-			case(WPSCAN_HIGHLIGHTED):		highlightSuggestion(0, false);
-											highlightSuggestion(1, false);
-											highlightSuggestion(2, false);
+			case(WPSCAN_HIGHLIGHTED):		populateWordChoices();
+											highlightSuggestions(false);
 											sState = WPSCAN_NONE;
 											break;
-			case(WPSCAN_SUGGESTIONS):		highlightSuggestion(sCurrentIndex++, false);
+			case(WPSCAN_SUGGESTIONS):		populateWordChoices();
+											highlightSuggestion(sCurrentIndex++, false);
 											sCurrentIndex %= SUGGESTIONSVIEWINDICES.length + 1;
 											highlightSuggestion(sCurrentIndex, true);
 											break;
-			case(WPSCAN_CLICK):		highlightSuggestion(sCurrentIndex, false);
+			case(WPSCAN_CLICK):		populateWordChoices();
+									highlightSuggestion(sCurrentIndex, false);
 									sState = WPSCAN_NONE;
 									break;
 			default:				break;
@@ -115,9 +131,8 @@ public class WordPredictionAdapter {
 		private static void click() {
 			switch(sState) {
 			case(WPSCAN_NONE):				break;
-			case(WPSCAN_HIGHLIGHTED):		highlightSuggestion(0, false);
-											highlightSuggestion(1, false);
-											highlightSuggestion(2, false);
+			case(WPSCAN_HIGHLIGHTED):		populateWordChoices();
+											highlightSuggestions(false);
 											sState = WPSCAN_SUGGESTIONS;
 											sCurrentIndex = 0;
 											highlightSuggestion(sCurrentIndex, true);
@@ -126,7 +141,8 @@ public class WordPredictionAdapter {
 			case(WPSCAN_SUGGESTIONS):		highlightSuggestion(sCurrentIndex, false);
 											invalidateKeys();
 											sState = WPSCAN_NONE;
-											View view = sSuggestionsViewGroup.getChildAt(SUGGESTIONSVIEWINDICES[sCurrentIndex]);
+											if(sCurrentIndex<0 || sCurrentIndex>=sWordChoices.size()) break;
+											View view = sWordChoices.get(sCurrentIndex);
 											view.callOnClick();
 											break;
 			default:						break;
