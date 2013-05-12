@@ -53,9 +53,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private ArrayList<AnimatorSet> mHUDAnimators;
 	private byte mScanIndex;
 
-	protected final static long SCAN_PERIOD = 1500;
-
-
 	public TeclaHUDOverlay(Context context) {
 		super(context);
 
@@ -94,7 +91,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
 		}
 
-		mAutoScanHandler.sleep(SCAN_PERIOD);
+		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
 	@Override
@@ -171,7 +168,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");
 			break;
 		}
-		mAutoScanHandler.sleep(SCAN_PERIOD);
+		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
 	protected void scanForward() {
@@ -182,7 +179,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 		mHUDPad.get(mScanIndex).setHighlighted(false);
 		AnimatorSet hud_animator = (AnimatorSet) AnimatorInflater.loadAnimator(mContext, R.animator.hud_alpha_animator);
-		long duration = SCAN_PERIOD * mHUDPad.size();
+		long duration = TeclaApp.persistence.getScanDelay() * mHUDPad.size();
 		hud_animator.getChildAnimations().get(0).setDuration(Math.round(0.1 * duration));
 		hud_animator.getChildAnimations().get(1).setDuration(Math.round(0.9 * duration));
 		hud_animator.setTarget(mHUDPad.get(mScanIndex));
@@ -200,7 +197,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(mScanIndex).setHighlighted(true);
 		mHUDPad.get(mScanIndex).setAlpha(1.0f);
 
-		mAutoScanHandler.sleep(SCAN_PERIOD);
+		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
 	private void findAllButtons() {
