@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:key="english_ime_settings" android:title="Tecla Next Settings">
+    <Preference android:key="scan_speed" 
+        android:title="Auto Scan Speed" 
+        android:summary="Adjust the scanning speed"/>
+    
+
+</PreferenceScreen>

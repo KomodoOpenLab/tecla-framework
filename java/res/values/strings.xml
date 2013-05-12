@@ -4,5 +4,14 @@
     
     <!-- Tecla a11y service description -->
     <string name="tecla_service_description">The Tecla Highlighter service emphasizes the screen elements that are selected to receive input from external devices. This makes your Android device easier to use with remote controls, keyboards and external switches.</string>
-
+    
+    <!-- Tecla: Scan Speed Dialog -->
+    <string name="dialog_faster">Faster</string>
+    <string name="dialog_slower">Slower</string>
+    <string name="btn_done">Done</string>
+    
+    <!-- Self-scanning delay strings -->
+    <string name="scan_speed">Scanning speed</string>
+    <string name="scan_speed_summary">Adjust the scanning speed</string>
+    
 </resources>
