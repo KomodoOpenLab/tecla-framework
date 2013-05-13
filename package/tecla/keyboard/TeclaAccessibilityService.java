@@ -44,6 +44,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private TeclaHighlighter mTeclaHighlighter;
 	protected TeclaHUDOverlay mTeclaHUDController;
+	private SingleSwitchTouchInterface mTouchInterface;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
@@ -72,6 +73,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTeclaHUDController.show();
 			registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
 					new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+		}
+
+		if (mTouchInterface == null) {
+			mTouchInterface = new SingleSwitchTouchInterface(this);
+			mTouchInterface.show();
 		}
 
 		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
@@ -334,6 +340,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mTeclaHighlighter != null) {
 			mTeclaHighlighter.hide();
 //			mTeclaHighlighter = null;
+		}
+		if(mTouchInterface != null) {
+			mTouchInterface.hide();
 		}
 	}
 	
