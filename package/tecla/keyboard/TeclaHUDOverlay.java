@@ -71,10 +71,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		setContentView(R.layout.tecla_hud);
 
-		View rView = getRootView();
+		/*View rView = getRootView();
 
 		rView.setOnLongClickListener(mOverlayLongClickListener);
-		rView.setOnClickListener(mOverlayClickListener);
+		rView.setOnClickListener(mOverlayClickListener);*/
 
 		findAllButtons();        
 		fixHUDLayout();
