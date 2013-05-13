@@ -13,7 +13,7 @@ public class Persistence {
 	
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
-	private boolean is_hud_made_hidden;
+	private boolean is_long_clicked;
 
 	private int mScanDelay;
 	
@@ -53,14 +53,12 @@ public class Persistence {
 		return is_ime_showing;
 	}
 	
-	public void setHUDHidden(boolean bool) {
-		// FIXME: This should be part of a method that actually hides the HUD. Does it have to be in persistence?
-		is_hud_made_hidden = bool;
+	public void setLongClicked(boolean bool) {
+		is_long_clicked = bool;
 	}
 	
-	public boolean isHUDHidden() {
-		// FIXME: This should query whether the HUD exists and is showing, not the local reference
-		return is_hud_made_hidden;
+	public boolean isLongClicked() {
+		return is_long_clicked;
 	}
 
 	public static Boolean isDefaultIME(Context context) {
