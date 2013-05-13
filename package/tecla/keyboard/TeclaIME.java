@@ -55,7 +55,8 @@ public class TeclaIME extends InputMethodService {
 	public void onFinishInputView(boolean finishingInput) {
 		IMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
-		if(!TeclaApp.persistence.isHUDMadeHidden()) TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
+		// FIXME: This basically means "Show when not hidden". It makes no sense, needs refactoring.
+		if(!TeclaApp.persistence.isHUDHidden()) TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
 		super.onFinishInputView(finishingInput);
 	}
 	
