@@ -1,6 +1,6 @@
 
     <resources>
-        <color name="hud_btn_inner_fill_color">#BE2FE6FF</color>
+        <color name="hud_btn_inner_fill_color">#DD666666</color>
         <color name="hud_btn_inner_stroke_color">#FF2FE6FF</color>
         <color name="hud_btn_outer_stroke_color">#FF295875</color>
         </resources>
