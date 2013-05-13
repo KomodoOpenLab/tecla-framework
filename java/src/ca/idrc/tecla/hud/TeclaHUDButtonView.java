@@ -4,11 +4,11 @@ import ca.idrc.tecla.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 
@@ -37,6 +37,7 @@ public class TeclaHUDButtonView extends ImageButton {
 	private Canvas mBackgroundCanvas;
 	private byte mPosition;
 	private boolean isHighlighted;
+	private Drawable mNormalForeground, mHighlightedForeground;
 
 	public TeclaHUDButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,7 +54,7 @@ public class TeclaHUDButtonView extends ImageButton {
     	mInnerFillPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     	mInnerStrokePaint.setStyle(Paint.Style.STROKE);
     	mOuterStrokePaint.setStyle(Paint.Style.STROKE);
-
+    	
 	}
 	
 	@Override
@@ -65,6 +66,11 @@ public class TeclaHUDButtonView extends ImageButton {
 
 		updateDrawables();
     	
+	}
+	
+	public void setDrawables(Drawable normal, Drawable highlighted) {
+		mNormalForeground = normal;
+		mHighlightedForeground = highlighted;
 	}
 	
 	public void setProperties(byte position, int stroke_width, boolean highlighted) {
@@ -81,6 +87,11 @@ public class TeclaHUDButtonView extends ImageButton {
 	
 	private void updateDrawables() {
 		updateBackground();
+		if (isHighlighted) {
+			setImageDrawable(mHighlightedForeground);
+		} else {
+			setImageDrawable(mNormalForeground);
+		}
 		updatePadding();
 		invalidate();
 	}
