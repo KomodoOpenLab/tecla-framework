@@ -53,11 +53,13 @@ public class Persistence {
 		return is_ime_showing;
 	}
 	
-	public void setHUDMadeHidden(boolean bool) {
+	public void setHUDHidden(boolean bool) {
+		// FIXME: This should be part of a method that actually hides the HUD. Does it have to be in persistence?
 		is_hud_made_hidden = bool;
 	}
 	
-	public boolean isHUDMadeHidden() {
+	public boolean isHUDHidden() {
+		// FIXME: This should query whether the HUD exists and is showing, not the local reference
 		return is_hud_made_hidden;
 	}
 
