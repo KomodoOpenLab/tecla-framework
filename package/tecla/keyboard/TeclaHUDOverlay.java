@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
@@ -42,6 +43,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private final static byte HUD_BTN_TOPLEFT = 7;
 
 	private Context mContext;
+	private Resources mResources;
 	private float side_width_proportion;
 	private float stroke_width_proportion;
 	private float scan_alpha_max;
@@ -57,11 +59,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		super(context);
 
 		mContext = context;
-		mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		mResources = mContext.getResources();
+		mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 
-		scan_alpha_max = Float.parseFloat(mContext.getResources().getString(R.string.scan_alpha_max));
-		side_width_proportion = Float.parseFloat(mContext.getResources().getString(R.string.side_width_proportion));
-		stroke_width_proportion = Float.parseFloat(mContext.getResources().getString(R.string.stroke_width_proportion));
+		scan_alpha_max = Float.parseFloat(mResources.getString(R.string.scan_alpha_max));
+		side_width_proportion = Float.parseFloat(mResources.getString(R.string.side_width_proportion));
+		stroke_width_proportion = Float.parseFloat(mResources.getString(R.string.stroke_width_proportion));
 
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
@@ -110,16 +113,16 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Configuration conf = context.getResources().getConfiguration();
-			
+
 			fixHUDLayout(); // resizes properly for both orientations
-//			if(conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//				fixHUDLayout();
-//			} else {
-//				fixHUDLayout();
-//			}
+			//			if(conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			//				fixHUDLayout();
+			//			} else {
+			//				fixHUDLayout();
+			//			}
 		}		
 	};
-	
+
 	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
 
 		@Override
@@ -143,7 +146,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	public static void selectScanHighlighted() {
 		TeclaHUDOverlay.sInstance.scanTrigger();
 	}
-	
+
 	protected void scanTrigger() {
 		switch (mScanIndex){
 		case HUD_BTN_TOP:
@@ -270,6 +273,15 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_TOP).setProperties(TeclaHUDButtonView.POSITION_TOP, stroke_width, true);
 		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
+
+		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
+		mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
+		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
+		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
+		mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
+		mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
+		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
+		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
 
 	class AutoScanHandler extends Handler {
