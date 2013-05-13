@@ -133,7 +133,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		@Override
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-			TeclaApp.persistence.setHUDMadeHidden(true);
+			TeclaApp.persistence.setHUDHidden(true);
 			TeclaAccessibilityService.getInstance().shutdownInfrastructure();
 			return true;
 		}
