@@ -12,7 +12,6 @@ import com.android.inputmethod.latin.LatinIME;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.ViewGroup;
 
 public class IMEAdapter {
 
@@ -156,6 +155,7 @@ public class IMEAdapter {
 		case(IMEStates.SCAN_WORDPREDICTION):if(!WordPredictionAdapter.highlightNext()) {
 												IMEStates.sState = IMEStates.SCAN_ROW;
 												IMEStates.reset();
+												IMEStates.sCurrentRow = IMEStates.sRowCount;
 												IMEAdapter.highlightNextRow();	
 											}
 											break;
@@ -332,13 +332,7 @@ public class IMEAdapter {
 	
 	private static void highlightNextRow() {
 		if(sKeyboard ==null) return;
-		if(IMEStates.sCurrentRow == IMEStates.sRowCount)
-			WordPredictionAdapter.highlightNext();
-		else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 		IMEStates.scanNextRow();
-		if(IMEStates.sCurrentRow == IMEStates.sRowCount)
-			WordPredictionAdapter.highlightNext();
-		else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		invalidateKeys();		
 	}
 	
@@ -391,7 +385,9 @@ public class IMEAdapter {
 			case(SCAN_ROW):			if(sCurrentRow == sRowCount) {
 										sState = SCAN_WORDPREDICTION;
 										WordPredictionAdapter.selectHighlighted();
-									} else {
+									} else if(sCurrentRow == sRowCount + 1) {
+										TeclaApp.ime.requestHideSelf(0);
+									} else {									
 										sState = SCAN_COLUMN;
 										highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
 									}
@@ -456,9 +452,19 @@ public class IMEAdapter {
 		}
 		
 		private static void scanNextRow() {
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
+				WordPredictionAdapter.highlightNext();
+			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1)
+				highlightKeys(0, sKeys.length - 1, false);
+			else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
-			sCurrentRow %= sRowCount + 1;
+			sCurrentRow %= sRowCount + 2;
 			updateRowKeyIndices();
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
+				WordPredictionAdapter.highlightNext();
+			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1)
+				highlightKeys(0, sKeys.length - 1, true);
+			else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		}
 		
 		private static void scanPreviousRow() {
