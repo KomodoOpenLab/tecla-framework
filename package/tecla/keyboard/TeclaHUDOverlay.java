@@ -67,14 +67,15 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;	
 		setParams(params);
 
 		setContentView(R.layout.tecla_hud);
 
-		View rView = getRootView();
+		/*View rView = getRootView();
 
 		rView.setOnLongClickListener(mOverlayLongClickListener);
-		rView.setOnClickListener(mOverlayClickListener);
+		rView.setOnClickListener(mOverlayClickListener);*/
 
 		findAllButtons();        
 		fixHUDLayout();
@@ -139,6 +140,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 	};
 
+	public static void selectScanHighlighted() {
+		TeclaHUDOverlay.sInstance.scanTrigger();
+	}
+	
 	protected void scanTrigger() {
 		switch (mScanIndex){
 		case HUD_BTN_TOP:
