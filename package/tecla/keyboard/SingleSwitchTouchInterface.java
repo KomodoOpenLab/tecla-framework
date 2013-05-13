@@ -43,8 +43,8 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		@Override
 		public void onClick(View v) {
 			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-			else ;
-				//scanTrigger();
+			else TeclaHUDOverlay.selectScanHighlighted();
+				
 		}
 	};	
 
