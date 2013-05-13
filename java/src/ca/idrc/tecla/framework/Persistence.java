@@ -13,6 +13,7 @@ public class Persistence {
 	
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
+	private boolean is_hud_made_hidden;
 
 	private int mScanDelay;
 	
@@ -50,6 +51,14 @@ public class Persistence {
 
 	public boolean isIMEShowing() {
 		return is_ime_showing;
+	}
+	
+	public void setHUDMadeHidden(boolean bool) {
+		is_hud_made_hidden = bool;
+	}
+	
+	public boolean isHUDMadeHidden() {
+		return is_hud_made_hidden;
 	}
 
 	public static Boolean isDefaultIME(Context context) {
