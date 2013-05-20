@@ -325,6 +325,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		super.onDestroy();
 		SEPManager.stop(this);
 		shutdownInfrastructure();
+		if(mTeclaHUDController != null) unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 //		unregisterReceiver(mReceiver);
 	}
 
