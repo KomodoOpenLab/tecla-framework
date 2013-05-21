@@ -24,6 +24,12 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		
+		// disable keyguard
+		/*params.flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+		params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+		params.flags |= WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
+		*/
 		setParams(params);
 
 		View rView = getRootView();
@@ -52,12 +58,6 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 			if(showing) {
 				KeyguardLock newKeyguardLock = kgMgr.newKeyguardLock(null);
 				newKeyguardLock.disableKeyguard();
-				/*WindowManager.LayoutParams params = sInstance.getParams();
-				params.flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
-				params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-				params.flags |= WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
-				sInstance.setParams(params);*/
-				Toast.makeText(sInstance.getContext().getApplicationContext(), "Unlocked screen", Toast.LENGTH_LONG).show();
 			} else {
 				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
 				else TeclaHUDOverlay.selectScanHighlighted();				
