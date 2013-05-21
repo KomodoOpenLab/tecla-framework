@@ -1,6 +1,7 @@
 package com.android.tecla.keyboard;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import ca.idrc.tecla.framework.SimpleOverlay;
@@ -19,8 +20,6 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
-		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 		setParams(params);
 
 		View rView = getRootView();
