@@ -1,8 +1,11 @@
 package com.android.tecla.keyboard;
 
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 import android.content.Context;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 import ca.idrc.tecla.framework.SimpleOverlay;
 import ca.idrc.tecla.framework.TeclaStatic;
 
@@ -21,6 +24,12 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		
+		// disable keyguard
+		/*params.flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+		params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+		params.flags |= WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
+		*/
 		setParams(params);
 
 		View rView = getRootView();
@@ -42,8 +51,18 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 
 		@Override
 		public void onClick(View v) {
-			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-			else TeclaHUDOverlay.selectScanHighlighted();
+			KeyguardManager kgMgr = 
+					(KeyguardManager) sInstance.getContext().getSystemService(Context.KEYGUARD_SERVICE);
+			boolean showing = kgMgr.inKeyguardRestrictedInputMode();
+			
+			if(showing) {
+				KeyguardLock newKeyguardLock = kgMgr.newKeyguardLock(null);
+				newKeyguardLock.disableKeyguard();
+			} else {
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+				else TeclaHUDOverlay.selectScanHighlighted();				
+			}
+		
 				
 		}
 	};	
