@@ -1,5 +1,7 @@
 package com.android.tecla.keyboard;
 
+import ca.idrc.tecla.framework.TeclaStatic;
+
 import com.android.inputmethod.keyboard.KeyboardSwitcher;
 import android.content.Intent;
 import com.android.inputmethod.keyboard.KeyboardView;
@@ -11,6 +13,11 @@ import android.os.Message;
 import android.view.inputmethod.EditorInfo;
 
 public class TeclaIME extends InputMethodService {
+
+	/**
+	 * Tag used for logging in the whole framework
+	 */
+	public static final String CLASS_TAG = "TeclaIME";
 
 	private static final int IMESCAN_SETUP = 0x2244;
 	
@@ -59,6 +66,24 @@ public class TeclaIME extends InputMethodService {
 		super.onFinishInputView(finishingInput);
 	}
 	
+	/* (non-Javadoc)
+	 * @see android.inputmethodservice.InputMethodService#onKeyDown(int, android.view.KeyEvent)
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " down!");
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see android.inputmethodservice.InputMethodService#onKeyUp(int, android.view.KeyEvent)
+	 */
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " up!");
+		return true;
+	}
+
 	public void pressHomeKey() {
 		Intent home = new Intent(Intent.ACTION_MAIN);
 		home.addCategory(Intent.CATEGORY_HOME);
