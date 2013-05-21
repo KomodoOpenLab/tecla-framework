@@ -69,7 +69,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-		params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;	
 		setParams(params);
 

@@ -334,6 +334,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	 */
 	public void shutdownInfrastructure() {	
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
+		unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 		if(mTeclaHUDController != null) {
 			mTeclaHUDController.hide();
 //			mTeclaHUDController = null;
