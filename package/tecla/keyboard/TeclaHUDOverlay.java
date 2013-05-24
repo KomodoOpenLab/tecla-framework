@@ -98,8 +98,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	}
 
 	// memory storage for HUD values during preview
-	private boolean[] mHUDPadHighlightVal = new boolean[mHUDPad.size()];
-	private float[] mHUDPadAlphaVal = new float[mHUDPad.size()];
+	private boolean[] mHUDPadHighlightVal;
+	private float[] mHUDPadAlphaVal;
 	
 	public void setPreviewHUD(boolean preview) {
 		if(preview) {
@@ -240,6 +240,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.add((TeclaHUDButtonView) findViewById(R.id.hud_btn_left));
 		mHUDPad.add((TeclaHUDButtonView) findViewById(R.id.hud_btn_topleft));
 
+		mHUDPadHighlightVal = new boolean[mHUDPad.size()];
+		mHUDPadAlphaVal = new float[mHUDPad.size()];
 	}
 
 	private void fixHUDLayout () {
