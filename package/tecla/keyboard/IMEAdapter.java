@@ -454,17 +454,19 @@ public class IMEAdapter {
 		private static void scanNextRow() {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
 				WordPredictionAdapter.highlightNext();
-			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1)
-				highlightKeys(0, sKeys.length - 1, false);
-			else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
+				TeclaAccessibilityService.getInstance().mTeclaHUDController.setPreviewHUD(false);
+				TeclaAccessibilityService.getInstance().mTeclaHUDController.hide();
+			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
 			sCurrentRow %= sRowCount + 2;
 			updateRowKeyIndices();
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
 				WordPredictionAdapter.highlightNext();
-			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1)
-				highlightKeys(0, sKeys.length - 1, true);
-			else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
+			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
+				TeclaAccessibilityService.getInstance().mTeclaHUDController.setPreviewHUD(true);
+				TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
+			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		}
 		
 		private static void scanPreviousRow() {
