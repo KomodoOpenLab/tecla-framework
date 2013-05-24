@@ -97,6 +97,26 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
+	// memory storage for HUD values during preview
+	private boolean[] mHUDPadHighlightVal;
+	private float[] mHUDPadAlphaVal;
+	
+	public void setPreviewHUD(boolean preview) {
+		if(preview) {
+			for(int i=0; i<mHUDPad.size(); ++i) {
+				mHUDPadHighlightVal[i] = mHUDPad.get(i).isHighlighted();
+				mHUDPadAlphaVal[i] = mHUDPad.get(i).getAlpha();
+				mHUDPad.get(i).setHighlighted(true);
+				mHUDPad.get(i).setAlpha(0.5f);
+			}
+		} else {
+			for(int i=0; i<mHUDPad.size(); ++i) {
+				mHUDPad.get(i).setHighlighted(mHUDPadHighlightVal[i]);
+				mHUDPad.get(i).setAlpha(mHUDPadAlphaVal[i]);
+			}
+		}
+	}
+	
 	@Override
 	protected void onShow() {
 		sInstance = this;
@@ -220,6 +240,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.add((TeclaHUDButtonView) findViewById(R.id.hud_btn_left));
 		mHUDPad.add((TeclaHUDButtonView) findViewById(R.id.hud_btn_topleft));
 
+		mHUDPadHighlightVal = new boolean[mHUDPad.size()];
+		mHUDPadAlphaVal = new float[mHUDPad.size()];
 	}
 
 	private void fixHUDLayout () {
