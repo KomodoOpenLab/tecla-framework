@@ -1,5 +1,9 @@
 package ca.idrc.tecla.framework;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 public class TeclaStatic {
@@ -11,6 +15,27 @@ public class TeclaStatic {
 	 * Tag used for logging in the whole framework
 	 */
 	public static final String TAG = "TeclaNextFramework";
+	private static final String IME_ID = "ca.idrc.tecla/.ime.TeclaIME";
+	private static final String IME_SERVICE = "ca.idrc.tecla.ime.TeclaIME";
+
+	public static boolean isIMERunning(Context context)
+	{
+	    ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service_info : manager.getRunningServices(Integer.MAX_VALUE))
+	    {
+	        if (IME_SERVICE.equals(service_info.service.getClassName()))
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	public static Boolean isDefaultIME(Context context) {
+		String ime_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+		if (ime_id.equals(IME_ID)) return true;
+		return false;
+	}
 
 	public static void logV(String class_tag, String msg) {
 		if (DEBUG) Log.v(TAG, class_tag + ": " + msg);
