@@ -318,8 +318,15 @@ public class IMEAdapter {
 	
 	private static void highlightNextKey() {
 		if(sKeyboard == null) return;
-		highlightKey(IMEStates.getCurrentKeyIndex(), false);
-		highlightKey(IMEStates.scanNextKey(), true);
+		if(IMEStates.getCurrentKeyIndex() > -1) 
+			highlightKey(IMEStates.getCurrentKeyIndex(), false);
+		else 
+			highlightKeys(0, sKeys.length - 1, false);
+		int nextkey = IMEStates.scanNextKey();
+		if(nextkey > -1) 
+			highlightKey(nextkey, true);
+		else 
+			highlightKeys(0, sKeys.length - 1, true);
 		invalidateKeys();	
 	}
 	
@@ -393,7 +400,13 @@ public class IMEAdapter {
 									}
 									AutomaticScan.resetTimer();
 									break;
-			case(SCAN_COLUMN):		sState = SCAN_CLICK;
+			case(SCAN_COLUMN):		if(IMEStates.sCurrentColumn == -1) {
+										sState = SCAN_ROW;
+										AutomaticScan.resetTimer();
+										highlightKeys(0, sKeys.length - 1, false);
+										break;
+									}
+									sState = SCAN_CLICK;
 									IMEAdapter.selectHighlighted();
 									AutomaticScan.setExtendedTimer();
 									break;
