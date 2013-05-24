@@ -321,12 +321,12 @@ public class IMEAdapter {
 		if(IMEStates.getCurrentKeyIndex() > -1) 
 			highlightKey(IMEStates.getCurrentKeyIndex(), false);
 		else 
-			highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+			highlightKeys(0, sKeys.length - 1, false);
 		int nextkey = IMEStates.scanNextKey();
 		if(nextkey > -1) 
 			highlightKey(nextkey, true);
 		else 
-			highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
+			highlightKeys(0, sKeys.length - 1, true);
 		invalidateKeys();	
 	}
 	
@@ -403,6 +403,7 @@ public class IMEAdapter {
 			case(SCAN_COLUMN):		if(IMEStates.sCurrentColumn == -1) {
 										sState = SCAN_ROW;
 										AutomaticScan.resetTimer();
+										highlightKeys(0, sKeys.length - 1, false);
 										break;
 									}
 									sState = SCAN_CLICK;
