@@ -104,7 +104,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	public void setPreviewHUD(boolean preview) {
 		if(preview) {
 			for(int i=0; i<mHUDPad.size(); ++i) {
-				mHUDPadHighlightVal[i] = mHUDPad.get(i).getHighlighted();
+				mHUDPadHighlightVal[i] = mHUDPad.get(i).isHighlighted();
 				mHUDPadAlphaVal[i] = mHUDPad.get(i).getAlpha();
 				mHUDPad.get(i).setHighlighted(true);
 				mHUDPad.get(i).setAlpha(0.5f);

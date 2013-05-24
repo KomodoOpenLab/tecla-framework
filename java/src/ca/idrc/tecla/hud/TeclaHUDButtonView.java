@@ -85,7 +85,7 @@ public class TeclaHUDButtonView extends ImageButton {
 		updateDrawables();
 	}
 
-	public boolean getHighlighted() {
+	public boolean isHighlighted() {
 		return isHighlighted;
 	}
 	
