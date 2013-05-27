@@ -174,13 +174,19 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		switch (mScanIndex){
 		case HUD_BTN_TOP:
 			if(TeclaAccessibilityService.isFirstScrollNode(node)) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				int actions = node.getParent().getActions();
+				if((actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
 			} else
 				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
 			break;
 		case HUD_BTN_BOTTOM:
 			if(TeclaAccessibilityService.isLastScrollNode(node)) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				int actions = node.getParent().getActions();
+				if((actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)
+					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
 			} else 
 				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
 			break;
