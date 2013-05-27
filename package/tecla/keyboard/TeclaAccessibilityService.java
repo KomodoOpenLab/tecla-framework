@@ -390,7 +390,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(node == null) return false;
 		AccessibilityNodeInfo parent = node.getParent();
 		if(!parent.isScrollable()) return false;
-		TeclaStatic.logD(CLASS_TAG, "Scrollable!!!!!!");
 		return true;
 	}
 	

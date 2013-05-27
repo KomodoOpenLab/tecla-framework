@@ -23,6 +23,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.android.tecla.keyboard.TeclaApp;
 
@@ -167,12 +168,21 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	}
 
 	protected void scanTrigger() {
+
+		AccessibilityNodeInfo node = TeclaAccessibilityService.getInstance().mSelectedNode;
+				
 		switch (mScanIndex){
 		case HUD_BTN_TOP:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+			if(TeclaAccessibilityService.isFirstScrollNode(node)) {
+				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+			} else
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
 			break;
 		case HUD_BTN_BOTTOM:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+			if(TeclaAccessibilityService.isLastScrollNode(node)) {
+				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+			} else 
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
 			break;
 		case HUD_BTN_LEFT:
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
@@ -196,6 +206,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");
 			break;
 		}
+		
 		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
