@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -383,5 +384,65 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mActionLock.unlock();   
 			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
+	}
+	
+	public static boolean hasScrollableParent(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		if(!parent.isScrollable()) return false;
+		TeclaStatic.logD(CLASS_TAG, "Scrollable!!!!!!");
+		return true;
+	}
+	
+	public static boolean isFirstScrollNode(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		if(!hasScrollableParent(node)) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		
+		Rect firstScrollNode_rect = null;	
+		for(int i=0; i<parent.getChildCount(); ++i) {
+			AccessibilityNodeInfo  firstScrollNode = parent.getChild(i);
+			if(firstScrollNode.isVisibleToUser() && firstScrollNode.isClickable()) {
+				firstScrollNode_rect = new Rect();
+				firstScrollNode.getBoundsInScreen(firstScrollNode_rect);
+				break;
+			}
+		}		
+		if(firstScrollNode_rect == null) return false;
+		
+		Rect node_rect = new Rect(); 
+		node.getBoundsInScreen(node_rect);		
+		if(node_rect.left == firstScrollNode_rect.left
+				&& node_rect.right == firstScrollNode_rect.right
+				&& node_rect.top == firstScrollNode_rect.top
+				&& node_rect.bottom == firstScrollNode_rect.bottom) 
+			return true;
+		return false;
+	}
+	
+	public static boolean isLastScrollNode(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		if(!hasScrollableParent(node)) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		
+		Rect lastScrollNode_rect = null;	
+		for(int i=parent.getChildCount()-1; i>=0; --i) {
+			AccessibilityNodeInfo  lastScrollNode = parent.getChild(i);
+			if(lastScrollNode.isVisibleToUser() && lastScrollNode.isClickable()) {
+				lastScrollNode_rect = new Rect();
+				lastScrollNode.getBoundsInScreen(lastScrollNode_rect);
+				break;
+			}
+		}		
+		if(lastScrollNode_rect == null) return false;
+
+		Rect node_rect = new Rect(); 
+		node.getBoundsInScreen(node_rect);	
+		if(node_rect.left == lastScrollNode_rect.left
+				&& node_rect.right == lastScrollNode_rect.right
+				&& node_rect.top == lastScrollNode_rect.top
+				&& node_rect.bottom == lastScrollNode_rect.bottom) 
+			return true;
+		return false;
 	}
 }
