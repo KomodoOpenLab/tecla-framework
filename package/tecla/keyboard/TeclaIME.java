@@ -20,6 +20,10 @@ public class TeclaIME extends InputMethodService {
 	public static final String CLASS_TAG = "TeclaIME";
 
 	private static final int IMESCAN_SETUP = 0x2244;
+	private static final int SHIELDEVENT_CHECK = 0x4466;
+	
+	private int[] mKeyBuff = new int[6];
+	private int mKeyCount = 0;
 	
 	private Handler mHandler = new Handler() {
 
@@ -35,6 +39,8 @@ public class TeclaIME extends InputMethodService {
 					}
 				} else {
 				}
+			} else if(msg.what == SHIELDEVENT_CHECK) {
+				// interpret keycodes and send switch events			
 			}
 			super.handleMessage(msg);
 		}
@@ -76,6 +82,14 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " down!");
+		if(mKeyCount == 0) {
+			Message msg = new Message();
+			msg.what = SHIELDEVENT_CHECK;
+			msg.arg1 = 0;
+			mHandler.sendMessageDelayed(msg, 200);
+		}
+		mKeyCount %= 6;
+		mKeyBuff[mKeyCount++] = keyCode;	
 		return true;
 	}
 
@@ -85,6 +99,8 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " up!");
+		mKeyCount %= 6;
+		mKeyBuff[mKeyCount++] = keyCode;	
 		return true;
 	}
 
