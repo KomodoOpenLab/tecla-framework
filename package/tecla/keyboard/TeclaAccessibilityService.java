@@ -5,14 +5,14 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
-import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
@@ -80,8 +80,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTouchInterface.show();
 		}
 
-		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		//SEPManager.start(this);
+		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		SEPManager.start(this);
 	}
 
 	@Override
@@ -272,17 +272,17 @@ public class TeclaAccessibilityService extends AccessibilityService {
 //	}
 //
 	
-//	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-//
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			String action = intent.getAction();
-//
-//			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
-//				handleSwitchEvent(intent.getExtras());
-//			}
-//		}
-//	};
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+
+			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
+				handleSwitchEvent(intent.getExtras());
+			}
+		}
+	};
 
 	private void handleSwitchEvent(Bundle extras) {
 		SwitchEvent event = new SwitchEvent(extras);
@@ -326,7 +326,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		SEPManager.stop(this);
 		shutdownInfrastructure();
 		if(mTeclaHUDController != null) unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-//		unregisterReceiver(mReceiver);
+		unregisterReceiver(mReceiver);
 	}
 
 	/**
@@ -383,5 +383,5 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mActionLock.unlock();   
 			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
-	}
+	}	
 }
