@@ -297,31 +297,28 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		TeclaStatic.logD(CLASS_TAG, "Received switch event.");
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
-			/*String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
+			String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
 			String action_tecla = actions[0];
 			int max_node_index = mActiveNodes.size() - 1;
 			switch(Integer.parseInt(action_tecla)) {
 
 			case SwitchEvent.ACTION_NEXT:
-				if (max_node_index > mNodeIndex) {
-					mNodeIndex++;
-					TeclaHighlighter.highlightNode(mActiveNodes.get(mNodeIndex));
-				}
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
+				else mTeclaHUDController.scanNext();
 				break;
 			case SwitchEvent.ACTION_PREV:
-				if (mNodeIndex > 0) {
-					mNodeIndex--;
-					TeclaHighlighter.highlightNode(mActiveNodes.get(mNodeIndex));
-				}
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
+				else mTeclaHUDController.scanPrevious();
 				break;
 			case SwitchEvent.ACTION_SELECT:
-				mActiveNodes.get(mNodeIndex).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+				else TeclaHUDOverlay.selectScanHighlighted();				
 				break;
 			case SwitchEvent.ACTION_CANCEL:
 				//TODO: Programmatic back key?
 			default:
 				break;
-			}*/
+			}
 		}
 	}
 

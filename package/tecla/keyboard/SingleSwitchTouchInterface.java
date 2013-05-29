@@ -26,7 +26,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 
 		View rView = getRootView();
 		rView.setOnTouchListener(mOverlayTouchListener);
-		//rView.setOnLongClickListener(mOverlayLongClickListener);
+		rView.setOnLongClickListener(mOverlayLongClickListener);
 		//rView.setOnClickListener(mOverlayClickListener);
 	}
 

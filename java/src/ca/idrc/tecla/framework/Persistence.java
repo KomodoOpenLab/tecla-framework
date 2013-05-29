@@ -10,6 +10,9 @@ import android.provider.Settings;
 public class Persistence {
 	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
 	public static final String PREF_SPEAKERPHONE_SWITCH = "speakerphone_switch";
+	public static final String PREF_SELF_SCANNING = "self_scanning";
+	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
+	public static final String PREF_SCAN_DELAY_INT = "scan_delay_int";
 
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 
@@ -139,4 +142,23 @@ public class Persistence {
 				shared_prefs.getString(PREF_SWITCH_E2_MORSE, "0")});
 		return mSwitchMap;
 	}
+
+	public boolean isSelfScanningEnabled() {
+		return shared_prefs.getBoolean(PREF_SELF_SCANNING, false);
+	}
+
+	public void setSelfScanningEnabled(boolean enabled) {
+		prefs_editor.putBoolean(PREF_SELF_SCANNING, enabled);
+		prefs_editor.commit();
+	}
+
+	public boolean isInverseScanningEnabled() {
+		return shared_prefs.getBoolean(PREF_INVERSE_SCANNING, false);
+	}
+
+	public void setInverseScanningEnabled(boolean enabled) {
+		prefs_editor.putBoolean(PREF_INVERSE_SCANNING, enabled);
+		prefs_editor.commit();
+	}
+
 }
