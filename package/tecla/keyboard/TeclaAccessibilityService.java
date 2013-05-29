@@ -294,9 +294,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	};
 
 	private void handleSwitchEvent(Bundle extras) {
+		TeclaStatic.logD(CLASS_TAG, "Received switch event.");
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
-			String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
+			/*String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
 			String action_tecla = actions[0];
 			int max_node_index = mActiveNodes.size() - 1;
 			switch(Integer.parseInt(action_tecla)) {
@@ -320,7 +321,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				//TODO: Programmatic back key?
 			default:
 				break;
-			}
+			}*/
 		}
 	}
 
