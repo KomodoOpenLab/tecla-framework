@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.android.tecla.keyboard.SwitchEventProvider.LocalBinder;
+
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
 import ca.idrc.tecla.framework.TeclaStatic;
@@ -12,11 +14,14 @@ import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -80,6 +85,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTouchInterface.show();
 		}
 
+		// Bind to SwitchEventProvider
+		Intent intent = new Intent(this, SwitchEventProvider.class);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		
 		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 		SEPManager.start(this);
 	}
@@ -384,4 +393,34 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
 	}	
+	
+	public void injectSwitchEvent(SwitchEvent event) {
+		switch_event_provider.injectSwitchEvent(event);
+	}
+	
+	public void injectSwitchEvent(int switchChanges, int switchStates) {
+		switch_event_provider.injectSwitchEvent(switchChanges, switchStates);
+	}
+	
+	SwitchEventProvider switch_event_provider;
+	boolean mBound = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName arg0, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            LocalBinder binder = (LocalBinder) service;
+            switch_event_provider = binder.getService();
+            mBound = true;
+            TeclaStatic.logD(CLASS_TAG, "IME bound to SEP");
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+			
+		}
+    };
 }
