@@ -94,8 +94,7 @@ public class TeclaIME extends InputMethodService {
 		mKeyBuff[mKeyCount++] = keyCode;
 		if(mKeyCount == 6) {
 			checkAndSendTeclaSwitchEvent();
-		}
-		return true;
+		}		return true;
 	}
 
 	/* (non-Javadoc)
@@ -120,11 +119,15 @@ public class TeclaIME extends InputMethodService {
 		if(mKeyBuff[3] != 10) return;
 		
 		if(mKeyBuff[4] == 124 && mKeyBuff[5] == 124) {
-			// switch 1 down
+			// switch E1 down
 			TeclaAccessibilityService.getInstance().injectSwitchEvent(
 					new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
+		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
+			// switch E2 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_E2, 0)); //Primary switch pressed
 		} else if(mKeyBuff[4] == 7 && mKeyBuff[5] == 7) {
-			// switch 1 up
+			// switch up
 			TeclaAccessibilityService.getInstance().injectSwitchEvent(
 					new SwitchEvent(0,0)); //Switches released			
 		} 
