@@ -41,7 +41,8 @@ public class TeclaIME extends InputMethodService {
 				} else {
 				}
 			} else if(msg.what == SHIELDEVENT_TIMEOUT) {
-				TeclaApp.ime.keyDownUp(mKeyBuff[0]);
+				if(mKeyCount == 1) 
+					TeclaApp.ime.keyDownUp(mKeyBuff[0]);
 				mKeyCount = 0;
 				
 			}
@@ -89,7 +90,7 @@ public class TeclaIME extends InputMethodService {
 			Message msg = new Message();
 			msg.what = SHIELDEVENT_TIMEOUT;
 			msg.arg1 = 0;
-			mHandler.sendMessageDelayed(msg, 300);
+			mHandler.sendMessageDelayed(msg, 200);
 		}
 		mKeyBuff[mKeyCount++] = keyCode;
 		if(mKeyCount == 6) {
