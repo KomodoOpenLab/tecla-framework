@@ -25,6 +25,7 @@ public class TeclaApp extends Application {
 	private static TeclaApp instance;
 	public static Persistence persistence;
 	public static TeclaIME ime;
+	public static TeclaAccessibilityService a11yservice;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -46,12 +47,13 @@ public class TeclaApp extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		
-		init();
+		init(getApplicationContext());
 	}
 	
-	private void init() {
-		instance = this;
+	private void init(Context context) {
 		TeclaStatic.logD(CLASS_TAG, "Application context created!");
+
+		instance = this;
 		persistence = new Persistence(this);
 
 		power_manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -69,8 +71,11 @@ public class TeclaApp extends Application {
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
 		
-		//TODO: Figure out if IME is default
-		//TODO: Figure out if A11yService is running
+		if ((!TeclaStatic.isDefaultIME(context)) || (TeclaAccessibilityService.getInstance() == null)) {
+			//FIXME: Trying to make sure IME is default and A11yService is running
+			TeclaApp.persistence.setFrameworkReady(false);
+			startActivity(new Intent(instance, OnboardingActivity.class));
+		}
 
 	}
 	

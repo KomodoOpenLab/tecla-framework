@@ -23,6 +23,7 @@ public class Persistence {
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
 	private boolean is_hud_cancelled;
+	private boolean is_framework_ready;
 
 	private int mScanDelay;
 	
@@ -55,6 +56,7 @@ public class Persistence {
 	public Persistence(Context context) {
 		is_ime_running = false;
 		is_ime_showing = false;
+		is_framework_ready = false;
 		mScanDelay = 1000;
 		
 		sInstance = this;
@@ -67,6 +69,14 @@ public class Persistence {
 
 	public static Persistence getInstance() {
 		return sInstance;
+	}
+	
+	public void setFrameworkReady(Boolean is_ready) {
+		is_framework_ready = is_ready;
+	}
+	
+	public Boolean isFrameworkReady() {
+		return is_framework_ready;
 	}
 	
 	public int getScanDelay() {
