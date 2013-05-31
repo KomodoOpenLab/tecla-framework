@@ -332,9 +332,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		unbindService(this.mConnection);
 		SEPManager.stop(this);
 		shutdownInfrastructure();
-		if(mTeclaHUDController != null) unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 		unregisterReceiver(mReceiver);
 	}
 
@@ -343,16 +343,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	 */
 	public void shutdownInfrastructure() {	
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
-		unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-		if(mTeclaHUDController != null) {
+		if(mTeclaHUDController.isVisible()) {
+			unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 			mTeclaHUDController.hide();
-//			mTeclaHUDController = null;
 		}
-		if (mTeclaHighlighter != null) {
+		if (mTeclaHighlighter.isVisible()) {
 			mTeclaHighlighter.hide();
-//			mTeclaHighlighter = null;
 		}
-		if(mTouchInterface != null) {
+		if(mTouchInterface.isVisible()) {
 			mTouchInterface.hide();
 		}
 	}
@@ -389,9 +387,95 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(node != null) {
 				getInstance().mSelectedNode = node;
 			}
-			mActionLock.unlock();   
+			mActionLock.unlock(); 
+			
+			if(isFirstScrollNode(node) && !isInsideParent(node)) {
+				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				return;
+			} 
+
+			if(isLastScrollNode(node) && !isInsideParent(node)) {
+				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				return;
+			} 
+			
 			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
+	}
+	
+	public static boolean hasScrollableParent(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		if(!parent.isScrollable()) return false;
+		return true;
+	}
+	
+	public static boolean isFirstScrollNode(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		if(!hasScrollableParent(node)) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		
+		Rect firstScrollNode_rect = null;	
+		for(int i=0; i<parent.getChildCount(); ++i) {
+			AccessibilityNodeInfo  firstScrollNode = parent.getChild(i);
+			if(firstScrollNode.isVisibleToUser() && firstScrollNode.isClickable()) {
+				firstScrollNode_rect = new Rect();
+				firstScrollNode.getBoundsInScreen(firstScrollNode_rect);
+				break;
+			}
+		}		
+		if(firstScrollNode_rect == null) return false;
+		
+		Rect node_rect = new Rect(); 
+		node.getBoundsInScreen(node_rect);		
+		if(node_rect.left == firstScrollNode_rect.left
+				&& node_rect.right == firstScrollNode_rect.right
+				&& node_rect.top == firstScrollNode_rect.top
+				&& node_rect.bottom == firstScrollNode_rect.bottom) 
+			return true;
+		return false;
+	}
+	
+	public static boolean isLastScrollNode(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		if(!hasScrollableParent(node)) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		
+		Rect lastScrollNode_rect = null;	
+		for(int i=parent.getChildCount()-1; i>=0; --i) {
+			AccessibilityNodeInfo  lastScrollNode = parent.getChild(i);
+			if(lastScrollNode.isVisibleToUser() && lastScrollNode.isClickable()) {
+				lastScrollNode_rect = new Rect();
+				lastScrollNode.getBoundsInScreen(lastScrollNode_rect);
+				break;
+			}
+		}		
+		if(lastScrollNode_rect == null) return false;
+
+		Rect node_rect = new Rect(); 
+		node.getBoundsInScreen(node_rect);	
+		if(node_rect.left == lastScrollNode_rect.left
+				&& node_rect.right == lastScrollNode_rect.right
+				&& node_rect.top == lastScrollNode_rect.top
+				&& node_rect.bottom == lastScrollNode_rect.bottom) 
+			return true;
+		return false;
+	}
+	
+	public static boolean isInsideParent(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		AccessibilityNodeInfo parent = node.getParent();
+		if(parent == null) return false;
+		Rect node_rect = new Rect();
+		Rect parent_rect = new Rect();
+		node.getBoundsInScreen(node_rect);
+		parent.getBoundsInScreen(parent_rect);
+		if(node_rect.top >= parent_rect.top
+				&& node_rect.bottom <= parent_rect.bottom
+				&& node_rect.left >= parent_rect.left
+				&& node_rect.right <= parent_rect.right) 
+			return true;
+		return false;
 	}
 	
 	public static void sendGlobalBackAction() {
