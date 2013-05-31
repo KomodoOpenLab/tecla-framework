@@ -73,7 +73,7 @@ public class TeclaIME extends InputMethodService {
 	public void onFinishInputView(boolean finishingInput) {
 		IMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
-		if(!TeclaApp.persistence.isLongClicked()) {
+		if(!TeclaApp.persistence.isHUDCancelled()) {
 			TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
 			TeclaAccessibilityService.getInstance().mTeclaHUDController.mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 		}

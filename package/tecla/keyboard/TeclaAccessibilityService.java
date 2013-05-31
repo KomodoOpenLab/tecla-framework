@@ -85,6 +85,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTouchInterface.show();
 		}
 
+		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+		
 		// Bind to SwitchEventProvider
 		Intent intent = new Intent(this, SwitchEventProvider.class);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -390,6 +392,16 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mActionLock.unlock();   
 			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
+	}
+	
+	public static void sendGlobalBackAction() {
+		if(sInstance == null) return;
+		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+	}
+
+	public static void sendGlobalHomeAction() {
+		if(sInstance == null) return;
+		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
 	}	
 	
 	public void injectSwitchEvent(SwitchEvent event) {

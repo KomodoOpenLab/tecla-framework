@@ -79,7 +79,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		@Override
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-			TeclaApp.persistence.setLongClicked(true);
+			TeclaApp.persistence.setHUDCancelled(true);
 			TeclaAccessibilityService.getInstance().shutdownInfrastructure();
 			return true;
 		}

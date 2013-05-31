@@ -22,7 +22,7 @@ public class Persistence {
 	
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
-	private boolean is_long_clicked;
+	private boolean is_hud_cancelled;
 
 	private int mScanDelay;
 	
@@ -93,12 +93,12 @@ public class Persistence {
 		return is_ime_showing;
 	}
 	
-	public void setLongClicked(boolean bool) {
-		is_long_clicked = bool;
+	public void setHUDCancelled(boolean bool) {
+		is_hud_cancelled = bool;
 	}
 	
-	public boolean isLongClicked() {
-		return is_long_clicked;
+	public boolean isHUDCancelled() {
+		return is_hud_cancelled;
 	}
 
 	public static Boolean isDefaultIME(Context context) {
