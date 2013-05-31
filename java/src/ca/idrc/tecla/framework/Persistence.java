@@ -10,6 +10,9 @@ import android.provider.Settings;
 public class Persistence {
 	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
 	public static final String PREF_SPEAKERPHONE_SWITCH = "speakerphone_switch";
+	public static final String PREF_SELF_SCANNING = "self_scanning";
+	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
+	public static final String PREF_SCAN_DELAY_INT = "scan_delay_int";
 
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 
@@ -19,7 +22,7 @@ public class Persistence {
 	
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
-	private boolean is_long_clicked;
+	private boolean is_hud_cancelled;
 
 	private int mScanDelay;
 	
@@ -90,12 +93,12 @@ public class Persistence {
 		return is_ime_showing;
 	}
 	
-	public void setLongClicked(boolean bool) {
-		is_long_clicked = bool;
+	public void setHUDCancelled(boolean bool) {
+		is_hud_cancelled = bool;
 	}
 	
-	public boolean isLongClicked() {
-		return is_long_clicked;
+	public boolean isHUDCancelled() {
+		return is_hud_cancelled;
 	}
 
 	public static Boolean isDefaultIME(Context context) {
@@ -139,4 +142,23 @@ public class Persistence {
 				shared_prefs.getString(PREF_SWITCH_E2_MORSE, "0")});
 		return mSwitchMap;
 	}
+
+	public boolean isSelfScanningEnabled() {
+		return shared_prefs.getBoolean(PREF_SELF_SCANNING, false);
+	}
+
+	public void setSelfScanningEnabled(boolean enabled) {
+		prefs_editor.putBoolean(PREF_SELF_SCANNING, enabled);
+		prefs_editor.commit();
+	}
+
+	public boolean isInverseScanningEnabled() {
+		return shared_prefs.getBoolean(PREF_INVERSE_SCANNING, false);
+	}
+
+	public void setInverseScanningEnabled(boolean enabled) {
+		prefs_editor.putBoolean(PREF_INVERSE_SCANNING, enabled);
+		prefs_editor.commit();
+	}
+
 }

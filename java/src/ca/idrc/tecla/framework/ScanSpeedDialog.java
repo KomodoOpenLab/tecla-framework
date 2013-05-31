@@ -5,7 +5,6 @@
 package ca.idrc.tecla.framework;
 
 import ca.idrc.tecla.R;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;

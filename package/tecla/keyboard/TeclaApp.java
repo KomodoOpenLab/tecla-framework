@@ -3,7 +3,6 @@ package com.android.tecla.keyboard;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 
-import android.annotation.TargetApi;
 import android.app.Application;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
@@ -12,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
@@ -63,11 +61,8 @@ public class TeclaApp extends Application {
 		keyguard_lock = keyguard_manager.newKeyguardLock(CLASS_TAG);
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR_MR1) {
-			screen_on = getScreenState();
-		} else {
-			screen_on = true;
-		}
+		screen_on = isScreenOn();
+		
 		TeclaStatic.logD(CLASS_TAG, "Screen on? " + screen_on);
 
 		//Intents & Intent Filters
@@ -92,22 +87,10 @@ public class TeclaApp extends Application {
 		buttonUp.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK));
 		sendOrderedBroadcast(buttonUp, "android.permission.CALL_PRIVILEGED");
 
-		/* Not required to enable speaker here, as the listener in 
-		 * ca.idi.tecla.framework.SwitchEventProvider changed from outgoing-call to Off-hook,
-		 * handling both incoming and outgoing calls
-		  
-		if(TeclaApp.persistence.isSpeakerphoneEnabled())
-				useSpeakerphone();
-				
-		*/
 	}
 
 	public boolean isScreenOn() {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR_MR1) {
-			return getScreenState();
-		} else {
-			return screen_on;
-		}
+		return power_manager.isScreenOn();
 	}
 
 	// All intents will be processed here
@@ -128,11 +111,6 @@ public class TeclaApp extends Application {
 
 	};
 	
-	@TargetApi(Build.VERSION_CODES.ECLAIR_MR1)
-	private Boolean getScreenState() {
-		return power_manager.isScreenOn();		
-	}
-
 	/**
 	 * Hold wake lock until releaseWakeLock() is called.
 	 */
