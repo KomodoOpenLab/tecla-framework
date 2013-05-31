@@ -386,4 +386,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			TeclaHighlighter.highlightNode(getInstance().mSelectedNode);
 	    }
 	}
+	
+	public static void sendGlobalBackAction() {
+		if(sInstance == null) return;
+		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+	}
+
+	public static void sendGlobalHomeAction() {
+		if(sInstance == null) return;
+		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
+	}
 }
