@@ -101,12 +101,6 @@ public class Persistence {
 		return is_hud_cancelled;
 	}
 
-	public static Boolean isDefaultIME(Context context) {
-		String ime_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-		if (ime_id.equals(IME_ID)) return true;
-		return false;
-	}
-
 	public boolean shouldConnectToShield() {
 		return shared_prefs.getBoolean(PREF_CONNECT_TO_SHIELD, false);
 	}

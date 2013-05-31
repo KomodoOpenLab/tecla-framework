@@ -68,6 +68,9 @@ public class TeclaApp extends Application {
 		//Intents & Intent Filters
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		
+		//TODO: Figure out if IME is default
+		//TODO: Figure out if A11yService is running
 
 	}
 	
