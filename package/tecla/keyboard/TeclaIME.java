@@ -122,16 +122,32 @@ public class TeclaIME extends InputMethodService {
 		if(mKeyBuff[4] == 124 && mKeyBuff[5] == 124) {
 			// switch E1 down
 			TeclaAccessibilityService.getInstance().injectSwitchEvent(
-					new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); 
 		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
 			// switch E2 down
 			TeclaAccessibilityService.getInstance().injectSwitchEvent(
-					new SwitchEvent(SwitchEvent.MASK_SWITCH_E2, 0)); //Primary switch pressed
-		} else if(mKeyBuff[4] == 7 && mKeyBuff[5] == 7) {
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_E2, 0)); 
+		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
+			// switch J1 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_J1, 0)); 
+		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
+			// switch J2 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_J2, 0)); 
+		}  else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
+			// switch J3 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_J3, 0)); 
+		}  else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
+			// switch J4 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_J4, 0));
+		}   else if(mKeyBuff[4] == 7 && mKeyBuff[5] == 7) {
 			// switch up
 			TeclaAccessibilityService.getInstance().injectSwitchEvent(
 					new SwitchEvent(0,0)); //Switches released			
-		} // TODO: write detection for J1 to J4 here
+		} 
 	
 	}
 

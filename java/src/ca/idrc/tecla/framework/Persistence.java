@@ -144,7 +144,7 @@ public class Persistence {
 	}
 
 	public boolean isSelfScanningEnabled() {
-		return shared_prefs.getBoolean(PREF_SELF_SCANNING, false);
+		return shared_prefs.getBoolean(PREF_SELF_SCANNING, true);
 	}
 
 	public void setSelfScanningEnabled(boolean enabled) {
