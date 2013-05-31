@@ -80,6 +80,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mTouchInterface.show();
 		}
 
+		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+		
 		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 		//SEPManager.start(this);
 	}
