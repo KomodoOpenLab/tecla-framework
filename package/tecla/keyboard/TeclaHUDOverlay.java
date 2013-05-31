@@ -184,16 +184,18 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			TeclaAccessibilityService.clickActiveNode();
 			break;
 		case HUD_BTN_BOTTOMLEFT:
-			if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+			TeclaAccessibilityService.sendGlobalBackAction();
+			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
 				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
 				TeclaApp.ime.pressBackKey();
-			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");
+			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
 		case HUD_BTN_TOPLEFT:
-			if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+			TeclaAccessibilityService.sendGlobalHomeAction();
+			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
 				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
 				TeclaApp.ime.pressHomeKey();
-			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");
+			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
 		}
 		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
