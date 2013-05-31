@@ -332,9 +332,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		unbindService(this.mConnection);
 		SEPManager.stop(this);
 		shutdownInfrastructure();
-		if(mTeclaHUDController != null) unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 		unregisterReceiver(mReceiver);
 	}
 
@@ -343,16 +343,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	 */
 	public void shutdownInfrastructure() {	
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
-		unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-		if(mTeclaHUDController != null) {
+		if(mTeclaHUDController.isVisible()) {
+			unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 			mTeclaHUDController.hide();
-//			mTeclaHUDController = null;
 		}
-		if (mTeclaHighlighter != null) {
+		if (mTeclaHighlighter.isVisible()) {
 			mTeclaHighlighter.hide();
-//			mTeclaHighlighter = null;
 		}
-		if(mTouchInterface != null) {
+		if(mTouchInterface.isVisible()) {
 			mTouchInterface.hide();
 		}
 	}
