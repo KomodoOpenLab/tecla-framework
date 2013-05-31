@@ -1,5 +1,6 @@
 package com.android.tecla.keyboard;
 
+import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idrc.tecla.framework.TeclaStatic;
 
 import com.android.inputmethod.keyboard.KeyboardSwitcher;
@@ -20,6 +21,10 @@ public class TeclaIME extends InputMethodService {
 	public static final String CLASS_TAG = "TeclaIME";
 
 	private static final int IMESCAN_SETUP = 0x2244;
+	private static final int SHIELDEVENT_TIMEOUT = 0x4466;
+	
+	private int[] mKeyBuff = new int[6];
+	private int mKeyCount = 0;
 	
 	private Handler mHandler = new Handler() {
 
@@ -35,6 +40,11 @@ public class TeclaIME extends InputMethodService {
 					}
 				} else {
 				}
+			} else if(msg.what == SHIELDEVENT_TIMEOUT) {
+				if(mKeyCount == 1) 
+					TeclaApp.ime.keyDownUp(mKeyBuff[0]);
+				mKeyCount = 0;
+				
 			}
 			super.handleMessage(msg);
 		}
@@ -76,7 +86,16 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " down!");
-		return true;
+		if(mKeyCount == 0) {
+			Message msg = new Message();
+			msg.what = SHIELDEVENT_TIMEOUT;
+			msg.arg1 = 0;
+			mHandler.sendMessageDelayed(msg, 200);
+		}
+		mKeyBuff[mKeyCount++] = keyCode;
+		if(mKeyCount == 6) {
+			checkAndSendTeclaSwitchEvent();
+		}		return true;
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +104,38 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " up!");
+		mKeyBuff[mKeyCount++] = keyCode;
+		if(mKeyCount == 6) {
+			checkAndSendTeclaSwitchEvent();			
+		}
 		return true;
+	}
+	
+	private void checkAndSendTeclaSwitchEvent() {
+		mHandler.removeMessages(SHIELDEVENT_TIMEOUT);
+		mKeyCount = 0;
+		if(mKeyBuff[0] != 59) return;
+		if(mKeyBuff[1] != 10) return;
+		if(mKeyBuff[2] != 59) return;
+		if(mKeyBuff[3] != 10) return;
+		
+		if(mKeyBuff[4] == 124 && mKeyBuff[5] == 124) {
+			// switch E1 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
+		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
+			// switch E2 down
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(SwitchEvent.MASK_SWITCH_E2, 0)); //Primary switch pressed
+		} else if(mKeyBuff[4] == 7 && mKeyBuff[5] == 7) {
+			// switch up
+			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+					new SwitchEvent(0,0)); //Switches released			
+		} // TODO: write detection for J1 to J4 here
+	
+		
+		
+
 	}
 
 	public void pressHomeKey() {

@@ -94,7 +94,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
 		}
 
-		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+		if(TeclaApp.persistence.isSelfScanningEnabled())
+			mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
 	// memory storage for HUD values during preview
@@ -198,10 +199,39 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
 		}
-		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+		
+		if(TeclaApp.persistence.isSelfScanningEnabled())
+			mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
-	protected void scanForward() {
+	protected void scanPrevious() {
+
+		// Move highlight out of previous button
+		if (mHUDAnimators.get(mScanIndex).isRunning()) {
+			mHUDAnimators.get(mScanIndex).cancel();
+		}
+		mHUDPad.get(mScanIndex).setHighlighted(false);
+		AnimatorSet hud_animator = (AnimatorSet) AnimatorInflater.loadAnimator(mContext, R.animator.hud_alpha_animator);
+		long duration = TeclaApp.persistence.getScanDelay() * mHUDPad.size();
+		hud_animator.getChildAnimations().get(0).setDuration(Math.round(0.1 * duration));
+		hud_animator.getChildAnimations().get(1).setDuration(Math.round(0.9 * duration));
+		hud_animator.setTarget(mHUDPad.get(mScanIndex));
+		mHUDAnimators.set(mScanIndex, hud_animator);
+		mHUDAnimators.get(mScanIndex).start();
+		// Proceed to highlight previous button
+		if (mScanIndex == 0) {
+			mScanIndex = (byte) (mHUDPad.size()-1);
+		} else {
+			--mScanIndex;
+		}
+		if (mHUDAnimators.get(mScanIndex).isRunning()) {
+			mHUDAnimators.get(mScanIndex).cancel();
+		}
+		mHUDPad.get(mScanIndex).setHighlighted(true);
+		mHUDPad.get(mScanIndex).setAlpha(1.0f);
+	}
+
+	protected void scanNext() {
 
 		// Move highlight out of previous button
 		if (mHUDAnimators.get(mScanIndex).isRunning()) {
@@ -226,8 +256,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 		mHUDPad.get(mScanIndex).setHighlighted(true);
 		mHUDPad.get(mScanIndex).setAlpha(1.0f);
-
-		mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
 	}
 
 	private void findAllButtons() {
@@ -314,7 +342,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		@Override
 		public void handleMessage(Message msg) {
-			TeclaHUDOverlay.this.scanForward();
+			TeclaHUDOverlay.this.scanNext();
+			sleep(TeclaApp.persistence.getScanDelay());
 		}
 
 		public void sleep(long delayMillis) {
