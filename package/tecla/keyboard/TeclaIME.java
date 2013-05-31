@@ -133,9 +133,6 @@ public class TeclaIME extends InputMethodService {
 					new SwitchEvent(0,0)); //Switches released			
 		} // TODO: write detection for J1 to J4 here
 	
-		
-		
-
 	}
 
 	public void pressHomeKey() {

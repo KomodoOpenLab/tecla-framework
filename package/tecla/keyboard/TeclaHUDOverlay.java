@@ -23,6 +23,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.android.tecla.keyboard.TeclaApp;
 
@@ -168,12 +169,29 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	}
 
 	protected void scanTrigger() {
+
+		AccessibilityNodeInfo node = TeclaAccessibilityService.getInstance().mSelectedNode;
+		AccessibilityNodeInfo parent = null;
+		if(node != null) parent = node.getParent();
+		int actions = 0;
+		if(parent != null) actions = node.getParent().getActions();
+				
 		switch (mScanIndex){
 		case HUD_BTN_TOP:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+			if(TeclaAccessibilityService.isFirstScrollNode(node) 
+					&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
+					== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+				parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+			} else
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
 			break;
 		case HUD_BTN_BOTTOM:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+			if(TeclaAccessibilityService.isLastScrollNode(node)
+					&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
+					== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
+				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+			} else 
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
 			break;
 		case HUD_BTN_LEFT:
 			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
