@@ -5,18 +5,23 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.android.tecla.keyboard.SwitchEventProvider.LocalBinder;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
-import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -82,8 +87,12 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 		
-		//registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		//SEPManager.start(this);
+		// Bind to SwitchEventProvider
+		Intent intent = new Intent(this, SwitchEventProvider.class);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		
+		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+		SEPManager.start(this);
 	}
 
 	@Override
@@ -274,19 +283,20 @@ public class TeclaAccessibilityService extends AccessibilityService {
 //	}
 //
 	
-//	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-//
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			String action = intent.getAction();
-//
-//			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
-//				handleSwitchEvent(intent.getExtras());
-//			}
-//		}
-//	};
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+
+			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
+				handleSwitchEvent(intent.getExtras());
+			}
+		}
+	};
 
 	private void handleSwitchEvent(Bundle extras) {
+		TeclaStatic.logD(CLASS_TAG, "Received switch event.");
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
 			String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
@@ -295,19 +305,16 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			switch(Integer.parseInt(action_tecla)) {
 
 			case SwitchEvent.ACTION_NEXT:
-				if (max_node_index > mNodeIndex) {
-					mNodeIndex++;
-					TeclaHighlighter.highlightNode(mActiveNodes.get(mNodeIndex));
-				}
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
+				else mTeclaHUDController.scanNext();
 				break;
 			case SwitchEvent.ACTION_PREV:
-				if (mNodeIndex > 0) {
-					mNodeIndex--;
-					TeclaHighlighter.highlightNode(mActiveNodes.get(mNodeIndex));
-				}
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
+				else mTeclaHUDController.scanPrevious();
 				break;
 			case SwitchEvent.ACTION_SELECT:
-				mActiveNodes.get(mNodeIndex).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+				else TeclaHUDOverlay.selectScanHighlighted();				
 				break;
 			case SwitchEvent.ACTION_CANCEL:
 				//TODO: Programmatic back key?
@@ -328,7 +335,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		SEPManager.stop(this);
 		shutdownInfrastructure();
 		if(mTeclaHUDController != null) unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-//		unregisterReceiver(mReceiver);
+		unregisterReceiver(mReceiver);
 	}
 
 	/**
@@ -395,5 +402,35 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public static void sendGlobalHomeAction() {
 		if(sInstance == null) return;
 		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
+	}	
+	
+	public void injectSwitchEvent(SwitchEvent event) {
+		switch_event_provider.injectSwitchEvent(event);
 	}
+	
+	public void injectSwitchEvent(int switchChanges, int switchStates) {
+		switch_event_provider.injectSwitchEvent(switchChanges, switchStates);
+	}
+	
+	SwitchEventProvider switch_event_provider;
+	boolean mBound = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName arg0, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            LocalBinder binder = (LocalBinder) service;
+            switch_event_provider = binder.getService();
+            mBound = true;
+            TeclaStatic.logD(CLASS_TAG, "IME bound to SEP");
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+			
+		}
+    };
 }

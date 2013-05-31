@@ -10,6 +10,18 @@
     <string name="dialog_slower">Slower</string>
     <string name="btn_done">Done</string>
     
+    <!-- Category title for scanning -->
+    <string name="scanning_category">Scanning settings</string>
+    <string name="scanning_settings_summary">Adjust the scanning mode and speed</string>
+    
+    <!-- Option to enable self-scanning -->
+    <string name="self_scanning">Enable self-scanning</string>
+    <string name="self_scanning_summary">Scans the keyboard automatically</string>
+
+    <!-- Option to enable self-scanning -->
+    <string name="inverse_scanning">Enable inverse scanning</string>
+    <string name="inverse_scanning_summary">Scan on switch press and select on release</string>
+
     <!-- Self-scanning delay strings -->
     <string name="scan_speed">Scanning speed</string>
     <string name="scan_speed_summary">Adjust the scanning speed</string>
