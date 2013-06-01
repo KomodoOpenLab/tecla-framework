@@ -1,4 +1,4 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idrc.tecla.framework.TeclaStatic;

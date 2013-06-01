@@ -1,4 +1,4 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import android.content.Context;
 import android.view.KeyEvent;
