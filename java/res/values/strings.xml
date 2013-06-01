@@ -1,5 +1,7 @@
 <resources>
 
+    <string name="app_name">Tecla Next</string>
+
     <string name="tecla_as">Tecla Controller</string>
     
     <!-- Tecla a11y service description -->
@@ -25,5 +27,10 @@
     <!-- Self-scanning delay strings -->
     <string name="scan_speed">Scanning speed</string>
     <string name="scan_speed_summary">Adjust the scanning speed</string>
+    
+    <!-- Onboarding strings -->
+    <string name="ime_warning_1">Your current input method is not compatible with </string>
+    <string name="ime_warning_2">In order to use</string>
+    <string name="ime_warning_3">you must first select a compatible input method.</string>
     
 </resources>

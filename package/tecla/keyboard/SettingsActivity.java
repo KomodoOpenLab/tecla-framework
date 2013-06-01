@@ -1,6 +1,8 @@
-package ca.idrc.tecla.framework;
+package com.android.tecla.keyboard;
 
 import ca.idrc.tecla.R;
+import ca.idrc.tecla.framework.Persistence;
+import ca.idrc.tecla.framework.ScanSpeedDialog;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -9,7 +11,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.util.Log;
 
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 
@@ -22,11 +23,17 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.addPreferencesFromResource(R.xml.tecla_prefs);
-		init();
+		if (TeclaApp.getInstance().isTeclaIMERunning() && TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+			init();
+		} else {
+			TeclaApp.getInstance().startOnboarding();
+			finish();
+		}
 	}
 
 	private void init() {
+		addPreferencesFromResource(R.xml.tecla_prefs);
+		
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
