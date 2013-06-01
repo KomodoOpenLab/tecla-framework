@@ -1,4 +1,4 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;

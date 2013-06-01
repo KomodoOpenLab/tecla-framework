@@ -2,7 +2,7 @@
  * Copyright (C) 2010-2011, Inclusive Design Research Centre
  */
 
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;

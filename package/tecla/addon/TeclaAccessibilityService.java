@@ -1,11 +1,11 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.android.tecla.keyboard.SwitchEventProvider.LocalBinder;
+import com.android.tecla.addon.SwitchEventProvider.LocalBinder;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
