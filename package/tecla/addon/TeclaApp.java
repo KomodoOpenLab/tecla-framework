@@ -1,4 +1,4 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;

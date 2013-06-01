@@ -1,4 +1,4 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import java.util.ArrayList;
 

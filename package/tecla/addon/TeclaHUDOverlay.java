@@ -1,4 +1,4 @@
-package com.android.tecla.keyboard;
+package com.android.tecla.addon;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.android.tecla.keyboard.TeclaApp;
+import com.android.tecla.addon.TeclaApp;
 
 public class TeclaHUDOverlay extends SimpleOverlay {
 
