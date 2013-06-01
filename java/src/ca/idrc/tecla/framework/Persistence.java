@@ -23,6 +23,7 @@ public class Persistence {
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
 	private boolean is_hud_cancelled;
+//	private boolean is_framework_ready;
 
 	private int mScanDelay;
 	
@@ -55,6 +56,7 @@ public class Persistence {
 	public Persistence(Context context) {
 		is_ime_running = false;
 		is_ime_showing = false;
+//		is_framework_ready = false;
 		mScanDelay = 1000;
 		
 		sInstance = this;
@@ -69,6 +71,14 @@ public class Persistence {
 		return sInstance;
 	}
 	
+//	public void setFrameworkReady(Boolean is_ready) {
+//		is_framework_ready = is_ready;
+//	}
+	
+//	public Boolean isFrameworkReady() {
+//		return is_framework_ready;
+//	}
+	
 	public int getScanDelay() {
 		return mScanDelay;
 	}
@@ -79,10 +89,6 @@ public class Persistence {
 	
 	public void setIMERunning(boolean is_showing) {
 		is_ime_running = is_showing;
-	}
-
-	public boolean isIMERunning() {
-		return is_ime_running;
 	}
 
 	public void setIMEShowing(boolean is_showing) {
@@ -99,12 +105,6 @@ public class Persistence {
 	
 	public boolean isHUDCancelled() {
 		return is_hud_cancelled;
-	}
-
-	public static Boolean isDefaultIME(Context context) {
-		String ime_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-		if (ime_id.equals(IME_ID)) return true;
-		return false;
 	}
 
 	public boolean shouldConnectToShield() {

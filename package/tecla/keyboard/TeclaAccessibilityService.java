@@ -40,6 +40,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static int DIRECTION_ANY = 8;
 	
 	protected static TeclaAccessibilityService sInstance;
+	
+	private Boolean register_receiver_called;
 
 	private AccessibilityNodeInfo mOriginalNode, mPreviousOriginalNode;
 	protected AccessibilityNodeInfo mSelectedNode;
@@ -60,71 +62,85 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
+		
 		TeclaStatic.logD(CLASS_TAG, "Tecla Accessibility Service Connected!");
 
-		sInstance = this;
-
-		mOriginalNode = null;
-		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
-		mActionLock = new ReentrantLock();
+		init();
 		
-		if (mTeclaHighlighter == null) {
-			mTeclaHighlighter = new TeclaHighlighter(this);
-			mTeclaHighlighter.show();
-		}
-
-		if (mTeclaHUDController == null) {
-			mTeclaHUDController = new TeclaHUDOverlay(this);
-			mTeclaHUDController.show();
-			registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
-					new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-		}
-
-		if (mTouchInterface == null) {
-			mTouchInterface = new SingleSwitchTouchInterface(this);
-			mTouchInterface.show();
-		}
-
-		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
-		
-		// Bind to SwitchEventProvider
-		Intent intent = new Intent(this, SwitchEventProvider.class);
-		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-		
-		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
-		SEPManager.start(this);
 	}
 
+	private void init() {
+		register_receiver_called = false;
+		if (TeclaApp.getInstance().isTeclaIMERunning()) {
+			sInstance = this;
+
+			mOriginalNode = null;
+			mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
+			mActionLock = new ReentrantLock();
+			
+			if (mTeclaHighlighter == null) {
+				mTeclaHighlighter = new TeclaHighlighter(this);
+				mTeclaHighlighter.show();
+			}
+
+			if (mTeclaHUDController == null) {
+				mTeclaHUDController = new TeclaHUDOverlay(this);
+				mTeclaHUDController.show();
+				registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
+						new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+			}
+
+			if (mTouchInterface == null) {
+				mTouchInterface = new SingleSwitchTouchInterface(this);
+				mTouchInterface.show();
+			}
+
+			performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+			
+			// Bind to SwitchEventProvider
+			Intent intent = new Intent(this, SwitchEventProvider.class);
+			bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+			
+			registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
+			register_receiver_called = true;
+			SEPManager.start(this);
+		} else {
+			TeclaApp.getInstance().startOnboarding();
+		}
+	}
+	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
-			int event_type = event.getEventType();
-			TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
+		if (TeclaApp.getInstance().isTeclaIMERunning()) {
+			if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
+				int event_type = event.getEventType();
+				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
 
-			AccessibilityNodeInfo node = event.getSource();
-			if (node != null) {
-				if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-					mPreviousOriginalNode = mOriginalNode;
-					mOriginalNode = node;				
-					mNodeIndex = 0;
-					searchAndUpdateNodes();
-				} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
-					mPreviousOriginalNode = mOriginalNode;
-					mOriginalNode = node;				
-					mNodeIndex = 0;
-					searchAndUpdateNodes();
-				} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-					//searchAndUpdateNodes();
-				} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
-					//searchAndUpdateNodes();
-				} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-					mPreviousOriginalNode = mOriginalNode;
-					mOriginalNode = node;				
-					mNodeIndex = 0;
-					searchAndUpdateNodes();
+				AccessibilityNodeInfo node = event.getSource();
+				if (node != null) {
+					if (event_type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+						mPreviousOriginalNode = mOriginalNode;
+						mOriginalNode = node;				
+						mNodeIndex = 0;
+						searchAndUpdateNodes();
+					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
+						mPreviousOriginalNode = mOriginalNode;
+						mOriginalNode = node;				
+						mNodeIndex = 0;
+						searchAndUpdateNodes();
+					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+						//searchAndUpdateNodes();
+					} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
+						//searchAndUpdateNodes();
+					} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+						mPreviousOriginalNode = mOriginalNode;
+						mOriginalNode = node;				
+						mNodeIndex = 0;
+						searchAndUpdateNodes();
+					}
+				} else {
+					TeclaStatic.logD(CLASS_TAG, "Node is null!");
 				}
-			} else {
-				TeclaStatic.logD(CLASS_TAG, "Node is null!");
 			}
 		}
 	}
@@ -332,10 +348,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		unbindService(this.mConnection);
-		SEPManager.stop(this);
 		shutdownInfrastructure();
-		unregisterReceiver(mReceiver);
 	}
 
 	/**
@@ -343,15 +356,27 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	 */
 	public void shutdownInfrastructure() {	
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
-		if(mTeclaHUDController.isVisible()) {
-			unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-			mTeclaHUDController.hide();
+		if (mBound) unbindService(mConnection);
+		SEPManager.stop(getApplicationContext());
+		if (mTeclaHUDController != null) {
+			if(mTeclaHUDController.isVisible()) {
+				unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
+				mTeclaHUDController.hide();
+			}
 		}
-		if (mTeclaHighlighter.isVisible()) {
-			mTeclaHighlighter.hide();
+		if (mTeclaHighlighter != null) {
+			if (mTeclaHighlighter.isVisible()) {
+				mTeclaHighlighter.hide();
+			}
 		}
-		if(mTouchInterface.isVisible()) {
-			mTouchInterface.hide();
+		if (mTouchInterface != null) {
+			if(mTouchInterface.isVisible()) {
+				mTouchInterface.hide();
+			}
+		}
+		if (register_receiver_called) {
+			unregisterReceiver(mReceiver);
+			register_receiver_called = false;
 		}
 	}
 	
