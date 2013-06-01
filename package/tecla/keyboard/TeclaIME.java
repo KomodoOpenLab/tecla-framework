@@ -26,6 +26,8 @@ public class TeclaIME extends InputMethodService {
 	private int[] mKeyBuff = new int[6];
 	private int mKeyCount = 0;
 	
+	protected static TeclaIME sInstance;
+
 	private Handler mHandler = new Handler() {
 
 		@Override
@@ -51,10 +53,15 @@ public class TeclaIME extends InputMethodService {
 		
 	};
 	
+	public static TeclaIME getInstance() {
+		return sInstance;
+	}
+
 	@Override
 	public void onCreate() {
-		super.onCreate();	
-		TeclaApp.setIMEInstance(this);
+		super.onCreate();
+		sInstance = this;
+//		TeclaApp.setIMEInstance(this);
 	}
 	
 	@Override

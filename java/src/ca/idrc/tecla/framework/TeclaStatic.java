@@ -31,7 +31,7 @@ public class TeclaStatic {
 	    return false;
 	}
 
-	public static Boolean isDefaultIME(Context context) {
+	public static Boolean isTeclaIMEDefault(Context context) {
 		String ime_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
 		if (ime_id.equals(IME_ID)) return true;
 		return false;

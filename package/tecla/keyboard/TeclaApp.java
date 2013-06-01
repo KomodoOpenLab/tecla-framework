@@ -3,8 +3,10 @@ package com.android.tecla.keyboard;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.KeyguardManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,12 +27,14 @@ public class TeclaApp extends Application {
 	private static TeclaApp instance;
 	public static Persistence persistence;
 	public static TeclaIME ime;
+	public static TeclaAccessibilityService a11yservice;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
 	private WakeLock wake_lock;
 	private KeyguardLock keyguard_lock;
 	private AudioManager audio_manager;
+	private ActivityManager activity_manager;
 
 	private Boolean screen_on;
 
@@ -46,12 +50,13 @@ public class TeclaApp extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		
-		init();
+		init(getApplicationContext());
 	}
 	
-	private void init() {
-		instance = this;
+	private void init(Context context) {
 		TeclaStatic.logD(CLASS_TAG, "Application context created!");
+
+		instance = this;
 		persistence = new Persistence(this);
 
 		power_manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -60,21 +65,50 @@ public class TeclaApp extends Application {
 		keyguard_manager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
 		keyguard_lock = keyguard_manager.newKeyguardLock(CLASS_TAG);
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		activity_manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
 		screen_on = isScreenOn();
 		
 		TeclaStatic.logD(CLASS_TAG, "Screen on? " + screen_on);
 
+		if (isTeclaIMERunning() && isTeclaA11yServiceRunning()) {
+			ime = TeclaIME.getInstance();
+			a11yservice = TeclaAccessibilityService.getInstance();
+		}
+
 		//Intents & Intent Filters
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
-
+		
 	}
 	
-	public static void setIMEInstance (TeclaIME ime_instance) {
-		ime = ime_instance;
-		persistence.setIMERunning(true);
+	public Boolean isTeclaA11yServiceRunning() {
+	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (TeclaAccessibilityService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
+
+	public void startOnboarding() {
+		Intent intent = new Intent(this, OnboardingActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+	}
+	
+	public Boolean isTeclaIMERunning() {
+	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (TeclaIME.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+//	public static void setIMEInstance (TeclaIME ime_instance) {
+//		ime = ime_instance;
+//	}
 	
 	public void answerCall() {
 		// Simulate a press of the headset button to pick up the call
@@ -169,7 +203,7 @@ public class TeclaApp extends Application {
 		audio_manager.setMode(AudioManager.MODE_NORMAL);
 		audio_manager.setSpeakerphoneOn(false);
 	}
-
+	
 	public String byte2Hex(int bite) {
 		return String.format("0x%02x", bite);
 	}
