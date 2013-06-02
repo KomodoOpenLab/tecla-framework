@@ -53,15 +53,12 @@ public class TeclaIME extends InputMethodService {
 		
 	};
 	
-	public static TeclaIME getInstance() {
-		return sInstance;
-	}
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		sInstance = this;
-//		TeclaApp.setIMEInstance(this);
+		TeclaApp.setIMEInstance(sInstance);
+		TeclaStatic.logD(CLASS_TAG, "Created " + TeclaIME.class.getName());
 	}
 	
 	@Override

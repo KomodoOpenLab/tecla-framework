@@ -3,7 +3,6 @@ package com.android.tecla.addon;
 import java.util.ArrayList;
 
 import ca.idrc.tecla.R;
-import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.SimpleOverlay;
 import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.hud.TeclaHUDButtonView;
@@ -18,7 +17,6 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
