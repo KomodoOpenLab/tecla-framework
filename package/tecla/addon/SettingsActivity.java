@@ -11,26 +11,35 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.view.View;
+import android.widget.Button;
 
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 
+	private SettingsActivity sInstance;
+	
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
 	
+	private OnboardingDialog mOnboardingDialog;
 	private ScanSpeedDialog mScanSpeedDialog;
+	
 	Preference mScanSpeedPref;
+	
+	/** Onboarding variables **/
+	private Button mOkButton;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		sInstance = this;
 		if (TeclaApp.getInstance().isTeclaIMERunning() && TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
 			init();
 		} else {
-			TeclaApp.getInstance().startOnboarding();
-			finish();
+			initOnboarding();
 		}
 	}
-
+	
 	private void init() {
 		addPreferencesFromResource(R.xml.tecla_prefs);
 		
@@ -44,8 +53,26 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		mScanSpeedPref.setOnPreferenceClickListener(this);		
 		
 		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
 	}
 
+	private void initOnboarding() {
+		mOnboardingDialog = new OnboardingDialog(this);
+		mOnboardingDialog.setContentView(R.layout.tecla_onboarding);
+		mOnboardingDialog.setCancelable(false);
+		mOkButton = (Button) mOnboardingDialog.findViewById(R.id.ok_button);
+		mOkButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mOnboardingDialog.dismiss();
+				sInstance.finish();
+				
+			}
+		});
+		mOnboardingDialog.show();
+	}
+	
 	@Override
 	public boolean onPreferenceClick(Preference pref) {	
 		if(pref.equals(mScanSpeedPref)) {

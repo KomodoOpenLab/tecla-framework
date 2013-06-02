@@ -72,9 +72,9 @@ public class SwitchEventProvider extends Service {
 		public void run()
 		{
 			handler.removeCallbacks(requestIME);
-			if (TeclaStatic.isTeclaIMEDefault(context)) {
+			if (TeclaApp.getInstance().isTeclaIMEDefault()) {
 				//TODO: Check if soft IME view is created
-				if (TeclaStatic.isIMERunning(context)) {
+				if (TeclaApp.getInstance().isTeclaIMERunning()) {
 					TeclaStatic.logD(CLASS_TAG, "IME is running!");
 				} else {
 					TeclaStatic.logD(CLASS_TAG, "IME is NOT running!");
