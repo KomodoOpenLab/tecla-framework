@@ -119,6 +119,10 @@ public class TeclaApp extends Application {
 	public static void setIMEInstance (TeclaIME ime_instance) {
 		ime = ime_instance;
 	}
+
+	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
+		a11yservice = a11yservice_instance;
+	}
 	
 	public void answerCall() {
 		// Simulate a press of the headset button to pick up the call

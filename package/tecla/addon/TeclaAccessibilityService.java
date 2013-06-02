@@ -51,7 +51,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private TeclaHighlighter mTeclaHighlighter;
 	protected TeclaHUDOverlay mTeclaHUDController;
-	private SingleSwitchTouchInterface mTouchInterface;
+	protected SingleSwitchTouchInterface mTouchInterface;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
@@ -73,6 +73,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		register_receiver_called = false;
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
 			sInstance = this;
+			TeclaApp.setA11yserviceInstance(sInstance);
 
 			mOriginalNode = null;
 			mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
