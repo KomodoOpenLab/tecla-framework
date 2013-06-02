@@ -26,10 +26,26 @@
     <!-- Self-scanning delay strings -->
     <string name="scan_speed">Scanning speed</string>
     <string name="scan_speed_summary">Adjust the scanning speed</string>
+      
+    <!-- Category title for fullscreen -->
+    <string name="fullscreen_category">Full-screen settings</string>
+    <string name="fullscreen_settings_summary">Set heads-up display and its settinngs</string>
+    
+    <!-- Option to show HUD -->
+    <string name="hud_visibility">Show heads-up display</string>
+    <string name="hud_visibility_summary">Show Tecla Shield visual feedback for controlling the device</string>
+    
+    <!-- Option to enable single-switch overlay -->
+    <string name="single_switch_overlay">Single-switch touch overlay</string>
+    <string name="single_switch_overlay_summary">Enable single-switch touch interface</string>
+    
+    <!-- Option to enable HUD self-scanning -->
+    <string name="hud_self_scanning">Enable heads-up display self-scanning</string>
+    <string name="hud_self_scanning_summary">Scans the heads-up display automatically</string>
     
     <!-- Onboarding strings -->
     <string name="onboarding_ime_warning">Your current input method is not compatible with Tecla Next. In order to use any Tecla Next features, you must first select a compatible input method. Do you want to do this now?</string>
     <string name="onboarding_a11y_warning">The Tecla Next accessibility service is not enabled. In order to use any Tecla Next features, you must first enable the Tecla Next accessibility service. Do you want to do this now?</string>
     <string name="onboarding_success">You have successfully set up Tecla Next!</string>
-    
+        
 </resources>
