@@ -1,11 +1,12 @@
 <resources>
 
-    <string name="app_name">Tecla Next</string>
-
+    <string name="tecla_next">Tecla Next</string>
+    <string name="tecla_next_settings">Tecla Next Settings</string>
+    
     <string name="tecla_as">Tecla Controller</string>
     
     <!-- Tecla a11y service description -->
-    <string name="tecla_service_description">The Tecla Highlighter service emphasizes the screen elements that are selected to receive input from external devices. This makes your Android device easier to use with remote controls, keyboards and external switches.</string>
+    <string name="tecla_service_description">The Tecla Next accessibility service makes your Android device easier to use with alternative input devices like the Tecla Shield. You must enable it before you can use any of the Tecla Next features! </string>
     
     <!-- Tecla: Scan Speed Dialog -->
     <string name="dialog_faster">Faster</string>

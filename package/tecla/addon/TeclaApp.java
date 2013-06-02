@@ -1,5 +1,6 @@
 package com.android.tecla.addon;
 
+
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 
@@ -9,6 +10,7 @@ import android.app.KeyguardManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,6 +18,7 @@ import android.media.AudioManager;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.view.KeyEvent;
 
 public class TeclaApp extends Application {
@@ -24,7 +27,7 @@ public class TeclaApp extends Application {
 	
 	public static final int WAKE_LOCK_TIMEOUT = 5000;
 
-	private static TeclaApp instance;
+	private static TeclaApp sInstance;
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
@@ -39,7 +42,7 @@ public class TeclaApp extends Application {
 	private Boolean screen_on;
 
 	public static TeclaApp getInstance() {
-		return instance;
+		return sInstance;
 	}
 
 	/* (non-Javadoc)
@@ -56,7 +59,7 @@ public class TeclaApp extends Application {
 	private void init(Context context) {
 		TeclaStatic.logD(CLASS_TAG, "Application context created!");
 
-		instance = this;
+		sInstance = this;
 		persistence = new Persistence(this);
 
 		power_manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -69,11 +72,10 @@ public class TeclaApp extends Application {
 
 		screen_on = isScreenOn();
 		
-		TeclaStatic.logD(CLASS_TAG, "Screen on? " + screen_on);
-
-		if (isTeclaIMERunning() && isTeclaA11yServiceRunning()) {
-			ime = TeclaIME.getInstance();
-			a11yservice = TeclaAccessibilityService.getInstance();
+		if (screen_on) {
+			TeclaStatic.logD(CLASS_TAG, "Screen on");
+		} else {
+			TeclaStatic.logD(CLASS_TAG, "Screen off");
 		}
 
 		//Intents & Intent Filters
@@ -82,6 +84,12 @@ public class TeclaApp extends Application {
 		
 	}
 	
+//	public void startOnboarding() {
+//		Intent intent = new Intent(this, OnboardingDialog.class);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		startActivity(intent);
+//	}
+//	
 	public Boolean isTeclaA11yServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaAccessibilityService.class.getName().equals(service.service.getClassName())) {
@@ -91,12 +99,13 @@ public class TeclaApp extends Application {
 	    return false;
 	}
 
-	public void startOnboarding() {
-		Intent intent = new Intent(this, OnboardingActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(intent);
+	public Boolean isTeclaIMEDefault() {
+		String ime_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+		ComponentName defaultInputMethod = ComponentName.unflattenFromString(ime_id);
+	    ComponentName myInputMethod = new ComponentName(sInstance, TeclaIME.class);
+		return myInputMethod.equals(defaultInputMethod);
 	}
-	
+
 	public Boolean isTeclaIMERunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaIME.class.getName().equals(service.service.getClassName())) {
@@ -106,9 +115,9 @@ public class TeclaApp extends Application {
 	    return false;
 	}
 
-//	public static void setIMEInstance (TeclaIME ime_instance) {
-//		ime = ime_instance;
-//	}
+	public static void setIMEInstance (TeclaIME ime_instance) {
+		ime = ime_instance;
+	}
 	
 	public void answerCall() {
 		// Simulate a press of the headset button to pick up the call
@@ -139,6 +148,7 @@ public class TeclaApp extends Application {
 			}
 			if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 				screen_on = true;
+				//TODO: If event from Tecla, unlock screen!
 				TeclaStatic.logD(CLASS_TAG, "Screen on");
 			}
 		}
@@ -208,4 +218,10 @@ public class TeclaApp extends Application {
 		return String.format("0x%02x", bite);
 	}
 
+//	private void logRunningServices() {
+//		for (RunningServiceInfo service_info : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
+//			TeclaStatic.logD(CLASS_TAG, service_info.service.getClassName());
+//		}
+//	}
+//
 }

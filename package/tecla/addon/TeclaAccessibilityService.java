@@ -104,8 +104,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 			register_receiver_called = true;
 			SEPManager.start(this);
-		} else {
-			TeclaApp.getInstance().startOnboarding();
 		}
 	}
 	
