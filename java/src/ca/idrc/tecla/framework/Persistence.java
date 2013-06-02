@@ -22,6 +22,7 @@ public class Persistence {
 	
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
+	private boolean is_hud_showing;
 	private boolean is_hud_cancelled;
 //	private boolean is_framework_ready;
 
@@ -56,6 +57,7 @@ public class Persistence {
 	public Persistence(Context context) {
 		is_ime_running = false;
 		is_ime_showing = false;
+		is_hud_showing = false;
 //		is_framework_ready = false;
 		mScanDelay = 1000;
 		
@@ -93,6 +95,14 @@ public class Persistence {
 
 	public void setIMEShowing(boolean is_showing) {
 		is_ime_showing = is_showing;
+	}
+
+	public boolean isHUDShowing() {
+		return is_hud_showing;
+	}
+
+	public void setHUDShowing(boolean is_showing) {
+		is_hud_showing = is_showing;
 	}
 
 	public boolean isIMEShowing() {

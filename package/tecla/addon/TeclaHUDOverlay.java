@@ -120,11 +120,13 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	@Override
 	protected void onShow() {
 		sInstance = this;
+		TeclaApp.persistence.setHUDShowing(true);
 	}
 
 	@Override
 	protected void onHide() {
 		sInstance = null;
+		TeclaApp.persistence.setHUDShowing(false);
 	}
 
 	protected BroadcastReceiver mConfigChangeReceiver = new BroadcastReceiver() {
