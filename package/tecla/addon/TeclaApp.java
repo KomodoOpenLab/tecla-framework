@@ -20,6 +20,7 @@ import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.KeyEvent;
+import android.view.inputmethod.InputMethodManager;
 
 public class TeclaApp extends Application {
 
@@ -38,6 +39,7 @@ public class TeclaApp extends Application {
 	private KeyguardLock keyguard_lock;
 	private AudioManager audio_manager;
 	private ActivityManager activity_manager;
+	private InputMethodManager ime_manager;
 
 	private Boolean screen_on;
 
@@ -69,6 +71,7 @@ public class TeclaApp extends Application {
 		keyguard_lock = keyguard_manager.newKeyguardLock(CLASS_TAG);
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		activity_manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		ime_manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
 		screen_on = isScreenOn();
 		
@@ -90,6 +93,11 @@ public class TeclaApp extends Application {
 //		startActivity(intent);
 //	}
 //	
+	
+	public void pickIme() {
+		ime_manager.showInputMethodPicker();
+	}
+	
 	public Boolean isTeclaA11yServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaAccessibilityService.class.getName().equals(service.service.getClassName())) {
@@ -99,14 +107,7 @@ public class TeclaApp extends Application {
 	    return false;
 	}
 
-	public Boolean isTeclaIMEDefault() {
-		String ime_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-		ComponentName defaultInputMethod = ComponentName.unflattenFromString(ime_id);
-	    ComponentName myInputMethod = new ComponentName(sInstance, TeclaIME.class);
-		return myInputMethod.equals(defaultInputMethod);
-	}
-
-	public Boolean isTeclaIMERunning() {
+	public Boolean isSupportedIMERunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaIME.class.getName().equals(service.service.getClassName())) {
 	            return true;

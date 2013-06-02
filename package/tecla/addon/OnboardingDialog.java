@@ -1,25 +1,30 @@
 package com.android.tecla.addon;
 
 import ca.idrc.tecla.R;
-import android.app.Activity;
+import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 public class OnboardingDialog extends Dialog {
 	
-	private OnboardingDialog sInstance;
+	public static final String CLASS_TAG = "OnboardingDialog";
+	
+	private static final int ONBOARD_SELECT_IME = 0;
+	private static final int ONBOARD_ENABLE_A11Y = 1;
+	private static final int ONBOARD_FINISHED = 2;
+	
 	private Context mContext;
-	private TextView mMessage;
-	private Button mButton;
+	private TextView mImeWarnText;
+	private TextView mA11yWarnText;
+	private TextView mSuccessText;
+	private ViewFlipper mOnboardingFlipper;
 	
 	public OnboardingDialog(Context context) {
 		super(context);
 		mContext = context;
-		sInstance = this;
 	}
 
 	@Override
@@ -31,17 +36,43 @@ public class OnboardingDialog extends Dialog {
 
 	private void init() {
 		
-		String title = mContext.getString(R.string.tecla_next);
-		String warn1 = mContext.getString(R.string.ime_warning_1);
-		String warn2 = mContext.getString(R.string.ime_warning_2);
-		String warn3 = mContext.getString(R.string.ime_warning_3);
-		setTitle(title);
+		setTitle(mContext.getString(R.string.tecla_next));
 
-		mMessage = (TextView) findViewById(R.id.ime_warning);
-		mButton = (Button) findViewById(R.id.ok_button);
+		mImeWarnText = (TextView) findViewById(R.id.ime_warning);
+		mA11yWarnText = (TextView) findViewById(R.id.a11y_warning);
+		mSuccessText = (TextView) findViewById(R.id.success_msg);
 		
-		mMessage.setText(warn1 + " " + title + ". " +
-				warn2 + " " + title + ", " + warn3);
+		mImeWarnText.setText(mContext.getString(R.string.onboarding_ime_warning));
+		mA11yWarnText.setText(mContext.getString(R.string.onboarding_a11y_warning));
+		mSuccessText.setText(mContext.getString(R.string.onboarding_success));
+		
+		mOnboardingFlipper = (ViewFlipper) findViewById(R.id.onboarding_flipper);
 	}
 	
+	/* (non-Javadoc)
+	 * @see android.app.Dialog#onWindowFocusChanged(boolean)
+	 */
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus) {
+			TeclaStatic.logD(CLASS_TAG, "Got focus!");
+			switch (mOnboardingFlipper.getDisplayedChild()) {
+			case ONBOARD_SELECT_IME:
+				TeclaStatic.logD(CLASS_TAG, "Selecting IME!");
+		    	if (TeclaStatic.isDefaultIMESupported(mContext)) {
+		    		mOnboardingFlipper.showNext();
+			    	if (TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+			    		mOnboardingFlipper.showNext();
+			    	}
+		    	}
+		    	break;
+			case ONBOARD_ENABLE_A11Y:
+		    	if (TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+		    		mOnboardingFlipper.showNext();
+		    	}
+			}
+		}
+	}
+
 }
