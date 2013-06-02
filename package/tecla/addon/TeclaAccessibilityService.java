@@ -63,7 +63,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	protected void onServiceConnected() {
 		super.onServiceConnected();
 		
-		TeclaStatic.logD(CLASS_TAG, "Tecla Accessibility Service Connected!");
+		TeclaStatic.logD(CLASS_TAG, "Service " + TeclaAccessibilityService.class.getName() + " connected");
 
 		init();
 		
@@ -71,7 +71,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private void init() {
 		register_receiver_called = false;
-		if (TeclaApp.getInstance().isTeclaIMERunning()) {
+		if (TeclaApp.getInstance().isSupportedIMERunning()) {
 			sInstance = this;
 
 			mOriginalNode = null;
@@ -109,7 +109,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		if (TeclaApp.getInstance().isTeclaIMERunning()) {
+		if (TeclaApp.getInstance().isSupportedIMERunning()) {
 			if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());

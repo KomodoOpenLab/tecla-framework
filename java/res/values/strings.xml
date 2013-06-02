@@ -3,8 +3,6 @@
     <string name="tecla_next">Tecla Next</string>
     <string name="tecla_next_settings">Tecla Next Settings</string>
     
-    <string name="tecla_as">Tecla Controller</string>
-    
     <!-- Tecla a11y service description -->
     <string name="tecla_service_description">The Tecla Next accessibility service makes your Android device easier to use with alternative input devices like the Tecla Shield. You must enable it before you can use any of the Tecla Next features! </string>
     
@@ -30,8 +28,8 @@
     <string name="scan_speed_summary">Adjust the scanning speed</string>
     
     <!-- Onboarding strings -->
-    <string name="ime_warning_1">Your current input method is not compatible with </string>
-    <string name="ime_warning_2">In order to use</string>
-    <string name="ime_warning_3">you must first select a compatible input method.</string>
+    <string name="onboarding_ime_warning">Your current input method is not compatible with Tecla Next. In order to use any Tecla Next features, you must first select a compatible input method. Do you want to do this now?</string>
+    <string name="onboarding_a11y_warning">The Tecla Next accessibility service is not enabled. In order to use any Tecla Next features, you must first enable the Tecla Next accessibility service. Do you want to do this now?</string>
+    <string name="onboarding_success">You have successfully set up Tecla Next!</string>
     
 </resources>

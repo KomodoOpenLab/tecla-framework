@@ -89,17 +89,22 @@ public class TeclaIME extends InputMethodService {
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " down!");
-		if(mKeyCount == 0) {
-			Message msg = new Message();
-			msg.what = SHIELDEVENT_TIMEOUT;
-			msg.arg1 = 0;
-			mHandler.sendMessageDelayed(msg, 200);
+		if (keyCode != KeyEvent.KEYCODE_BACK) {
+			TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " down!");
+			if(mKeyCount == 0) {
+				Message msg = new Message();
+				msg.what = SHIELDEVENT_TIMEOUT;
+				msg.arg1 = 0;
+				mHandler.sendMessageDelayed(msg, 200);
+			}
+			mKeyBuff[mKeyCount++] = keyCode;
+			if(mKeyCount == 6) {
+				checkAndSendTeclaSwitchEvent();
+			}
+			return true;
 		}
-		mKeyBuff[mKeyCount++] = keyCode;
-		if(mKeyCount == 6) {
-			checkAndSendTeclaSwitchEvent();
-		}		return true;
+		super.onKeyDown(keyCode, event);
+		return false;
 	}
 
 	/* (non-Javadoc)
@@ -107,12 +112,16 @@ public class TeclaIME extends InputMethodService {
 	 */
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " up!");
-		mKeyBuff[mKeyCount++] = keyCode;
-		if(mKeyCount == 6) {
-			checkAndSendTeclaSwitchEvent();			
+		if (keyCode != KeyEvent.KEYCODE_BACK) {
+			TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " up!");
+			mKeyBuff[mKeyCount++] = keyCode;
+			if(mKeyCount == 6) {
+				checkAndSendTeclaSwitchEvent();			
+			}
+			return true;
 		}
-		return true;
+		super.onKeyUp(keyCode, event);
+		return false;
 	}
 	
 	private void checkAndSendTeclaSwitchEvent() {
