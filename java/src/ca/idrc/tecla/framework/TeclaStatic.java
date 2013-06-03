@@ -20,6 +20,7 @@ public class TeclaStatic {
 
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 	private static final String IME_SERVICE = "ca.idrc.tecla.ime.TeclaIME";
+	public static final String A11Y_SERVICE = "com.android.tecla.addon.TeclaAccessibilityService";
 
 	public static Boolean isDefaultIMESupported(Context context) {
 		String ime_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
