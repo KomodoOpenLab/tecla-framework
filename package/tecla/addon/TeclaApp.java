@@ -1,6 +1,8 @@
 package com.android.tecla.addon;
 
 
+import com.android.inputmethod.latin.LatinIME;
+
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 
@@ -109,7 +111,7 @@ public class TeclaApp extends Application {
 
 	public Boolean isSupportedIMERunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (TeclaIME.class.getName().equals(service.service.getClassName())) {
+	        if (LatinIME.class.getName().equals(service.service.getClassName())) {
 	            return true;
 	        }
 	    }
@@ -118,6 +120,10 @@ public class TeclaApp extends Application {
 
 	public static void setIMEInstance (TeclaIME ime_instance) {
 		ime = ime_instance;
+	}
+
+	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
+		a11yservice = a11yservice_instance;
 	}
 	
 	public void answerCall() {
