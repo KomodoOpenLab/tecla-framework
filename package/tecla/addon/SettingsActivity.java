@@ -50,14 +50,14 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		mScanSpeedDialog = new ScanSpeedDialog(this);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
-		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
-		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
-		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
-		mPrefHUDSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_HUD_SELF_SCANNING);
-		mPrefSingleSwitchOverlay.setEnabled(mPrefHUD.isChecked());
-		mPrefHUDSelfScanning.setEnabled(mPrefHUD.isChecked());
-		mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
-		mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());			
+//		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
+//		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
+//		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
+//		mPrefHUDSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_HUD_SELF_SCANNING);
+//		mPrefSingleSwitchOverlay.setEnabled(mPrefHUD.isChecked());
+//		mPrefHUDSelfScanning.setEnabled(mPrefHUD.isChecked());
+//		mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
+//		mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());			
 		
 		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
