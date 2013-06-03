@@ -165,14 +165,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
-	public void stopScanning() {
-		mTeclaHUDController.mAutoScanHandler.removeMessages(0);
+	public void scanNextHUDButton() {
+		mTeclaHUDController.scanNext();
 	}
-
-	public void startScanning() {
-		mTeclaHUDController.mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
-	}
-
+	
 	public void showPreviewHUD() {
 		mTeclaHUDController.setPreviewHUD(true);
 		showHUD();
@@ -411,6 +407,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			default:
 				break;
 			}
+			if(TeclaApp.persistence.isSelfScanningEnabled())
+				AutomaticScan.resetTimer();
 		}
 	}
 
