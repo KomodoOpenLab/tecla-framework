@@ -71,8 +71,8 @@ public class TeclaIME extends InputMethodService {
 		TeclaApp.persistence.setIMEShowing(true);
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
 				&& TeclaApp.persistence.isHUDShowing()) {
-			TeclaAccessibilityService.getInstance().mTeclaHUDController.mAutoScanHandler.removeMessages(0);
-			TeclaAccessibilityService.getInstance().mTeclaHUDController.hide();			
+			TeclaApp.a11yservice.stopScanning();
+			TeclaApp.a11yservice.hideHUD();			
 		}
 	}
 
@@ -82,8 +82,8 @@ public class TeclaIME extends InputMethodService {
 		TeclaApp.persistence.setIMEShowing(false);
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
 				&& !TeclaApp.persistence.isHUDShowing()) {
-			TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
-			TeclaAccessibilityService.getInstance().mTeclaHUDController.mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+			TeclaApp.a11yservice.showHUD();
+			TeclaApp.a11yservice.startScanning();
 		}
 		super.onFinishInputView(finishingInput);
 	}
@@ -138,15 +138,15 @@ public class TeclaIME extends InputMethodService {
 		
 		if(mKeyBuff[4] == 124 && mKeyBuff[5] == 124) {
 			// switch E1 down
-			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+			TeclaApp.a11yservice.injectSwitchEvent(
 					new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
 		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
 			// switch E2 down
-			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+			TeclaApp.a11yservice.injectSwitchEvent(
 					new SwitchEvent(SwitchEvent.MASK_SWITCH_E2, 0)); //Primary switch pressed
 		} else if(mKeyBuff[4] == 7 && mKeyBuff[5] == 7) {
 			// switch up
-			TeclaAccessibilityService.getInstance().injectSwitchEvent(
+			TeclaApp.a11yservice.injectSwitchEvent(
 					new SwitchEvent(0,0)); //Switches released			
 		} // TODO: write detection for J1 to J4 here
 	

@@ -468,8 +468,7 @@ public class IMEAdapter {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
 				WordPredictionAdapter.highlightNext();
 			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaAccessibilityService.getInstance().mTeclaHUDController.setPreviewHUD(false);
-				TeclaAccessibilityService.getInstance().mTeclaHUDController.hide();
+				TeclaApp.a11yservice.hidePreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
 			sCurrentRow %= sRowCount + 2;
@@ -477,8 +476,7 @@ public class IMEAdapter {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
 				WordPredictionAdapter.highlightNext();
 			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaAccessibilityService.getInstance().mTeclaHUDController.setPreviewHUD(true);
-				TeclaAccessibilityService.getInstance().mTeclaHUDController.show();
+				TeclaApp.a11yservice.showPreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		}
 		
