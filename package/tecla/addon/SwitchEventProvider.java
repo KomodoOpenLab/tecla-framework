@@ -45,11 +45,11 @@ public class SwitchEventProvider extends Service {
 
 		handler.postDelayed(requestIME, REQUEST_IME_DELAY);
 
-		if (TeclaApp.persistence.shouldConnectToShield()) {
-			TeclaStatic.logD(CLASS_TAG, "Starting Shield Service...");
-			TeclaShieldManager.connect(this);
-		}
-		TeclaStatic.logD(CLASS_TAG, "Tecla Service created");
+//		if (TeclaApp.persistence.shouldConnectToShield()) {
+//			TeclaStatic.logD(CLASS_TAG, "Starting Shield Service...");
+//			TeclaShieldManager.connect(this);
+//		}
+		TeclaStatic.logD(CLASS_TAG, "Switch Event Provider created");
 	}
 
 	@Override

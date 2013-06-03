@@ -2,6 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="english_ime_settings" >
 
+    <CheckBoxPreference
+        android:key="fullscreen_switch"
+        android:persistent="true"
+        android:summary="@string/fullscreen_mode_summary"
+        android:title="@string/fullscreen_mode" />
+
     <PreferenceScreen
         android:key="scanning_settings"
         android:summary="@string/scanning_settings_summary"
@@ -18,28 +24,31 @@
             android:persistent="true"
             android:summary="@string/inverse_scanning_summary"
             android:title="@string/inverse_scanning" />
+
         <Preference
             android:key="scan_delay_int"
             android:persistent="true"
             android:summary="@string/scan_speed_summary"
             android:title="@string/scan_speed" />
     </PreferenceScreen>
-    <PreferenceScreen 
-        android:key="fullscreen_settings" 
-        android:title="@string/fullscreen_category" 
-        android:summary="@string/fullscreen_settings_summary">
-        <CheckBoxPreference 
-            android:key="hud_visibility" 
-            android:summary="@string/hud_visibility_summary" 
-            android:title="@string/hud_visibility"/>
-        <CheckBoxPreference 
-            android:key="single_switch_overlay" 
-            android:summary="@string/single_switch_overlay_summary" 
-            android:title="@string/single_switch_overlay"/>
-        <CheckBoxPreference 
-            android:key="hud_self_scanning" 
-            android:summary="@string/hud_self_scanning_summary" 
-            android:title="@string/hud_self_scanning"/>
+    <!--
+    <PreferenceScreen
+        android:key="advanced_settings"
+        android:summary="@string/advanced_settings_summary"
+        android:title="@string/fullscreen_category" >
+        <CheckBoxPreference
+            android:key="hud_visibility"
+            android:summary="@string/hud_visibility_summary"
+            android:title="@string/hud_visibility" />
+        <CheckBoxPreference
+            android:key="single_switch_overlay"
+            android:summary="@string/single_switch_overlay_summary"
+            android:title="@string/single_switch_overlay" />
+        <CheckBoxPreference
+            android:key="hud_self_scanning"
+            android:summary="@string/hud_self_scanning_summary"
+            android:title="@string/hud_self_scanning" />
     </PreferenceScreen>
+    -->
 
 </PreferenceScreen>

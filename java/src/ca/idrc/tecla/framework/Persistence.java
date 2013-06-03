@@ -8,7 +8,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 
 public class Persistence {
-	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
+	public static final String PREF_FULLSCREEN_MODE = "fullscreen_mode";
+//	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
 	public static final String PREF_SPEAKERPHONE_SWITCH = "speakerphone_switch";
 	public static final String PREF_SELF_SCANNING = "self_scanning";
 	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
@@ -120,15 +121,15 @@ public class Persistence {
 		return is_hud_cancelled;
 	}
 
-	public boolean shouldConnectToShield() {
-		return shared_prefs.getBoolean(PREF_CONNECT_TO_SHIELD, false);
-	}
-	
-	public void setConnectToShield(boolean shieldConnect) {
-		prefs_editor.putBoolean(PREF_CONNECT_TO_SHIELD, shieldConnect);
-		prefs_editor.commit();
-	}
-
+//	public boolean shouldConnectToShield() {
+//		return shared_prefs.getBoolean(PREF_CONNECT_TO_SHIELD, false);
+//	}
+//	
+//	public void setConnectToShield(boolean shieldConnect) {
+//		prefs_editor.putBoolean(PREF_CONNECT_TO_SHIELD, shieldConnect);
+//		prefs_editor.commit();
+//	}
+//
 	public boolean isSpeakerphoneEnabled() {
 		return shared_prefs.getBoolean(PREF_SPEAKERPHONE_SWITCH, false);
 	}
