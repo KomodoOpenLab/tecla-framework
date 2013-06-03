@@ -31,6 +31,13 @@
     <string name="fullscreen_category">Full-screen settings</string>
     <string name="fullscreen_settings_summary">Set heads-up display and its settinngs</string>
     
+    <!-- Category title for alternative input settings -->
+    <string name="alternative_input_category">Alternative input settings</string>
+    
+    <!-- Option to enable fullscreen switch mode -->
+    <string name="fullscreen_switch">Full-screen switch mode</string>
+    <string name="fullscreen_switch_summary">Uses the entire screen as a single switch</string>
+    
     <!-- Option to show HUD -->
     <string name="hud_visibility">Show HUD</string>
     <string name="hud_visibility_summary">Show Tecla Shield heads-up display for controlling the device</string>
