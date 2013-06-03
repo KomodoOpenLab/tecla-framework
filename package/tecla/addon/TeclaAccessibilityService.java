@@ -411,7 +411,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				break;
 			}
 			if(TeclaApp.persistence.isSelfScanningEnabled())
-				AutomaticScan.resetTimer();
+				AutomaticScan.setExtendedTimer();
 		}
 	}
 
