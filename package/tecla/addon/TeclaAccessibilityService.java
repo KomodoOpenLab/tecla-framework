@@ -79,25 +79,26 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 			mActionLock = new ReentrantLock();
 			
-			if (mTeclaHighlighter == null) {
+			if(mTeclaHighlighter == null)
 				mTeclaHighlighter = new TeclaHighlighter(this);
-				mTeclaHighlighter.show();
-			}
 
-			if (mTeclaHUDController == null) {
+			if (mTeclaHUDController == null) 
 				mTeclaHUDController = new TeclaHUDOverlay(this);
+			
+			if (mTouchInterface == null)
+				mTouchInterface = new SingleSwitchTouchInterface(this);
+			
+			if (TeclaApp.persistence.isHUDRunning()) {
+				mTeclaHighlighter.show();
 				mTeclaHUDController.show();
 				registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
 						new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+				performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 			}
 
-			if (mTouchInterface == null) {
-				mTouchInterface = new SingleSwitchTouchInterface(this);
+			if(TeclaApp.persistence.isSingleSwitchOverlayEnabled())
 				mTouchInterface.show();
-			}
 
-			performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
-			
 			// Bind to SwitchEventProvider
 			Intent intent = new Intent(this, SwitchEventProvider.class);
 			bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
