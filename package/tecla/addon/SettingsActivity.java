@@ -54,15 +54,10 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
 		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
 		mPrefHUDSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_HUD_SELF_SCANNING);
-		if(!mPrefHUD.isChecked()) {
-			mPrefSingleSwitchOverlay.setEnabled(false);
-			mPrefHUDSelfScanning.setEnabled(false);
-		} else {
-			mPrefSingleSwitchOverlay.setEnabled(true);
-			mPrefHUDSelfScanning.setEnabled(true);
-			mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
-			mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());			
-		}
+		mPrefSingleSwitchOverlay.setEnabled(mPrefHUD.isChecked());
+		mPrefHUDSelfScanning.setEnabled(mPrefHUD.isChecked());
+		mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
+		mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());			
 		
 		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
