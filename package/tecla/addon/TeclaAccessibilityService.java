@@ -111,7 +111,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		if (TeclaApp.getInstance().isSupportedIMERunning()) {
+		if (TeclaApp.getInstance().isSupportedIMERunning()
+				&& TeclaApp.persistence.isHUDRunning()) {
 			if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
