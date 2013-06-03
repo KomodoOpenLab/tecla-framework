@@ -27,16 +27,16 @@
     <string name="scan_speed">Scanning speed</string>
     <string name="scan_speed_summary">Adjust the scanning speed</string>
       
-    <!-- Category title for fullscreen -->
-    <string name="fullscreen_category">Full-screen settings</string>
-    <string name="fullscreen_settings_summary">Set heads-up display and its settinngs</string>
-    
     <!-- Category title for alternative input settings -->
     <string name="alternative_input_category">Alternative input settings</string>
     
     <!-- Option to enable fullscreen switch mode -->
-    <string name="fullscreen_switch">Full-screen switch mode</string>
-    <string name="fullscreen_switch_summary">Uses the entire screen as a single switch</string>
+    <string name="fullscreen_mode">Full-screen switch mode</string>
+    <string name="fullscreen_mode_summary">Uses the entire screen as a single switch</string>
+    
+    <!-- Category title for fullscreen -->
+    <string name="tecla_advanced_category">Advanced settings</string>
+    <string name="tecla_advanced_category_summary">Control Tecla Next components individually.</string>
     
     <!-- Option to show HUD -->
     <string name="hud_visibility">Show HUD</string>
