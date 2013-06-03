@@ -132,6 +132,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	private void initOnboarding() {
 		if (!TeclaStatic.isDefaultIMESupported(getApplicationContext()) ||
 				!TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+			if (mOnboardingDialog != null) {
+				if (mOnboardingDialog.isShowing()) {
+					mOnboardingDialog.dismiss();
+				}
+				mOnboardingDialog = null;
+			}
 			mOnboardingDialog = new OnboardingDialog(this);
 			mOnboardingDialog.setContentView(R.layout.tecla_onboarding);
 			mOnboardingDialog.setCancelable(false);
@@ -166,12 +172,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			});
 			mOnboardingDialog.show();
 		} else {
-			if (mOnboardingDialog != null) {
-				if (mOnboardingDialog.isShowing()) {
-					mOnboardingDialog.dismiss();
-				}
-				mOnboardingDialog = null;
-			}
+//			if (mOnboardingDialog != null) {
+//				if (mOnboardingDialog.isShowing()) {
+//					mOnboardingDialog.dismiss();
+//				}
+//				mOnboardingDialog = null;
+//			}
 		}
 	}
 

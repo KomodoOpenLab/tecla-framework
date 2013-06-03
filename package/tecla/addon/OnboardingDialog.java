@@ -63,6 +63,7 @@ public class OnboardingDialog extends Dialog {
 		    	if (TeclaStatic.isDefaultIMESupported(mContext)) {
 		    		mOnboardingFlipper.showNext();
 			    	if (TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+						TeclaStatic.logD(CLASS_TAG, "Enabling A11y Service!");
 			    		mOnboardingFlipper.showNext();
 			    	}
 		    	}
