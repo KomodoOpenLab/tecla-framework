@@ -100,7 +100,7 @@ public class TeclaApp extends Application {
 	
 	public Boolean isTeclaA11yServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (TeclaAccessibilityService.class.getName().equals(service.service.getClassName())) {
+	        if (TeclaStatic.A11Y_SERVICE.equals(service.service.getClassName())) {
 	            return true;
 	        }
 	    }
