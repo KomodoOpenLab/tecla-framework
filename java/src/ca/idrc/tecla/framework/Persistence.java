@@ -13,6 +13,9 @@ public class Persistence {
 	public static final String PREF_SELF_SCANNING = "self_scanning";
 	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
 	public static final String PREF_SCAN_DELAY_INT = "scan_delay_int";
+	public static final String PREF_HUD = "hud_visibility";
+	public static final String PREF_SINGLESWITCH_OVERLAY = "single_switch_overlay";
+	public static final String PREF_HUD_SELF_SCANNING = "hud_self_scanning";
 
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 
@@ -168,6 +171,33 @@ public class Persistence {
 
 	public void setInverseScanningEnabled(boolean enabled) {
 		prefs_editor.putBoolean(PREF_INVERSE_SCANNING, enabled);
+		prefs_editor.commit();
+	}
+
+	public boolean isHUDRunning() {
+		return shared_prefs.getBoolean(PREF_HUD, false);
+	}
+
+	public void setHUDRunning(boolean enabled) {
+		prefs_editor.putBoolean(PREF_HUD, enabled);
+		prefs_editor.commit();
+	}
+
+	public boolean isSingleSwitchOverlayEnabled() {
+		return shared_prefs.getBoolean(PREF_SINGLESWITCH_OVERLAY, false);
+	}
+
+	public void setSingleSwitchOverlayEnabled(boolean enabled) {
+		prefs_editor.putBoolean(PREF_SINGLESWITCH_OVERLAY, enabled);
+		prefs_editor.commit();
+	}
+
+	public boolean isHUDSelfScanningEnabled() {
+		return shared_prefs.getBoolean(PREF_HUD_SELF_SCANNING, false);
+	}
+
+	public void setHUDSelfScanningEnabled(boolean enabled) {
+		prefs_editor.putBoolean(PREF_HUD_SELF_SCANNING, enabled);
 		prefs_editor.commit();
 	}
 

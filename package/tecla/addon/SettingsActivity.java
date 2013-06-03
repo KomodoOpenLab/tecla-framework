@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -23,10 +24,12 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
-
-	private ScanSpeedDialog mScanSpeedDialog;
-
 	Preference mScanSpeedPref;
+	private ScanSpeedDialog mScanSpeedDialog;
+	
+	private CheckBoxPreference mPrefHUD;
+	private CheckBoxPreference mPrefSingleSwitchOverlay;
+	private CheckBoxPreference mPrefHUDSelfScanning;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +46,19 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
-
+		mScanSpeedPref.setOnPreferenceClickListener(this);	
 		mScanSpeedDialog = new ScanSpeedDialog(this);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
-		mScanSpeedPref.setOnPreferenceClickListener(this);		
-
+		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
+		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
+		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
+		mPrefHUDSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_HUD_SELF_SCANNING);
+		mPrefSingleSwitchOverlay.setEnabled(mPrefHUD.isChecked());
+		mPrefHUDSelfScanning.setEnabled(mPrefHUD.isChecked());
+		mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
+		mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());			
+		
 		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
 		initOnboarding();
@@ -80,8 +90,8 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 					}*/
 				}
 			}
-		}
-		if (key.equals(Persistence.PREF_INVERSE_SCANNING)) {
+			
+		} else if (key.equals(Persistence.PREF_INVERSE_SCANNING)) {
 			Persistence.getInstance().setInverseScanningEnabled(true);
 			if (mPrefInverseScanning.isChecked()) {
 				mPrefSelfScanning.setChecked(false);
@@ -99,6 +109,69 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 					}*/
 				}
 			}
+			
+		} else if (key.equals(Persistence.PREF_HUD)) {
+			if(!TeclaApp.getInstance().isTeclaA11yServiceRunning()
+					|| !TeclaApp.persistence.isHUDRunning()) {
+				mPrefHUD.setChecked(false);
+				return;
+			}
+			TeclaApp.persistence.setHUDRunning(mPrefHUD.isChecked());
+			if(mPrefHUD.isChecked()) {
+				if(!TeclaApp.a11yservice.mTeclaHUDController.isVisible()) {
+					TeclaApp.a11yservice.mTeclaHUDController.show();
+				}
+				mPrefSingleSwitchOverlay.setEnabled(true);
+				mPrefHUDSelfScanning.setEnabled(true);
+				TeclaApp.persistence.setSingleSwitchOverlayEnabled(true);
+				TeclaApp.a11yservice.mTouchInterface.show();
+				mPrefSingleSwitchOverlay.setChecked(true);
+				TeclaApp.persistence.setHUDSelfScanningEnabled(mPrefHUDSelfScanning.isChecked());
+				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.sleep(
+						TeclaApp.persistence.getScanDelay());
+				mPrefHUDSelfScanning.setChecked(true);				
+			} else {
+				if(TeclaApp.persistence.isHUDRunning()) {
+					TeclaApp.persistence.setHUDRunning(false);
+					TeclaApp.a11yservice.mTeclaHUDController.hide();
+				}
+				if(TeclaApp.persistence.isSingleSwitchOverlayEnabled()) {
+					TeclaApp.persistence.setSingleSwitchOverlayEnabled(false);
+					mPrefSingleSwitchOverlay.setChecked(false);
+					TeclaApp.a11yservice.mTouchInterface.hide();
+				}
+				if(TeclaApp.persistence.isHUDSelfScanningEnabled()) {
+					TeclaApp.persistence.setHUDSelfScanningEnabled(false);
+					mPrefHUDSelfScanning.setChecked(false);
+					TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.removeMessages(0);
+				}
+				mPrefSingleSwitchOverlay.setEnabled(false);
+				mPrefHUDSelfScanning.setEnabled(false);
+			}
+			
+		} else if (key.equals(Persistence.PREF_SINGLESWITCH_OVERLAY)) {
+			if(!TeclaApp.getInstance().isTeclaA11yServiceRunning()
+					|| !TeclaApp.persistence.isHUDRunning()
+					|| !TeclaApp.a11yservice.mTeclaHUDController.isVisible()) {
+				mPrefSingleSwitchOverlay.setChecked(false);
+				return;
+			}			
+			TeclaApp.persistence.setSingleSwitchOverlayEnabled(mPrefSingleSwitchOverlay.isChecked());
+			if(mPrefSingleSwitchOverlay.isChecked()) {
+				TeclaApp.a11yservice.mTouchInterface.show();
+			} else {
+				TeclaApp.a11yservice.mTouchInterface.hide();
+			}
+			
+		} else if (key.equals(Persistence.PREF_HUD_SELF_SCANNING)) {
+			TeclaApp.persistence.setHUDSelfScanningEnabled(mPrefHUDSelfScanning.isChecked());
+			if(mPrefHUDSelfScanning.isChecked()) {
+				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.sleep(
+						TeclaApp.persistence.getScanDelay());
+			} else {
+				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.removeMessages(0);				
+			}
+			
 		}
 
 	}

@@ -51,7 +51,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private TeclaHighlighter mTeclaHighlighter;
 	protected TeclaHUDOverlay mTeclaHUDController;
-	private SingleSwitchTouchInterface mTouchInterface;
+	protected SingleSwitchTouchInterface mTouchInterface;
 
 	public static TeclaAccessibilityService getInstance() {
 		return sInstance;
@@ -73,30 +73,32 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		register_receiver_called = false;
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
 			sInstance = this;
+			TeclaApp.setA11yserviceInstance(sInstance);
 
 			mOriginalNode = null;
 			mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 			mActionLock = new ReentrantLock();
 			
-			if (mTeclaHighlighter == null) {
+			if(mTeclaHighlighter == null)
 				mTeclaHighlighter = new TeclaHighlighter(this);
-				mTeclaHighlighter.show();
-			}
 
-			if (mTeclaHUDController == null) {
+			if (mTeclaHUDController == null) 
 				mTeclaHUDController = new TeclaHUDOverlay(this);
+			
+			if (mTouchInterface == null)
+				mTouchInterface = new SingleSwitchTouchInterface(this);
+			
+			if (TeclaApp.persistence.isHUDRunning()) {
+				mTeclaHighlighter.show();
 				mTeclaHUDController.show();
 				registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
 						new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+				performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 			}
 
-			if (mTouchInterface == null) {
-				mTouchInterface = new SingleSwitchTouchInterface(this);
+			if(TeclaApp.persistence.isSingleSwitchOverlayEnabled())
 				mTouchInterface.show();
-			}
 
-			performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
-			
 			// Bind to SwitchEventProvider
 			Intent intent = new Intent(this, SwitchEventProvider.class);
 			bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -109,7 +111,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		if (TeclaApp.getInstance().isSupportedIMERunning()) {
+		if (TeclaApp.getInstance().isSupportedIMERunning()
+				&& TeclaApp.persistence.isHUDRunning()) {
 			if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
