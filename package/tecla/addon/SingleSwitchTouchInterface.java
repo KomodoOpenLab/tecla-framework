@@ -48,12 +48,12 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				TeclaAccessibilityService.getInstance().injectSwitchEvent(
+				TeclaApp.a11yservice.injectSwitchEvent(
 						new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
 				// if (TeclaApp.DEBUG) Log.d(TeclaApp.TAG, CLASS_TAG + "Fullscreen switch down!");
 				break;
 			case MotionEvent.ACTION_UP:
-				TeclaAccessibilityService.getInstance().injectSwitchEvent(
+				TeclaApp.a11yservice.injectSwitchEvent(
 						new SwitchEvent(0,0)); //Switches released
 				// if (TeclaApp.DEBUG) Log.d(TeclaApp.TAG, CLASS_TAG + "Fullscreen switch up!");
 				break;
@@ -80,7 +80,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
 			TeclaApp.persistence.setHUDCancelled(true);
-			TeclaAccessibilityService.getInstance().shutdownInfrastructure();
+			TeclaApp.a11yservice.shutdownInfrastructure();
 			return true;
 		}
 	};

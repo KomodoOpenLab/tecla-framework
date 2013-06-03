@@ -159,7 +159,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
 			TeclaApp.persistence.setHUDCancelled(true);
-			TeclaAccessibilityService.getInstance().shutdownInfrastructure();
+			TeclaApp.a11yservice.shutdownInfrastructure();
 			return true;
 		}
 	};
@@ -170,7 +170,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 	protected void scanTrigger() {
 
-		AccessibilityNodeInfo node = TeclaAccessibilityService.getInstance().mSelectedNode;
+		AccessibilityNodeInfo node = TeclaApp.a11yservice.mSelectedNode;
 		AccessibilityNodeInfo parent = null;
 		if(node != null) parent = node.getParent();
 		int actions = 0;
