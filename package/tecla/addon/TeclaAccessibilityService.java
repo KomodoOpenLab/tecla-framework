@@ -120,17 +120,33 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public void hideHUD() {
 		if (mTeclaHUDController != null) {
 			if (mTeclaHUDController.isVisible()) {
+				//FIXME: Abstract into unregisterConfigReceiver() method on mTeclaHUDController
+				unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
 				mTeclaHUDController.hide();
+			}
+		}
+		if (mTeclaHighlighter != null) {
+			if (mTeclaHighlighter.isVisible()) {
+				mTeclaHighlighter.hide();
 			}
 		}
 	}
 
 	public void showHUD() {
+		if (mTeclaHighlighter != null) {
+			if (!mTeclaHighlighter.isVisible()) {
+				mTeclaHighlighter.show();
+			}
+		}
 		if (mTeclaHUDController != null) {
 			if (!mTeclaHUDController.isVisible()) {
 				mTeclaHUDController.show();
 			}
 		}
+		//FIXME: Abstract into registerConfigReceiver() method on mTeclaHUDController
+		registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
+				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 	}
 
 	public void hideFullscreenSwitch() {
@@ -169,8 +185,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		if (TeclaApp.getInstance().isSupportedIMERunning()
-				&& TeclaApp.persistence.isHUDRunning()) {
+		if (TeclaApp.getInstance().isSupportedIMERunning()) {
 			if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
