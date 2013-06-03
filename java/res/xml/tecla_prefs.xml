@@ -3,7 +3,7 @@
     android:key="english_ime_settings" >
 
     <CheckBoxPreference
-        android:key="fullscreen_switch"
+        android:key="fullscreen_mode"
         android:persistent="true"
         android:summary="@string/fullscreen_mode_summary"
         android:title="@string/fullscreen_mode" />
