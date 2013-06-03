@@ -18,7 +18,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ViewFlipper;
 
-public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener, OnPreferenceChangeListener {
+
+	private final static String CLASS_TAG = "TeclaSettings";
 
 	private SettingsActivity sInstance;
 
@@ -28,9 +30,9 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
 	
-	private CheckBoxPreference mPrefHUD;
-	private CheckBoxPreference mPrefSingleSwitchOverlay;
-	private CheckBoxPreference mPrefHUDSelfScanning;
+//	private CheckBoxPreference mPrefHUD;
+//	private CheckBoxPreference mPrefSingleSwitchOverlay;
+//	private CheckBoxPreference mPrefHUDSelfScanning;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +50,9 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
-		mScanSpeedPref.setOnPreferenceClickListener(this);	
-		mScanSpeedDialog = new ScanSpeedDialog(this);
+		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
+		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
+		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
 //		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
@@ -72,21 +75,32 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			mScanSpeedDialog.show();
 			return true;
 		}
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see android.preference.Preference.OnPreferenceChangeListener#onPreferenceChange(android.preference.Preference, java.lang.Object)
+	 */
+	@Override
+	public boolean onPreferenceChange(Preference pref, Object newValue) {
 		if(pref.equals(mFullscreenMode)) {
-			if (mFullscreenMode.isChecked()) {
-				TeclaApp.a11yservice.hideFullscreenSwitch();
-				TeclaApp.a11yservice.stopScanning();				
-				TeclaApp.a11yservice.hideHUD();
-			} else {
+			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
+			if (newValue.toString().equals("true")) {
 				TeclaApp.a11yservice.showHUD();
 				TeclaApp.a11yservice.startScanning();
 				TeclaApp.a11yservice.showFullscreenSwitch();
+			} else {
+				TeclaApp.a11yservice.hideFullscreenSwitch();
+				TeclaApp.a11yservice.stopScanning();				
+				TeclaApp.a11yservice.hideHUD();
 			}
 			return true;
 		}
 		return false;
 	}
 
+	
+	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
