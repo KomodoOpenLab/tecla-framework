@@ -320,11 +320,11 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		hudParams.get(HUD_BTN_BOTTOMRIGHT).width = size_reference;
 		hudParams.get(HUD_BTN_BOTTOMRIGHT).height = size_reference;
 		hudParams.get(HUD_BTN_LEFT).width = Math.round(side_width_proportion * size_reference);
-		hudParams.get(HUD_BTN_LEFT).height = display_height - (2 * size_reference);
+		hudParams.get(HUD_BTN_LEFT).height = display_height - (2 * size_reference) - getStatusBarHeight();
 		hudParams.get(HUD_BTN_TOP).width = display_width - (2 * size_reference);
 		hudParams.get(HUD_BTN_TOP).height = Math.round(side_width_proportion * size_reference);
 		hudParams.get(HUD_BTN_RIGHT).width = Math.round(side_width_proportion * size_reference);
-		hudParams.get(HUD_BTN_RIGHT).height = display_height - (2 * size_reference);
+		hudParams.get(HUD_BTN_RIGHT).height = display_height - (2 * size_reference) - getStatusBarHeight();
 		hudParams.get(HUD_BTN_BOTTOM).width = display_width - (2 * size_reference);
 		hudParams.get(HUD_BTN_BOTTOM).height = Math.round(side_width_proportion * size_reference);
 
@@ -353,6 +353,15 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
 
+	private int getStatusBarHeight() {
+		  int result = 0;
+		  int resourceId = this.getRootView().getResources().getIdentifier("status_bar_height", "dimen", "android");
+		  if (resourceId > 0) {
+		      result = getRootView().getResources().getDimensionPixelSize(resourceId);
+		  }
+		  return result;
+	}
+	
 	class AutoScanHandler extends Handler {
 		public AutoScanHandler() {
 
