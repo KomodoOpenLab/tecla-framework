@@ -101,9 +101,11 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	// memory storage for HUD values during preview
 	private boolean[] mHUDPadHighlightVal;
 	private float[] mHUDPadAlphaVal;
+	private boolean mIsPreview = false;
 	
-	public void setPreviewHUD(boolean preview) {
+	public void setPreviewHUD(boolean preview) {		
 		if(preview) {
+			mIsPreview = true;
 			for(int i=0; i<mHUDPad.size(); ++i) {
 				mHUDPadHighlightVal[i] = mHUDPad.get(i).isHighlighted();
 				mHUDPadAlphaVal[i] = mHUDPad.get(i).getAlpha();
@@ -115,7 +117,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 				mHUDPad.get(i).setHighlighted(mHUDPadHighlightVal[i]);
 				mHUDPad.get(i).setAlpha(mHUDPadAlphaVal[i]);
 			}
+			mIsPreview = false;
 		}
+	}
+	
+	public boolean isPreview() {
+		return mIsPreview;
 	}
 	
 	@Override

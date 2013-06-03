@@ -146,7 +146,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		//FIXME: Abstract into registerConfigReceiver() method on mTeclaHUDController
 		registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
 				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 	}
 
 	public void hideFullscreenSwitch() {
@@ -177,6 +176,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public void hidePreviewHUD() {
 		mTeclaHUDController.setPreviewHUD(false);
 		hideHUD();
+	}
+	
+	public boolean isPreviewHUD() {
+		return mTeclaHUDController.isPreview();
 	}
 	
 	@Override

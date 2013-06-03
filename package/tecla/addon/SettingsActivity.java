@@ -4,6 +4,7 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
+import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -87,6 +88,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.a11yservice.showHUD();
+				TeclaAccessibilityService.sendGlobalHomeAction();
 				TeclaApp.persistence.setSelfScanningEnabled(true);
 				AutomaticScan.startAutoScan();;
 				TeclaApp.a11yservice.showFullscreenSwitch();
