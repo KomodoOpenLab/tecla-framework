@@ -19,11 +19,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ViewFlipper;
 
-public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
+public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
 
 	private final static String CLASS_TAG = "TeclaSettings";
 
-	private SettingsActivity sInstance;
+	private TeclaSettingsActivity sInstance;
 
 	private CheckBoxPreference mFullscreenMode;
 	private CheckBoxPreference mPrefSelfScanning;
