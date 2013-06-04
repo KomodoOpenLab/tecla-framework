@@ -587,6 +587,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
 	}	
 
+	public static void sendGlobalNotificationAction() {
+		if(sInstance == null) return;
+		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);		
+	}	
+
 	public void injectSwitchEvent(SwitchEvent event) {
 		switch_event_provider.injectSwitchEvent(event);
 	}

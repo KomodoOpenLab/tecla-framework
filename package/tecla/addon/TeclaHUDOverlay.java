@@ -210,7 +210,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
 		case HUD_BTN_TOPLEFT:
-			TeclaAccessibilityService.sendGlobalHomeAction();
+			TeclaAccessibilityService.sendGlobalNotificationAction();
 			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
 				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
 				TeclaApp.ime.pressHomeKey();
