@@ -343,7 +343,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
 
-		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
+		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
 		mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
 		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
 		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
