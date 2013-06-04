@@ -464,6 +464,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 		public void run() {
 			AccessibilityNodeInfo node;
+			if(direction == DIRECTION_UP
+					&& isFirstScrollNode(current_node) 
+					&& !isInsideParent(current_node)) {
+				current_node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				return;
+			} 
+			if(direction == DIRECTION_DOWN	
+					&& isLastScrollNode(current_node) 
+					&& !isInsideParent(current_node)) {
+				current_node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				return;
+			} 
 			mActionLock.lock();
 			node = findNeighbourNode(current_node, direction );
 			if(node == null) {
@@ -488,16 +500,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				TeclaApp.a11yservice.mSelectedNode = node;
 			}
 			mActionLock.unlock(); 
-
-			if(isFirstScrollNode(node) && !isInsideParent(node)) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-				return;
-			} 
-
-			if(isLastScrollNode(node) && !isInsideParent(node)) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-				return;
-			} 
 
 			TeclaHighlighter.highlightNode(TeclaApp.a11yservice.mSelectedNode);
 		}
