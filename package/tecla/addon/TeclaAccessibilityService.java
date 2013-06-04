@@ -39,7 +39,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static int DIRECTION_DOWN_NORATIOCONSTRAINT = 7;
 	private final static int DIRECTION_ANY = 8;
 
-	protected static TeclaAccessibilityService sInstance;
+	//private static TeclaAccessibilityService sInstance;
 
 	private Boolean register_receiver_called;
 
@@ -52,10 +52,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private TeclaHighlighter mTeclaHighlighter;
 	private TeclaHUDOverlay mTeclaHUDController;
 	private SingleSwitchTouchInterface mFullscreenSwitch;
-
-//	public static TeclaAccessibilityService getInstance() {
-//		return sInstance;
-//	}
 
 	protected static ReentrantLock mActionLock;
 
@@ -72,8 +68,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void init() {
 		register_receiver_called = false;
 
-		sInstance = this;
-		TeclaApp.setA11yserviceInstance(sInstance);
+		TeclaApp.setA11yserviceInstance(this);
 
 		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
@@ -300,7 +295,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		int y = refOutBounds.centerY();
 		Rect outBounds = new Rect();
 		AccessibilityNodeInfo result = null; 
-		for (AccessibilityNodeInfo node: TeclaAccessibilityService.sInstance.mActiveNodes ) {
+		for (AccessibilityNodeInfo node: TeclaApp.a11yservice.mActiveNodes ) {
 			if(refnode.equals(node) && direction != DIRECTION_ANY) continue; 
 			node.getBoundsInScreen(outBounds);
 			r2 = (x - outBounds.centerX())*(x - outBounds.centerX()) 
@@ -348,10 +343,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	public static void clickActiveNode() {
-		if(sInstance.mActiveNodes.size() == 0) return;
-		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0); 
-		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-		if(TeclaAccessibilityService.sInstance.isHUDShowing()) 
+		if(TeclaApp.a11yservice.mActiveNodes.size() == 0) return;
+		if(TeclaApp.a11yservice.mSelectedNode == null) TeclaApp.a11yservice.mSelectedNode = TeclaApp.a11yservice.mActiveNodes.get(0); 
+		TeclaApp.a11yservice.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+		if(TeclaApp.a11yservice.isHUDShowing()) 
 			TeclaHighlighter.clearHighlight();
 	}
 
@@ -586,18 +581,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	public static void sendGlobalBackAction() {
-		if(sInstance == null) return;
-		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+		if(TeclaApp.a11yservice == null) return;
+		TeclaApp.a11yservice.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
 	}
 
 	public static void sendGlobalHomeAction() {
-		if(sInstance == null) return;
-		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
+		if(TeclaApp.a11yservice == null) return;
+		TeclaApp.a11yservice.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
 	}	
 
 	public static void sendGlobalNotificationAction() {
-		if(sInstance == null) return;
-		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);		
+		if(TeclaApp.a11yservice == null) return;
+		TeclaApp.a11yservice.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);		
 	}	
 
 	public void injectSwitchEvent(SwitchEvent event) {
