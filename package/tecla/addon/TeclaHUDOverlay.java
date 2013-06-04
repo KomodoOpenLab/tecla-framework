@@ -302,8 +302,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		int size_reference = 0;
 		if (display_width <= display_height) { // Portrait (use width)
 			size_reference = Math.round(display_width * 0.24f);
+			display_height -= getStatusBarHeight();
 		} else { // Landscape (use height)
 			size_reference = Math.round(display_height * 0.24f);
+			display_width -= getStatusBarHeight();
 		}
 
 		ArrayList<ViewGroup.LayoutParams> hudParams = new ArrayList<ViewGroup.LayoutParams>();
@@ -320,11 +322,11 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		hudParams.get(HUD_BTN_BOTTOMRIGHT).width = size_reference;
 		hudParams.get(HUD_BTN_BOTTOMRIGHT).height = size_reference;
 		hudParams.get(HUD_BTN_LEFT).width = Math.round(side_width_proportion * size_reference);
-		hudParams.get(HUD_BTN_LEFT).height = display_height - (2 * size_reference) - getStatusBarHeight();
+		hudParams.get(HUD_BTN_LEFT).height = display_height - (2 * size_reference);
 		hudParams.get(HUD_BTN_TOP).width = display_width - (2 * size_reference);
 		hudParams.get(HUD_BTN_TOP).height = Math.round(side_width_proportion * size_reference);
 		hudParams.get(HUD_BTN_RIGHT).width = Math.round(side_width_proportion * size_reference);
-		hudParams.get(HUD_BTN_RIGHT).height = display_height - (2 * size_reference) - getStatusBarHeight();
+		hudParams.get(HUD_BTN_RIGHT).height = display_height - (2 * size_reference);
 		hudParams.get(HUD_BTN_BOTTOM).width = display_width - (2 * size_reference);
 		hudParams.get(HUD_BTN_BOTTOM).height = Math.round(side_width_proportion * size_reference);
 
