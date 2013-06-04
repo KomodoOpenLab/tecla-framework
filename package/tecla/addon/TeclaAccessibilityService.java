@@ -177,10 +177,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return mTeclaHUDController.isPreview();
 	}
 	
-	public boolean isHUDShowing() {
-		return mTeclaHUDController.isHUDShowing();
-	}
-	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
@@ -346,7 +342,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(TeclaApp.a11yservice.mActiveNodes.size() == 0) return;
 		if(TeclaApp.a11yservice.mSelectedNode == null) TeclaApp.a11yservice.mSelectedNode = TeclaApp.a11yservice.mActiveNodes.get(0); 
 		TeclaApp.a11yservice.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-		if(TeclaApp.a11yservice.isHUDShowing()) 
+		if(TeclaApp.a11yservice.isHUDVisible()) 
 			TeclaHighlighter.clearHighlight();
 	}
 

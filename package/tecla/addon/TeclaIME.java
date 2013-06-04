@@ -67,7 +67,7 @@ public class TeclaIME extends InputMethodService {
 		super.onStartInputView(info, restarting);
 		TeclaApp.persistence.setIMEShowing(true);
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
-				&& TeclaApp.a11yservice.isHUDShowing()) {
+				&& TeclaApp.a11yservice.isHUDVisible()) {
 			TeclaApp.a11yservice.hideHUD();			
 		}
 	}
@@ -77,7 +77,7 @@ public class TeclaIME extends InputMethodService {
 		IMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
-				&& !TeclaApp.a11yservice.isHUDShowing()) {
+				&& !TeclaApp.a11yservice.isHUDVisible()) {
 			TeclaApp.a11yservice.showHUD();
 		}
 		super.onFinishInputView(finishingInput);
