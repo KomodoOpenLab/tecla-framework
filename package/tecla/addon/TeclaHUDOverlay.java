@@ -46,7 +46,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private float side_width_proportion;
 	private float stroke_width_proportion;
 	private float scan_alpha_max;
-	private boolean mHUDShowing;
 
 	private final WindowManager mWindowManager;
 	private static TeclaHUDOverlay sInstance;
@@ -79,7 +78,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		rView.setOnLongClickListener(mOverlayLongClickListener);
 		rView.setOnClickListener(mOverlayClickListener);*/
 
-		mHUDShowing = false;
 		findAllButtons();        
 		fixHUDLayout();
 
@@ -127,20 +125,14 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		return mIsPreview;
 	}
 	
-	public boolean isHUDShowing() {
-		return mHUDShowing;
-	}
-	
 	@Override
 	protected void onShow() {
 		sInstance = this;
-		mHUDShowing = true;
 	}
 
 	@Override
 	protected void onHide() {
 		sInstance = null;
-		mHUDShowing = false;
 	}
 
 	protected BroadcastReceiver mConfigChangeReceiver = new BroadcastReceiver() {
