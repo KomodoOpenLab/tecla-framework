@@ -394,6 +394,8 @@ public class IMEAdapter {
 										WordPredictionAdapter.selectHighlighted();
 									} else if(sCurrentRow == sRowCount + 1) {
 										TeclaApp.ime.requestHideSelf(0);
+										TeclaApp.a11yservice.hidePreviewHUD();
+										TeclaApp.a11yservice.showHUD();
 									} else {									
 										sState = SCAN_COLUMN;
 										highlightKeys(sKeyStartIndex, sKeyEndIndex, false);

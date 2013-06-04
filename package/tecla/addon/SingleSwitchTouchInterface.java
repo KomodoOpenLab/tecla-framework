@@ -1,5 +1,6 @@
 package com.android.tecla.addon;
 
+import ca.idrc.tecla.R;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -25,6 +26,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		setParams(params);
 
 		View rView = getRootView();
+		rView.setBackgroundResource(R.drawable.screen_switch_background_normal);
 		rView.setOnTouchListener(mOverlayTouchListener);
 		rView.setOnLongClickListener(mOverlayLongClickListener);
 		//rView.setOnClickListener(mOverlayClickListener);
@@ -48,11 +50,13 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
+				sInstance.getRootView().setBackgroundResource(R.drawable.screen_switch_background_pressed);
 				TeclaApp.a11yservice.injectSwitchEvent(
 						new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
 				// if (TeclaApp.DEBUG) Log.d(TeclaApp.TAG, CLASS_TAG + "Fullscreen switch down!");
 				break;
 			case MotionEvent.ACTION_UP:
+				sInstance.getRootView().setBackgroundResource(R.drawable.screen_switch_background_normal);
 				TeclaApp.a11yservice.injectSwitchEvent(
 						new SwitchEvent(0,0)); //Switches released
 				// if (TeclaApp.DEBUG) Log.d(TeclaApp.TAG, CLASS_TAG + "Fullscreen switch up!");

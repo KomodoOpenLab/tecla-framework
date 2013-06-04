@@ -93,16 +93,19 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
 		}
 
-		if(TeclaApp.persistence.isSelfScanningEnabled())
-			mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+		if(TeclaApp.persistence.isSelfScanningEnabled()) {
+			AutomaticScan.startAutoScan();
+		}
 	}
 
 	// memory storage for HUD values during preview
 	private boolean[] mHUDPadHighlightVal;
 	private float[] mHUDPadAlphaVal;
+	private boolean mIsPreview = false;
 	
-	public void setPreviewHUD(boolean preview) {
+	public void setPreviewHUD(boolean preview) {		
 		if(preview) {
+			mIsPreview = true;
 			for(int i=0; i<mHUDPad.size(); ++i) {
 				mHUDPadHighlightVal[i] = mHUDPad.get(i).isHighlighted();
 				mHUDPadAlphaVal[i] = mHUDPad.get(i).getAlpha();
@@ -114,7 +117,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 				mHUDPad.get(i).setHighlighted(mHUDPadHighlightVal[i]);
 				mHUDPad.get(i).setAlpha(mHUDPadAlphaVal[i]);
 			}
+			mIsPreview = false;
 		}
+	}
+	
+	public boolean isPreview() {
+		return mIsPreview;
 	}
 	
 	@Override
@@ -210,7 +218,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
 		case HUD_BTN_TOPLEFT:
-			TeclaAccessibilityService.sendGlobalHomeAction();
+			TeclaAccessibilityService.sendGlobalNotificationAction();
 			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
 				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
 				TeclaApp.ime.pressHomeKey();
@@ -219,7 +227,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 		
 		if(TeclaApp.persistence.isSelfScanningEnabled())
-			mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+			AutomaticScan.resetTimer();
 	}
 
 	protected void scanPrevious() {
@@ -345,7 +353,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
 
-		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
+		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
 		mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
 		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
 		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
@@ -354,7 +362,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
 		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
-
 	private int getStatusBarHeight() {
 		  int result = 0;
 		  int resourceId = this.getRootView().getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -364,22 +371,4 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		  return result;
 	}
 	
-	class AutoScanHandler extends Handler {
-		public AutoScanHandler() {
-
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			TeclaHUDOverlay.this.scanNext();
-			sleep(TeclaApp.persistence.getScanDelay());
-		}
-
-		public void sleep(long delayMillis) {
-			removeMessages(0);
-			sendMessageDelayed(obtainMessage(0), delayMillis);
-		}
-	}
-	AutoScanHandler mAutoScanHandler = new AutoScanHandler();
-
 }

@@ -146,7 +146,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		//FIXME: Abstract into registerConfigReceiver() method on mTeclaHUDController
 		registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
 				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 	}
 
 	public void hideFullscreenSwitch() {
@@ -165,14 +164,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
-	public void stopScanning() {
-		mTeclaHUDController.mAutoScanHandler.removeMessages(0);
+	public void scanNextHUDButton() {
+		mTeclaHUDController.scanNext();
 	}
-
-	public void startScanning() {
-		mTeclaHUDController.mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
-	}
-
+	
 	public void showPreviewHUD() {
 		mTeclaHUDController.setPreviewHUD(true);
 		showHUD();
@@ -181,6 +176,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public void hidePreviewHUD() {
 		mTeclaHUDController.setPreviewHUD(false);
 		hideHUD();
+	}
+	
+	public boolean isPreviewHUD() {
+		return mTeclaHUDController.isPreview();
 	}
 	
 	@Override
@@ -348,7 +347,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(sInstance.mActiveNodes.size() == 0) return;
 		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0); 
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-		TeclaHighlighter.clearHighlight();
+		if(TeclaApp.persistence.isHUDShowing()) 
+			TeclaHighlighter.clearHighlight();
 	}
 
 	//	public static void selectActiveNode(int index) {
@@ -411,6 +411,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			default:
 				break;
 			}
+			if(TeclaApp.persistence.isSelfScanningEnabled())
+				AutomaticScan.setExtendedTimer();
 		}
 	}
 
@@ -463,6 +465,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 		public void run() {
 			AccessibilityNodeInfo node;
+			if(direction == DIRECTION_UP
+					&& isFirstScrollNode(current_node) 
+					&& !isInsideParent(current_node)) {
+				current_node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				return;
+			} 
+			if(direction == DIRECTION_DOWN	
+					&& isLastScrollNode(current_node) 
+					&& !isInsideParent(current_node)) {
+				current_node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				return;
+			} 
 			mActionLock.lock();
 			node = findNeighbourNode(current_node, direction );
 			if(node == null) {
@@ -487,16 +501,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				TeclaApp.a11yservice.mSelectedNode = node;
 			}
 			mActionLock.unlock(); 
-
-			if(isFirstScrollNode(node) && !isInsideParent(node)) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-				return;
-			} 
-
-			if(isLastScrollNode(node) && !isInsideParent(node)) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-				return;
-			} 
 
 			TeclaHighlighter.highlightNode(TeclaApp.a11yservice.mSelectedNode);
 		}
@@ -585,6 +589,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public static void sendGlobalHomeAction() {
 		if(sInstance == null) return;
 		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
+	}	
+
+	public static void sendGlobalNotificationAction() {
+		if(sInstance == null) return;
+		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);		
 	}	
 
 	public void injectSwitchEvent(SwitchEvent event) {
