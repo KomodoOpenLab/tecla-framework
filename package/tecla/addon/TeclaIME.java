@@ -26,8 +26,8 @@ public class TeclaIME extends InputMethodService {
 	private int[] mKeyBuff = new int[6];
 	private int mKeyCount = 0;
 	
-	protected static TeclaIME sInstance;
-
+	private static TeclaIME sInstance;
+	
 	private Handler mHandler = new Handler() {
 
 		@Override
@@ -44,7 +44,7 @@ public class TeclaIME extends InputMethodService {
 				}
 			} else if(msg.what == SHIELDEVENT_TIMEOUT) {
 				if(mKeyCount == 1) 
-					TeclaApp.ime.keyDownUp(mKeyBuff[0]);
+					sInstance.keyDownUp(mKeyBuff[0]);
 				mKeyCount = 0;
 				
 			}
@@ -57,7 +57,7 @@ public class TeclaIME extends InputMethodService {
 	public void onCreate() {
 		super.onCreate();
 		sInstance = this;
-		TeclaApp.setIMEInstance(sInstance);
+		TeclaApp.setIMEInstance(this);
 		TeclaStatic.logD(CLASS_TAG, "Created " + TeclaIME.class.getName());
 	}
 	
