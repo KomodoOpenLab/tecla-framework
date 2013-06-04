@@ -146,7 +146,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		//FIXME: Abstract into registerConfigReceiver() method on mTeclaHUDController
 		registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
 				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-		performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 	}
 
 	public void hideFullscreenSwitch() {
@@ -165,14 +164,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
-	public void stopScanning() {
-		mTeclaHUDController.mAutoScanHandler.removeMessages(0);
+	public void scanNextHUDButton() {
+		mTeclaHUDController.scanNext();
 	}
-
-	public void startScanning() {
-		mTeclaHUDController.mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
-	}
-
+	
 	public void showPreviewHUD() {
 		mTeclaHUDController.setPreviewHUD(true);
 		showHUD();
@@ -181,6 +176,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public void hidePreviewHUD() {
 		mTeclaHUDController.setPreviewHUD(false);
 		hideHUD();
+	}
+	
+	public boolean isPreviewHUD() {
+		return mTeclaHUDController.isPreview();
 	}
 	
 	@Override
@@ -411,6 +410,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			default:
 				break;
 			}
+			if(TeclaApp.persistence.isSelfScanningEnabled())
+				AutomaticScan.setExtendedTimer();
 		}
 	}
 

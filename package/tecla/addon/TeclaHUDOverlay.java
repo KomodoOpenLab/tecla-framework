@@ -93,16 +93,19 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
 		}
 
-		if(TeclaApp.persistence.isSelfScanningEnabled())
-			mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+		if(TeclaApp.persistence.isSelfScanningEnabled()) {
+			AutomaticScan.startAutoScan();
+		}
 	}
 
 	// memory storage for HUD values during preview
 	private boolean[] mHUDPadHighlightVal;
 	private float[] mHUDPadAlphaVal;
+	private boolean mIsPreview = false;
 	
-	public void setPreviewHUD(boolean preview) {
+	public void setPreviewHUD(boolean preview) {		
 		if(preview) {
+			mIsPreview = true;
 			for(int i=0; i<mHUDPad.size(); ++i) {
 				mHUDPadHighlightVal[i] = mHUDPad.get(i).isHighlighted();
 				mHUDPadAlphaVal[i] = mHUDPad.get(i).getAlpha();
@@ -114,7 +117,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 				mHUDPad.get(i).setHighlighted(mHUDPadHighlightVal[i]);
 				mHUDPad.get(i).setAlpha(mHUDPadAlphaVal[i]);
 			}
+			mIsPreview = false;
 		}
+	}
+	
+	public boolean isPreview() {
+		return mIsPreview;
 	}
 	
 	@Override
@@ -219,7 +227,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 		
 		if(TeclaApp.persistence.isSelfScanningEnabled())
-			mAutoScanHandler.sleep(TeclaApp.persistence.getScanDelay());
+			AutomaticScan.resetTimer();
 	}
 
 	protected void scanPrevious() {
@@ -352,23 +360,4 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
 		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
-
-	class AutoScanHandler extends Handler {
-		public AutoScanHandler() {
-
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			TeclaHUDOverlay.this.scanNext();
-			sleep(TeclaApp.persistence.getScanDelay());
-		}
-
-		public void sleep(long delayMillis) {
-			removeMessages(0);
-			sendMessageDelayed(obtainMessage(0), delayMillis);
-		}
-	}
-	AutoScanHandler mAutoScanHandler = new AutoScanHandler();
-
 }
