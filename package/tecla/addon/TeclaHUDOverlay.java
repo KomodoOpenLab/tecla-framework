@@ -316,8 +316,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		int size_reference = 0;
 		if (display_width <= display_height) { // Portrait (use width)
 			size_reference = Math.round(display_width * 0.24f);
+			display_height -= getStatusBarHeight();
 		} else { // Landscape (use height)
 			size_reference = Math.round(display_height * 0.24f);
+			display_width -= getStatusBarHeight();
 		}
 
 		ArrayList<ViewGroup.LayoutParams> hudParams = new ArrayList<ViewGroup.LayoutParams>();
@@ -366,4 +368,13 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
 		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
+	private int getStatusBarHeight() {
+		  int result = 0;
+		  int resourceId = this.getRootView().getResources().getIdentifier("status_bar_height", "dimen", "android");
+		  if (resourceId > 0) {
+		      result = getRootView().getResources().getDimensionPixelSize(resourceId);
+		  }
+		  return result;
+	}
+	
 }
