@@ -67,18 +67,18 @@ public class TeclaHighlighter extends SimpleOverlay {
         sInstance.mInnerBounds.postInvalidate();
     }
 
-    public static void highlightNode(AccessibilityNodeInfo announced) {
+    public static void highlightNode(AccessibilityNodeInfo node) {
         if (sInstance == null) {
             return;
         }
 
         clearHighlight();
-        if(announced != null) {
+        if(node != null) {
             sInstance.mOuterBounds.setStrokeWidth(20);
-            sInstance.mOuterBounds.add(announced);
+            sInstance.mOuterBounds.add(node);
             sInstance.mOuterBounds.postInvalidate();        	
             sInstance.mInnerBounds.setStrokeWidth(6);
-            sInstance.mInnerBounds.add(announced);
+            sInstance.mInnerBounds.add(node);
             sInstance.mInnerBounds.postInvalidate();
         	
         }

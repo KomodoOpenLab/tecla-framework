@@ -220,10 +220,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
-			TeclaHighlighter.highlightNode(mSelectedNode);	
+			TeclaHighlighter.highlightNode(mSelectedNode);
+			mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 			if(mPreviousOriginalNode != null) mPreviousOriginalNode.recycle();
 		}
-		//		TeclaHighlighter.highlightNode(mActiveNodes.get(0));
 	}
 
 	private void searchActiveNodesBFS(AccessibilityNodeInfo node) {
@@ -499,6 +499,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mActionLock.unlock(); 
 
 			TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
+			sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 		}
 	}
 
