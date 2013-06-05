@@ -134,11 +134,20 @@ public class TeclaApp extends Application {
 	}
 	
 	public void turnFullscreenOn() {
-		a11yservice.showHUD();
-		TeclaAccessibilityService.sendGlobalHomeAction();
 		persistence.setSelfScanningEnabled(true);
-		AutomaticScan.startAutoScan();;
-		a11yservice.showFullscreenSwitch();
+		AutomaticScan.startAutoScan();
+		if (a11yservice != null) {
+			a11yservice.showHUD();
+			a11yservice.showFullscreenSwitch();
+			a11yservice.sendGlobalHomeAction();
+		}
+	}
+	
+	public void turnFullscreenOff() {
+		TeclaApp.a11yservice.hideFullscreenSwitch();
+		TeclaApp.persistence.setSelfScanningEnabled(false);
+		AutomaticScan.stopAutoScan();				
+		TeclaApp.a11yservice.hideHUD();
 	}
 	
 	public void answerCall() {

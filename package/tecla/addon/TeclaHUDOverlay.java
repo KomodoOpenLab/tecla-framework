@@ -159,17 +159,17 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 	};	
 
-	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
-
-		@Override
-		public boolean onLongClick(View v) {
-			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-			TeclaApp.persistence.setHUDCancelled(true);
-			TeclaApp.a11yservice.shutdownInfrastructure();
-			return true;
-		}
-	};
-
+//	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
+//
+//		@Override
+//		public boolean onLongClick(View v) {
+//			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
+//			TeclaApp.persistence.setHUDCancelled(true);
+//			TeclaApp.a11yservice.shutdownInfrastructure();
+//			return true;
+//		}
+//	};
+//
 	public static void selectScanHighlighted() {
 		TeclaHUDOverlay.sInstance.scanTrigger();
 	}
@@ -209,14 +209,14 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			TeclaAccessibilityService.clickActiveNode();
 			break;
 		case HUD_BTN_BOTTOMLEFT:
-			TeclaAccessibilityService.sendGlobalBackAction();
+			TeclaApp.a11yservice.sendGlobalBackAction();
 			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
 				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
 				TeclaApp.ime.pressBackKey();
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
 		case HUD_BTN_TOPLEFT:
-			TeclaAccessibilityService.sendGlobalHomeAction();
+			TeclaApp.a11yservice.sendGlobalHomeAction();
 			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
 				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
 				TeclaApp.ime.pressHomeKey();
