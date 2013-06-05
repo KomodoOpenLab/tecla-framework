@@ -111,6 +111,10 @@ public class Persistence {
 		return is_hud_cancelled;
 	}
 
+	public boolean isFullscreenEnabled() {
+		return shared_prefs.getBoolean(PREF_FULLSCREEN_MODE, false);
+	}
+
 	// TODO: This method depends only on full-screen mode now, but will likely depend on other preferences later on
 	public boolean shouldShowHUD() {
 		return shared_prefs.getBoolean(PREF_FULLSCREEN_MODE, false);
