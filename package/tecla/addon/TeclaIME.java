@@ -30,21 +30,22 @@ public class TeclaIME extends InputMethodService {
 	private static final int KEYCODE_SHIELD_J4 = 93;
 	private static final int KEYCODE_SHIELD_ALLUP = 7;
 
-	private static final int SHIELD_KEYEVENT_TIMEOUT = 100;  //milliseconds
-	private static final int IMESCAN_SETUP_MSG = 0x2244;
-	private static final int SHIELD_KEYEVENT_TIMEOUT_MSG = 0x4466;
 	private static final int TOTAL_SHIELD_KEY_COUNT = 6;
+	private static final int SHIELD_KEYEVENT_TIMEOUT = 200;  //milliseconds
+//	private static final int MSG_REQUEST_SHOW_IME = 0x7755;
+	private static final int MSG_IMESCAN_SETUP = 0x2244;
+	private static final int MSG_SHIELD_KEYEVENT_TIMEOUT = 0x4466;
 	
 	private int[] mShieldKeyBuff = new int[TOTAL_SHIELD_KEY_COUNT];
 	private int mShieldKeyCount = 0;
 	
-	private static TeclaIME sInstance;
+//	private static TeclaIME sInstance;
 	
 	private Handler mHandler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			if(msg.what == IMESCAN_SETUP_MSG) {
+			if(msg.what == MSG_IMESCAN_SETUP) {
 				KeyboardView kbv = KeyboardSwitcher.getInstance().getKeyboardView();
 				boolean kb_ready = IMEAdapter.setKeyboardView(kbv);
 				if(!kb_ready) {
@@ -54,7 +55,8 @@ public class TeclaIME extends InputMethodService {
 					}
 				} else {
 				}
-			} else if(msg.what == SHIELD_KEYEVENT_TIMEOUT_MSG) {
+			}
+			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
 				TeclaStatic.logD(CLASS_TAG, "Shield Timeout expired!");
 				cancelShieldKeyTimeout();
 //				if(mShieldKeyCount < TOTAL_SHIELD_KEY_COUNT) {
@@ -65,15 +67,28 @@ public class TeclaIME extends InputMethodService {
 //				}
 				mShieldKeyCount = 0;				
 			}
+/*			if(msg.what == MSG_REQUEST_SHOW_IME) {
+				showWindow(true);
+				updateInputViewShown();
+			}*/
 			super.handleMessage(msg);
 		}
 		
 	};
 	
+	/* (non-Javadoc)
+	 * @see android.inputmethodservice.InputMethodService#onEvaluateInputViewShown()
+	 */
+	@Override
+	public boolean onEvaluateInputViewShown() {
+		if (TeclaApp.persistence.isFullscreenEnabled()) return true;
+		return super.onEvaluateInputViewShown();
+	}
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		sInstance = this;
+//		sInstance = this;
 		TeclaApp.setIMEInstance(this);
 		TeclaStatic.logD(CLASS_TAG, "Created " + TeclaIME.class.getName());
 	}
@@ -81,7 +96,7 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public void onStartInputView(EditorInfo info, boolean restarting) {
 		Message msg = new Message();
-		msg.what = IMESCAN_SETUP_MSG;
+		msg.what = MSG_IMESCAN_SETUP;
 		msg.arg1 = 0;
 		mHandler.sendMessageDelayed(msg, 250);
 		super.onStartInputView(info, restarting);
@@ -173,29 +188,19 @@ public class TeclaIME extends InputMethodService {
 	}
 
 	private void cancelShieldKeyTimeout () {
-		mHandler.removeMessages(SHIELD_KEYEVENT_TIMEOUT_MSG);
+		mHandler.removeMessages(MSG_SHIELD_KEYEVENT_TIMEOUT);
 	}
 
 	private void expireDelayedShieldKeyTimeout (int delay) {
 		cancelShieldKeyTimeout();
 		Message msg = new Message();
-		msg.what = SHIELD_KEYEVENT_TIMEOUT_MSG;
+		msg.what = MSG_SHIELD_KEYEVENT_TIMEOUT;
 		msg.arg1 = 0;
 		mHandler.sendMessageDelayed(msg, delay);
 	}
 
 	private void sendTeclaSwitchEvent(int keyCode) {
 		
-//		// Create a copy in case the original is overwritten by a new Shield event
-//		int[] shieldKeyBuffCopy = new int[TOTAL_SHIELD_KEY_COUNT];
-//		shieldKeyBuffCopy = mShieldKeyBuff;
-//
-//		//Headers may not arrive in a specific order!
-//		for (byte i=0; i < TOTAL_SHIELD_KEY_COUNT - 2; i++) {
-//			if (!isShieldCodeHeader(shieldKeyBuffCopy[i])) return;
-//		}
-//
-//		int keyCode = shieldKeyBuffCopy[TOTAL_SHIELD_KEY_COUNT - 1];
 		switch (keyCode) {
 		case KEYCODE_SHIELD_SP1:
 		case KEYCODE_SHIELD_SP2:
