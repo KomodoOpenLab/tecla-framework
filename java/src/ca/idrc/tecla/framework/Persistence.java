@@ -9,7 +9,7 @@ import android.provider.Settings;
 
 public class Persistence {
 	public static final String PREF_FULLSCREEN_MODE = "fullscreen_mode";
-//	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
+	//	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
 	public static final String PREF_SPEAKERPHONE_SWITCH = "speakerphone_switch";
 	public static final String PREF_SELF_SCANNING = "self_scanning";
 	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
@@ -23,14 +23,14 @@ public class Persistence {
 	public static final float MAX_SCAN_DELAY = 3000;
 
 	private static Persistence sInstance;
-	
+
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
 	private boolean is_hud_cancelled;
-//	private boolean is_framework_ready;
+	//	private boolean is_framework_ready;
 
 	private int mScanDelay;
-	
+
 	public static final String PREF_SWITCH_J1 = "switch_j1";
 	public static final String PREF_SWITCH_J2 = "switch_j2";
 	public static final String PREF_SWITCH_J3 = "switch_j3";
@@ -60,37 +60,37 @@ public class Persistence {
 	public Persistence(Context context) {
 		is_ime_running = false;
 		is_ime_showing = false;
-//		is_framework_ready = false;
+		//		is_framework_ready = false;
 		mScanDelay = 1000;
-		
+
 		sInstance = this;
-		
+
 		shared_prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		prefs_editor = shared_prefs.edit();
-		
+
 		mSwitchMap = new HashMap<String,String[]>();
 	}
 
 	public static Persistence getInstance() {
 		return sInstance;
 	}
-	
-//	public void setFrameworkReady(Boolean is_ready) {
-//		is_framework_ready = is_ready;
-//	}
-	
-//	public Boolean isFrameworkReady() {
-//		return is_framework_ready;
-//	}
-	
+
+	//	public void setFrameworkReady(Boolean is_ready) {
+	//		is_framework_ready = is_ready;
+	//	}
+
+	//	public Boolean isFrameworkReady() {
+	//		return is_framework_ready;
+	//	}
+
 	public int getScanDelay() {
 		return mScanDelay;
 	}
-	
+
 	public void setScanDelay(int delay) {
 		mScanDelay = delay;
 	}
-	
+
 	public void setIMERunning(boolean is_showing) {
 		is_ime_running = is_showing;
 	}
@@ -102,24 +102,29 @@ public class Persistence {
 	public boolean isIMEShowing() {
 		return is_ime_showing;
 	}
-	
+
 	public void setHUDCancelled(boolean bool) {
 		is_hud_cancelled = bool;
 	}
-	
+
 	public boolean isHUDCancelled() {
 		return is_hud_cancelled;
 	}
 
-//	public boolean shouldConnectToShield() {
-//		return shared_prefs.getBoolean(PREF_CONNECT_TO_SHIELD, false);
-//	}
-//	
-//	public void setConnectToShield(boolean shieldConnect) {
-//		prefs_editor.putBoolean(PREF_CONNECT_TO_SHIELD, shieldConnect);
-//		prefs_editor.commit();
-//	}
-//
+	// TODO: This method depends only on full-screen mode now, but will likely depend on other preferences later on
+	public boolean shouldShowHUD() {
+		return shared_prefs.getBoolean(PREF_FULLSCREEN_MODE, false);
+	}
+
+	//	public boolean shouldConnectToShield() {
+	//		return shared_prefs.getBoolean(PREF_CONNECT_TO_SHIELD, false);
+	//	}
+	//	
+	//	public void setConnectToShield(boolean shieldConnect) {
+	//		prefs_editor.putBoolean(PREF_CONNECT_TO_SHIELD, shieldConnect);
+	//		prefs_editor.commit();
+	//	}
+	//
 	public boolean isSpeakerphoneEnabled() {
 		return shared_prefs.getBoolean(PREF_SPEAKERPHONE_SWITCH, false);
 	}
@@ -165,31 +170,31 @@ public class Persistence {
 		prefs_editor.commit();
 	}
 
-//	public boolean isHUDRunning() {
-//		return shared_prefs.getBoolean(PREF_HUD, false);
-//	}
-//
-//	public void setHUDRunning(boolean enabled) {
-//		prefs_editor.putBoolean(PREF_HUD, enabled);
-//		prefs_editor.commit();
-//	}
-//
-//	public boolean isSingleSwitchOverlayEnabled() {
-//		return shared_prefs.getBoolean(PREF_SINGLESWITCH_OVERLAY, false);
-//	}
-//
-//	public void setSingleSwitchOverlayEnabled(boolean enabled) {
-//		prefs_editor.putBoolean(PREF_SINGLESWITCH_OVERLAY, enabled);
-//		prefs_editor.commit();
-//	}
-//
-//	public boolean isHUDSelfScanningEnabled() {
-//		return shared_prefs.getBoolean(PREF_HUD_SELF_SCANNING, false);
-//	}
-//
-//	public void setHUDSelfScanningEnabled(boolean enabled) {
-//		prefs_editor.putBoolean(PREF_HUD_SELF_SCANNING, enabled);
-//		prefs_editor.commit();
-//	}
-//
+	//	public boolean isHUDRunning() {
+	//		return shared_prefs.getBoolean(PREF_HUD, false);
+	//	}
+	//
+	//	public void setHUDRunning(boolean enabled) {
+	//		prefs_editor.putBoolean(PREF_HUD, enabled);
+	//		prefs_editor.commit();
+	//	}
+	//
+	//	public boolean isSingleSwitchOverlayEnabled() {
+	//		return shared_prefs.getBoolean(PREF_SINGLESWITCH_OVERLAY, false);
+	//	}
+	//
+	//	public void setSingleSwitchOverlayEnabled(boolean enabled) {
+	//		prefs_editor.putBoolean(PREF_SINGLESWITCH_OVERLAY, enabled);
+	//		prefs_editor.commit();
+	//	}
+	//
+	//	public boolean isHUDSelfScanningEnabled() {
+	//		return shared_prefs.getBoolean(PREF_HUD_SELF_SCANNING, false);
+	//	}
+	//
+	//	public void setHUDSelfScanningEnabled(boolean enabled) {
+	//		prefs_editor.putBoolean(PREF_HUD_SELF_SCANNING, enabled);
+	//		prefs_editor.commit();
+	//	}
+	//
 }
