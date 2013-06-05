@@ -83,8 +83,8 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		@Override
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-			TeclaApp.persistence.setHUDCancelled(true);
-			TeclaApp.a11yservice.shutdownInfrastructure();
+			TeclaApp.persistence.setFullscreenEnabled(false);
+			TeclaApp.getInstance().turnFullscreenOff();
 			return true;
 		}
 	};
