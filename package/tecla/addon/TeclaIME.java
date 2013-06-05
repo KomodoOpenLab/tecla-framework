@@ -186,16 +186,6 @@ public class TeclaIME extends InputMethodService {
 
 	private void sendTeclaSwitchEvent(int keyCode) {
 		
-//		// Create a copy in case the original is overwritten by a new Shield event
-//		int[] shieldKeyBuffCopy = new int[TOTAL_SHIELD_KEY_COUNT];
-//		shieldKeyBuffCopy = mShieldKeyBuff;
-//
-//		//Headers may not arrive in a specific order!
-//		for (byte i=0; i < TOTAL_SHIELD_KEY_COUNT - 2; i++) {
-//			if (!isShieldCodeHeader(shieldKeyBuffCopy[i])) return;
-//		}
-//
-//		int keyCode = shieldKeyBuffCopy[TOTAL_SHIELD_KEY_COUNT - 1];
 		switch (keyCode) {
 		case KEYCODE_SHIELD_SP1:
 		case KEYCODE_SHIELD_SP2:
