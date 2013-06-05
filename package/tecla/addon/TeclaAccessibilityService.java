@@ -68,9 +68,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void init() {
 		register_receiver_called = false;
 
-		sInstance = this;
-		TeclaApp.setA11yserviceInstance(this);
-
 		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
@@ -102,7 +99,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 		register_receiver_called = true;
 		SEPManager.start(this);
-	}
+
+		sInstance = this;
+		TeclaApp.setA11yserviceInstance(this);
+}
 	
 	public boolean isHUDVisible() {
 		if (mTeclaHUDController != null) {
