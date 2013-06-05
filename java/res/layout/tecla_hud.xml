@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter"
-            android:src="@drawable/hud_icon_notification_normal" />
+            android:src="@drawable/hud_icon_home_normal" />
 
         <ca.idrc.tecla.hud.TeclaHUDButtonView
             android:id="@+id/hud_btn_left"
