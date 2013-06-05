@@ -30,7 +30,7 @@ public class TeclaIME extends InputMethodService {
 	private static final int KEYCODE_SHIELD_J4 = 93;
 	private static final int KEYCODE_SHIELD_ALLUP = 7;
 
-	private static final int SHIELD_KEYEVENT_TIMEOUT = 100;  //milliseconds
+	private static final int SHIELD_KEYEVENT_TIMEOUT = 200;  //milliseconds
 	private static final int IMESCAN_SETUP_MSG = 0x2244;
 	private static final int SHIELD_KEYEVENT_TIMEOUT_MSG = 0x4466;
 	private static final int TOTAL_SHIELD_KEY_COUNT = 6;
@@ -38,7 +38,7 @@ public class TeclaIME extends InputMethodService {
 	private int[] mShieldKeyBuff = new int[TOTAL_SHIELD_KEY_COUNT];
 	private int mShieldKeyCount = 0;
 	
-	private static TeclaIME sInstance;
+//	private static TeclaIME sInstance;
 	
 	private Handler mHandler = new Handler() {
 
@@ -73,7 +73,7 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		sInstance = this;
+//		sInstance = this;
 		TeclaApp.setIMEInstance(this);
 		TeclaStatic.logD(CLASS_TAG, "Created " + TeclaIME.class.getName());
 	}
