@@ -89,18 +89,11 @@ public class TeclaApp extends Application {
 		
 	}
 	
-//	public void startOnboarding() {
-//		Intent intent = new Intent(this, OnboardingDialog.class);
-//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		startActivity(intent);
-//	}
-//	
-	
 	public void pickIme() {
 		ime_manager.showInputMethodPicker();
 	}
 	
-	public Boolean isTeclaA11yServiceRunning() {
+	public boolean isTeclaA11yServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaStatic.A11Y_SERVICE.equals(service.service.getClassName())) {
 	            return true;
@@ -109,7 +102,7 @@ public class TeclaApp extends Application {
 	    return false;
 	}
 
-	public Boolean isSupportedIMERunning() {
+	public boolean isSupportedIMERunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (LatinIME.class.getName().equals(service.service.getClassName())) {
 	            return true;
@@ -117,13 +110,35 @@ public class TeclaApp extends Application {
 	    }
 	    return false;
 	}
+	
+	private boolean isTeclaFrameworkReady() {
+		return (isTeclaA11yServiceRunning() && isSupportedIMERunning());
+	}
 
 	public static void setIMEInstance (TeclaIME ime_instance) {
 		ime = ime_instance;
+		getInstance().processFrameworkOptions();
 	}
 
 	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
 		a11yservice = a11yservice_instance;
+		getInstance().processFrameworkOptions();
+	}
+	
+	private void processFrameworkOptions() {
+		if (isTeclaFrameworkReady()) {
+			if (persistence.isFullscreenEnabled()) {
+				turnFullscreenOn();
+			}
+		}		
+	}
+	
+	public void turnFullscreenOn() {
+		a11yservice.showHUD();
+		TeclaAccessibilityService.sendGlobalHomeAction();
+		persistence.setSelfScanningEnabled(true);
+		AutomaticScan.startAutoScan();;
+		a11yservice.showFullscreenSwitch();
 	}
 	
 	public void answerCall() {

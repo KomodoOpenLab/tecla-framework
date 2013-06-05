@@ -20,11 +20,22 @@ public class TeclaIME extends InputMethodService {
 	 */
 	public static final String CLASS_TAG = "TeclaIME";
 
+	private static final int KEYCODE_SHIELD_HEADER1 = 59;
+	private static final int KEYCODE_SHIELD_HEADER2 = 10;
+	private static final int KEYCODE_SHIELD_SP1 = 124;
+	private static final int KEYCODE_SHIELD_SP2 = 122;
+	private static final int KEYCODE_SHIELD_J1 = 92;
+	private static final int KEYCODE_SHIELD_J2 = 112;
+	private static final int KEYCODE_SHIELD_J3 = 123;
+	private static final int KEYCODE_SHIELD_J4 = 93;
+	private static final int KEYCODE_SHIELD_ALLUP = 7;
+
 	private static final int IMESCAN_SETUP = 0x2244;
 	private static final int SHIELDEVENT_TIMEOUT = 0x4466;
+	private static final int TOTAL_SHIELD_KEY_COUNT = 6;
 	
-	private int[] mKeyBuff = new int[6];
-	private int mKeyCount = 0;
+	private int[] mShieldKeyBuff = new int[TOTAL_SHIELD_KEY_COUNT];
+	private int mShieldKeyCount = 0;
 	
 	private static TeclaIME sInstance;
 	
@@ -43,10 +54,15 @@ public class TeclaIME extends InputMethodService {
 				} else {
 				}
 			} else if(msg.what == SHIELDEVENT_TIMEOUT) {
-				if(mKeyCount == 1) 
-					sInstance.keyDownUp(mKeyBuff[0]);
-				mKeyCount = 0;
-				
+				TeclaStatic.logD(CLASS_TAG, "Shield Timeout expired!");
+				cancelShieldKeyTimeoutMessage();
+//				if(mShieldKeyCount < TOTAL_SHIELD_KEY_COUNT) {
+//					// Flush out ALL buffered keys!
+//					for (byte i=0; i < (mShieldKeyCount); i++) {
+//						sInstance.keyDownUp(mShieldKeyBuff[1]);
+//					}
+//				}
+				mShieldKeyCount = 0;				
 			}
 			super.handleMessage(msg);
 		}
@@ -86,68 +102,121 @@ public class TeclaIME extends InputMethodService {
 		super.onFinishInputView(finishingInput);
 	}
 	
+	private boolean isShieldCode(int keyCode) {
+		return (isShieldCodeHeader(keyCode) || isShieldCodeEvent(keyCode));
+	}
+	
+	private boolean isShieldCodeHeader(int keyCode) {
+		switch(keyCode) {
+		case KEYCODE_SHIELD_HEADER1:
+		case KEYCODE_SHIELD_HEADER2:
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isShieldCodeEvent(int keyCode) {
+		switch(keyCode) {
+		case KEYCODE_SHIELD_SP1:
+		case KEYCODE_SHIELD_SP2:
+		case KEYCODE_SHIELD_J1:
+		case KEYCODE_SHIELD_J2:
+		case KEYCODE_SHIELD_J3:
+		case KEYCODE_SHIELD_J4:
+		case KEYCODE_SHIELD_ALLUP:
+			return true;
+		}
+		return false;
+	}
+	
 	/* (non-Javadoc)
 	 * @see android.inputmethodservice.InputMethodService#onKeyDown(int, android.view.KeyEvent)
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode != KeyEvent.KEYCODE_BACK) {
-			TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " down!");
-			if(mKeyCount == 0) {
-				Message msg = new Message();
-				msg.what = SHIELDEVENT_TIMEOUT;
-				msg.arg1 = 0;
-				mHandler.sendMessageDelayed(msg, 200);
-			}
-			mKeyBuff[mKeyCount++] = keyCode;
-			if(mKeyCount == 6) {
-				checkAndSendTeclaSwitchEvent();
-			}
+		if (isShieldCodeHeader(keyCode) && mShieldKeyCount == 0) {
+			resetShieldKeyTimeoutMessage();
+			mShieldKeyCount++;
 			return true;
 		}
-		super.onKeyDown(keyCode, event);
+		if (isShieldCodeHeader(keyCode) && mShieldKeyCount < 4) {
+			mShieldKeyCount++;
+			return true;
+		}
+		if (isShieldCodeEvent(keyCode) && mShieldKeyCount == 4) {
+			mShieldKeyCount++;
+			return true;
+		}
+		sendShieldKeyTimeoutMessage(0);
+//		super.onKeyDown(keyCode, event);
 		return false;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see android.inputmethodservice.InputMethodService#onKeyUp(int, android.view.KeyEvent)
 	 */
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode != KeyEvent.KEYCODE_BACK) {
-			TeclaStatic.logD(CLASS_TAG, "Key " + keyCode + " up!");
-			mKeyBuff[mKeyCount++] = keyCode;
-			if(mKeyCount == 6) {
-				checkAndSendTeclaSwitchEvent();			
-			}
+		if (isShieldCodeHeader(keyCode) && mShieldKeyCount < 4) {
+			mShieldKeyCount++;
 			return true;
 		}
-		super.onKeyUp(keyCode, event);
+		if (isShieldCodeEvent(keyCode) && mShieldKeyCount == 5) {
+			cancelShieldKeyTimeoutMessage();
+			sendTeclaSwitchEvent(keyCode);
+			return true;
+		}
+		sendShieldKeyTimeoutMessage(0);
+//		super.onKeyUp(keyCode, event);
 		return false;
 	}
 	
-	private void checkAndSendTeclaSwitchEvent() {
+	private void resetShieldKeyTimeoutMessage () {
+		sendShieldKeyTimeoutMessage(200); // FIXME: Huge latency!
+	}
+
+	private void cancelShieldKeyTimeoutMessage () {
 		mHandler.removeMessages(SHIELDEVENT_TIMEOUT);
-		mKeyCount = 0;
-		if(mKeyBuff[0] != 59) return;
-		if(mKeyBuff[1] != 10) return;
-		if(mKeyBuff[2] != 59) return;
-		if(mKeyBuff[3] != 10) return;
+		mShieldKeyCount = 0;
+	}
+
+	private void sendShieldKeyTimeoutMessage (int delay) {
+		cancelShieldKeyTimeoutMessage();
+		Message msg = new Message();
+		msg.what = SHIELDEVENT_TIMEOUT;
+		msg.arg1 = 0;
+		mHandler.sendMessageDelayed(msg, delay);
+	}
+
+	private void sendTeclaSwitchEvent(int keyCode) {
 		
-		if(mKeyBuff[4] == 124 && mKeyBuff[5] == 124) {
+//		// Create a copy in case the original is overwritten by a new Shield event
+//		int[] shieldKeyBuffCopy = new int[TOTAL_SHIELD_KEY_COUNT];
+//		shieldKeyBuffCopy = mShieldKeyBuff;
+//
+//		//Headers may not arrive in a specific order!
+//		for (byte i=0; i < TOTAL_SHIELD_KEY_COUNT - 2; i++) {
+//			if (!isShieldCodeHeader(shieldKeyBuffCopy[i])) return;
+//		}
+//
+//		int keyCode = shieldKeyBuffCopy[TOTAL_SHIELD_KEY_COUNT - 1];
+		switch (keyCode) {
+		case KEYCODE_SHIELD_SP1:
+		case KEYCODE_SHIELD_SP2:
+		case KEYCODE_SHIELD_J1:
+		case KEYCODE_SHIELD_J2:
+		case KEYCODE_SHIELD_J3:
+		case KEYCODE_SHIELD_J4:
 			// switch E1 down
 			TeclaApp.a11yservice.injectSwitchEvent(
 					new SwitchEvent(SwitchEvent.MASK_SWITCH_E1, 0)); //Primary switch pressed
-		} else if(mKeyBuff[4] == 122 && mKeyBuff[5] == 122) {
-			// switch E2 down
+			break;
+		case KEYCODE_SHIELD_ALLUP:
 			TeclaApp.a11yservice.injectSwitchEvent(
-					new SwitchEvent(SwitchEvent.MASK_SWITCH_E2, 0)); //Primary switch pressed
-		} else if(mKeyBuff[4] == 7 && mKeyBuff[5] == 7) {
-			// switch up
-			TeclaApp.a11yservice.injectSwitchEvent(
-					new SwitchEvent(0,0)); //Switches released			
-		} // TODO: write detection for J1 to J4 here
-	
+					new SwitchEvent(0,0)); //Switches released
+			break;
+		}
+		
 	}
 
 	public void pressHomeKey() {

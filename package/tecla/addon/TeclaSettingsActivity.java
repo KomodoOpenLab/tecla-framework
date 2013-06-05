@@ -87,11 +87,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		if(pref.equals(mFullscreenMode)) {
 			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
 			if (newValue.toString().equals("true")) {
-				TeclaApp.a11yservice.showHUD();
-				TeclaAccessibilityService.sendGlobalHomeAction();
-				TeclaApp.persistence.setSelfScanningEnabled(true);
-				AutomaticScan.startAutoScan();;
-				TeclaApp.a11yservice.showFullscreenSwitch();
+				TeclaApp.getInstance().turnFullscreenOn();
 			} else {
 				TeclaApp.a11yservice.hideFullscreenSwitch();
 				TeclaApp.persistence.setSelfScanningEnabled(false);
