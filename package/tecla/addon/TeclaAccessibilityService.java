@@ -505,7 +505,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public static boolean hasScrollableParent(AccessibilityNodeInfo node) {
 		if(node == null) return false;
 		AccessibilityNodeInfo parent = node.getParent();
-		if(!parent.isScrollable()) return false;
+		if (parent != null) {
+			if(!parent.isScrollable()) return false;
+		}
 		return true;
 	}
 
@@ -514,15 +516,17 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(!hasScrollableParent(node)) return false;
 		AccessibilityNodeInfo parent = node.getParent();
 
-		Rect firstScrollNode_rect = null;	
-		for(int i=0; i<parent.getChildCount(); ++i) {
-			AccessibilityNodeInfo  firstScrollNode = parent.getChild(i);
-			if(firstScrollNode.isVisibleToUser() && firstScrollNode.isClickable()) {
-				firstScrollNode_rect = new Rect();
-				firstScrollNode.getBoundsInScreen(firstScrollNode_rect);
-				break;
-			}
-		}		
+		Rect firstScrollNode_rect = null;
+		if (parent != null) {
+			for(int i=0; i<parent.getChildCount(); ++i) {
+				AccessibilityNodeInfo  firstScrollNode = parent.getChild(i);
+				if(firstScrollNode.isVisibleToUser() && firstScrollNode.isClickable()) {
+					firstScrollNode_rect = new Rect();
+					firstScrollNode.getBoundsInScreen(firstScrollNode_rect);
+					break;
+				}
+			}		
+		}
 		if(firstScrollNode_rect == null) return false;
 
 		Rect node_rect = new Rect(); 
@@ -539,16 +543,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(node == null) return false;
 		if(!hasScrollableParent(node)) return false;
 		AccessibilityNodeInfo parent = node.getParent();
-
+		
 		Rect lastScrollNode_rect = null;	
-		for(int i=parent.getChildCount()-1; i>=0; --i) {
-			AccessibilityNodeInfo  lastScrollNode = parent.getChild(i);
-			if(lastScrollNode.isVisibleToUser() && lastScrollNode.isClickable()) {
-				lastScrollNode_rect = new Rect();
-				lastScrollNode.getBoundsInScreen(lastScrollNode_rect);
-				break;
-			}
-		}		
+		if (parent != null) {
+			for(int i=parent.getChildCount()-1; i>=0; --i) {
+				AccessibilityNodeInfo  lastScrollNode = parent.getChild(i);
+				if(lastScrollNode.isVisibleToUser() && lastScrollNode.isClickable()) {
+					lastScrollNode_rect = new Rect();
+					lastScrollNode.getBoundsInScreen(lastScrollNode_rect);
+					break;
+				}
+			}		
+		}
 		if(lastScrollNode_rect == null) return false;
 
 		Rect node_rect = new Rect(); 
@@ -577,18 +583,15 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return false;
 	}
 
-	public static void sendGlobalBackAction() {
-		if(sInstance == null) return;
+	public void sendGlobalBackAction() {
 		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
 	}
 
-	public static void sendGlobalHomeAction() {
-		if(sInstance == null) return;
+	public void sendGlobalHomeAction() {
 		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);		
 	}	
 
-	public static void sendGlobalNotificationAction() {
-		if(sInstance == null) return;
+	public void sendGlobalNotificationAction() {
 		sInstance.performGlobalAction(AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS);		
 	}	
 

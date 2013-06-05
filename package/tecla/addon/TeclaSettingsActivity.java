@@ -89,10 +89,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			if (newValue.toString().equals("true")) {
 				TeclaApp.getInstance().turnFullscreenOn();
 			} else {
-				TeclaApp.a11yservice.hideFullscreenSwitch();
-				TeclaApp.persistence.setSelfScanningEnabled(false);
-				AutomaticScan.stopAutoScan();				
-				TeclaApp.a11yservice.hideHUD();
+				TeclaApp.getInstance().turnFullscreenOff();
 			}
 			return true;
 		}

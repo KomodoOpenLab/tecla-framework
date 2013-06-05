@@ -26,7 +26,7 @@ public class Persistence {
 
 	private boolean is_ime_running;
 	private boolean is_ime_showing;
-	private boolean is_hud_cancelled;
+//	private boolean is_hud_cancelled;
 	//	private boolean is_framework_ready;
 
 	private int mScanDelay;
@@ -103,16 +103,21 @@ public class Persistence {
 		return is_ime_showing;
 	}
 
-	public void setHUDCancelled(boolean bool) {
-		is_hud_cancelled = bool;
-	}
+//	public void setHUDCancelled(boolean bool) {
+//		is_hud_cancelled = bool;
+//	}
 
-	public boolean isHUDCancelled() {
-		return is_hud_cancelled;
-	}
+//	public boolean isHUDCancelled() {
+//		return is_hud_cancelled;
+//	}
 
 	public boolean isFullscreenEnabled() {
 		return shared_prefs.getBoolean(PREF_FULLSCREEN_MODE, false);
+	}
+
+	public void setFullscreenEnabled(boolean value) {
+		prefs_editor.putBoolean(PREF_FULLSCREEN_MODE, value);
+		prefs_editor.commit();
 	}
 
 	// TODO: This method depends only on full-screen mode now, but will likely depend on other preferences later on
