@@ -393,7 +393,8 @@ public class IMEAdapter {
 										sState = SCAN_WORDPREDICTION;
 										WordPredictionAdapter.selectHighlighted();
 									} else if(sCurrentRow == sRowCount + 1) {
-										TeclaApp.ime.requestHideSelf(0);
+										//TeclaApp.ime.requestHideSelf(0);
+										TeclaApp.ime.hideWindow();
 										TeclaApp.a11yservice.hidePreviewHUD();
 										TeclaApp.a11yservice.showHUD();
 									} else {									
