@@ -72,8 +72,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
 
-		if(mTeclaHighlighter == null)
+		if(mTeclaHighlighter == null) {
 			mTeclaHighlighter = new TeclaHighlighter(this);
+			TeclaApp.setHighlighter(mTeclaHighlighter);			
+		}
 
 		if (mTeclaHUDController == null) 
 			mTeclaHUDController = new TeclaHUDOverlay(this);
@@ -220,7 +222,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
-			TeclaHighlighter.highlightNode(mSelectedNode);	
+			TeclaApp.highlighter.highlightNode(mSelectedNode);	
 			if(mPreviousOriginalNode != null) mPreviousOriginalNode.recycle();
 		}
 		//		TeclaHighlighter.highlightNode(mActiveNodes.get(0));
@@ -344,7 +346,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0); 
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 		if(sInstance.isHUDVisible()) 
-			TeclaHighlighter.clearHighlight();
+			TeclaApp.highlighter.clearHighlight();
 	}
 
 	//	public static void selectActiveNode(int index) {
@@ -498,7 +500,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			mActionLock.unlock(); 
 
-			TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
+			TeclaApp.highlighter.highlightNode(sInstance.mSelectedNode);
 		}
 	}
 
