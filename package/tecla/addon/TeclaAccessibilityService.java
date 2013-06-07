@@ -198,6 +198,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+						if(mSelectedNode.getClassName().toString().contains("EditText"))
+								TeclaApp.ime.showWindow(true);
 						//searchAndUpdateNodes();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
 						//searchAndUpdateNodes();
@@ -206,6 +208,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
+					} else if (event_type == AccessibilityEvent.TYPE_VIEW_CLICKED) {
+						//searchAndUpdateNodes();
 					}
 				} else {
 					TeclaStatic.logD(CLASS_TAG, "Node is null!");
@@ -495,9 +499,12 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}			
 			if(node != null) {
 				sInstance.mSelectedNode = node;
+				if(node.getClassName().toString().contains("EditText")) {
+					node.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+				}
 			}
-			mActionLock.unlock(); 
-
+			mActionLock.unlock(); 			
+			
 			TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
 		}
 	}
