@@ -58,15 +58,6 @@ public class TeclaIME extends InputMethodService {
 		}
 		
 	};
-	
-	/* (non-Javadoc)
-	 * @see android.inputmethodservice.InputMethodService#onEvaluateInputViewShown()
-	 */
-	@Override
-	public boolean onEvaluateInputViewShown() {
-		if (TeclaApp.persistence.isFullscreenEnabled()) return true;
-		return super.onEvaluateInputViewShown();
-	}
 
 	@Override
 	public void onCreate() {
@@ -160,6 +151,15 @@ public class TeclaIME extends InputMethodService {
 				new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
 	}	
 	
+	/* (non-Javadoc)
+	 * @see android.inputmethodservice.InputMethodService#onEvaluateInputViewShown()
+	 */
+//	@Override
+//	public boolean onEvaluateInputViewShown() {
+//		if (TeclaApp.persistence.isFullscreenEnabled()) return true;
+//		return super.onEvaluateInputViewShown();
+//	}
+
 //	private boolean isShieldCode(int keyCode) {
 //		return (isShieldCodeHeader(keyCode) || isShieldCodeEvent(keyCode));
 //	}
