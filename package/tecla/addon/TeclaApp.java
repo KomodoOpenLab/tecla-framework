@@ -24,6 +24,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 public class TeclaApp extends Application {
 
@@ -255,6 +256,10 @@ public class TeclaApp extends Application {
 		return String.format("0x%02x", bite);
 	}
 
+	public void showToast(int resid) {
+		Toast.makeText(this, resid, Toast.LENGTH_LONG).show();
+	}
+	
 //	private void logRunningServices() {
 //		for (RunningServiceInfo service_info : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 //			TeclaStatic.logD(CLASS_TAG, service_info.service.getClassName());

@@ -5,6 +5,10 @@ import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
 import android.accessibilityservice.AccessibilityService;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -28,8 +32,13 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	private CheckBoxPreference mFullscreenMode;
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
+	private CheckBoxPreference mPrefConnectToShield;
+	private CheckBoxPreference mPrefTempDisconnect;
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
+	private ProgressDialog mProgressDialog;
+	private BluetoothAdapter mBluetoothAdapter;
+	private boolean mShieldFound, mConnectionCancelled;
 	
 //	private CheckBoxPreference mPrefHUD;
 //	private CheckBoxPreference mPrefSingleSwitchOverlay;
@@ -56,6 +65,9 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
+		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
+		mPrefTempDisconnect = (CheckBoxPreference) findPreference(Persistence.PREF_TEMP_SHIELD_DISCONNECT);
+		
 //		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
 //		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
 //		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
@@ -93,9 +105,79 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			}
 			return true;
 		}
+		if(pref.equals(mPrefConnectToShield)) {
+			if (newValue.toString().equals("true")) {
+				// Connect to shield
+				discoverShield();
+			} else {
+				// FIXME: Tecla Access - Find out how to disconnect
+				// switch event provider without breaking
+				// connection with other potential clients.
+				// Should perhaps use Binding?
+				dismissDialog();
+				if (!mFullscreenMode.isChecked()) {
+					mPrefTempDisconnect.setChecked(false);
+					mPrefTempDisconnect.setEnabled(false);
+					mPrefSelfScanning.setChecked(false);
+					mPrefInverseScanning.setChecked(false);
+				}
+				stopShieldService();
+			}
+			return true;
+		}
 		return false;
 	}
+	
+	/*
+	 * Dismisses progress dialog without triggerint it's OnCancelListener
+	 */
+	private void dismissDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
+		}
+	}
 
+	private void discoverShield() {
+		mShieldFound = false;
+		mConnectionCancelled = false;
+		cancelDiscovery();
+		mBluetoothAdapter.startDiscovery();
+		showDiscoveryDialog();
+	}
+
+	/*
+	 * Stops the SEP if it is running
+	 */
+	private void stopShieldService() {
+		if (TeclaShieldManager.isRunning(getApplicationContext())) {
+			TeclaShieldManager.disconnect(getApplicationContext());
+		}
+	}
+	
+	private void cancelDiscovery() {
+		if (mBluetoothAdapter != null && mBluetoothAdapter.isDiscovering()) {
+			// Triggers ACTION_DISCOVERY_FINISHED on mReceiver.onReceive
+			mBluetoothAdapter.cancelDiscovery();
+		}
+	}
+
+	private void showDiscoveryDialog() {
+		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
+		mProgressDialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface arg0) {
+				cancelDiscovery();
+				TeclaStatic.logD(CLASS_TAG, CLASS_TAG + "Tecla Shield discovery cancelled");
+				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
+				mConnectionCancelled = true;
+				mPrefTempDisconnect.setChecked(false);
+				mPrefTempDisconnect.setEnabled(false);
+				//Since we have cancelled the discovery the check state needs to be reset
+				//(triggers onSharedPreferenceChanged)
+				//mPrefConnectToShield.setChecked(false);
+			}
+		});
+		mProgressDialog.show();
+	}
 	
 	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
 //	@Override

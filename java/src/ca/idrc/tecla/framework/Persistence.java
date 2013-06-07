@@ -17,6 +17,8 @@ public class Persistence {
 	public static final String PREF_HUD = "hud_visibility";
 	public static final String PREF_SINGLESWITCH_OVERLAY = "single_switch_overlay";
 	public static final String PREF_HUD_SELF_SCANNING = "hud_self_scanning";
+	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
+	public static final String PREF_TEMP_SHIELD_DISCONNECT = "shield_temp_disconnect";
 
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 

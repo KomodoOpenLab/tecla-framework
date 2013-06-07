@@ -39,6 +39,13 @@
         android:summary="@string/shield_connect_summary"
         android:title="@string/shield_connect" />
     
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="shield_temp_disconnect"
+        android:persistent="true"
+        android:summary="@string/shield_temp_disconnect_summary"
+        android:title="@string/shield_temp_disconnect" />
+    
     <!--
     <PreferenceScreen
         android:key="advanced_settings"
