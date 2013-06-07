@@ -512,21 +512,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	public static boolean isFirstScrollNode(AccessibilityNodeInfo node) {
-		if(node == null) return false;
 		if(!hasScrollableParent(node)) return false;
 		AccessibilityNodeInfo parent = node.getParent();
-
 		Rect firstScrollNode_rect = null;
-		if (parent != null) {
-			for(int i=0; i<parent.getChildCount(); ++i) {
-				AccessibilityNodeInfo  firstScrollNode = parent.getChild(i);
-				if(firstScrollNode.isVisibleToUser() && firstScrollNode.isClickable()) {
-					firstScrollNode_rect = new Rect();
-					firstScrollNode.getBoundsInScreen(firstScrollNode_rect);
-					break;
-				}
-			}		
+		for(int i=0; i<parent.getChildCount(); ++i) {
+			AccessibilityNodeInfo  firstScrollNode = parent.getChild(i);
+			if(firstScrollNode.isVisibleToUser() && firstScrollNode.isClickable()) {
+				firstScrollNode_rect = new Rect();
+				firstScrollNode.getBoundsInScreen(firstScrollNode_rect);
+				break;
+			}
 		}
+		
 		if(firstScrollNode_rect == null) return false;
 
 		Rect node_rect = new Rect(); 
@@ -540,21 +537,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	public static boolean isLastScrollNode(AccessibilityNodeInfo node) {
-		if(node == null) return false;
 		if(!hasScrollableParent(node)) return false;
 		AccessibilityNodeInfo parent = node.getParent();
-		
 		Rect lastScrollNode_rect = null;	
-		if (parent != null) {
-			for(int i=parent.getChildCount()-1; i>=0; --i) {
-				AccessibilityNodeInfo  lastScrollNode = parent.getChild(i);
-				if(lastScrollNode.isVisibleToUser() && lastScrollNode.isClickable()) {
-					lastScrollNode_rect = new Rect();
-					lastScrollNode.getBoundsInScreen(lastScrollNode_rect);
-					break;
-				}
-			}		
-		}
+		for(int i=parent.getChildCount()-1; i>=0; --i) {
+			AccessibilityNodeInfo  lastScrollNode = parent.getChild(i);
+			if(lastScrollNode.isVisibleToUser() && lastScrollNode.isClickable()) {
+				lastScrollNode_rect = new Rect();
+				lastScrollNode.getBoundsInScreen(lastScrollNode_rect);
+				break;
+			}
+		}	
+		
 		if(lastScrollNode_rect == null) return false;
 
 		Rect node_rect = new Rect(); 
