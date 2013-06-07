@@ -31,6 +31,14 @@
             android:summary="@string/scan_speed_summary"
             android:title="@string/scan_speed" />
     </PreferenceScreen>
+    
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="shield_connect"
+        android:persistent="true"
+        android:summary="@string/shield_connect_summary"
+        android:title="@string/shield_connect" />
+    
     <!--
     <PreferenceScreen
         android:key="advanced_settings"
