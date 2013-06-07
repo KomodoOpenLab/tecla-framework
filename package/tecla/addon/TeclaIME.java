@@ -54,6 +54,7 @@ public class TeclaIME extends InputMethodService {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
 				} else {
+					IMEAdapter.selectScanHighlighted();
 				}
 			}
 			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
