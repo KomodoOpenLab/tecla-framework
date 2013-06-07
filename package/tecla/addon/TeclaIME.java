@@ -54,7 +54,6 @@ public class TeclaIME extends InputMethodService {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
 				} else {
-					TeclaStatic.logD(CLASS_TAG, "GGGGGGGGGGGGGGGGGGGGGGGGGGGG");
 					IMEAdapter.selectScanHighlighted();
 				}
 			}
