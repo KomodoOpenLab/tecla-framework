@@ -5,6 +5,7 @@ import com.android.inputmethod.latin.LatinIME;
 
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
+import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.app.ActivityManager;
 import android.app.Application;
@@ -34,6 +35,7 @@ public class TeclaApp extends Application {
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
+	public static TeclaHighlighter highlighter;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -120,6 +122,10 @@ public class TeclaApp extends Application {
 		getInstance().processFrameworkOptions();
 	}
 
+	public static void setHighlighter (TeclaHighlighter highlighter_instance) {
+		highlighter = highlighter_instance;
+	}
+	
 	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
 		a11yservice = a11yservice_instance;
 		getInstance().processFrameworkOptions();
