@@ -48,38 +48,31 @@ public class TeclaHighlighter extends SimpleOverlay {
 	}
 	
 
-	public static void clearHighlight() {
-        sInstance.mOuterBounds.clear();
-        sInstance.mInnerBounds.clear();
-        sInstance.mOuterBounds.postInvalidate();
-        sInstance.mInnerBounds.postInvalidate();
+	public void clearHighlight() {
+        mOuterBounds.clear();
+        mInnerBounds.clear();
+        mOuterBounds.postInvalidate();
+        mInnerBounds.postInvalidate();
 	}
 	
-    public static void removeInvalidNodes() {
-        if (sInstance == null) {
-            return;
-        }
+    public void removeInvalidNodes() {
 
-        sInstance.mOuterBounds.removeInvalidNodes();
-        sInstance.mOuterBounds.postInvalidate();
+        mOuterBounds.removeInvalidNodes();
+        mOuterBounds.postInvalidate();
 
-        sInstance.mInnerBounds.removeInvalidNodes();
-        sInstance.mInnerBounds.postInvalidate();
+        mInnerBounds.removeInvalidNodes();
+        mInnerBounds.postInvalidate();
     }
 
-    public static void highlightNode(AccessibilityNodeInfo announced) {
-        if (sInstance == null) {
-            return;
-        }
-
+    public void highlightNode(AccessibilityNodeInfo announced) {
         clearHighlight();
         if(announced != null) {
-            sInstance.mOuterBounds.setStrokeWidth(20);
-            sInstance.mOuterBounds.add(announced);
-            sInstance.mOuterBounds.postInvalidate();        	
-            sInstance.mInnerBounds.setStrokeWidth(6);
-            sInstance.mInnerBounds.add(announced);
-            sInstance.mInnerBounds.postInvalidate();
+            mOuterBounds.setStrokeWidth(20);
+            mOuterBounds.add(announced);
+            mOuterBounds.postInvalidate();        	
+            mInnerBounds.setStrokeWidth(6);
+            mInnerBounds.add(announced);
+            mInnerBounds.postInvalidate();
         	
         }
     }
