@@ -20,24 +20,7 @@ public class TeclaIME extends InputMethodService {
 	 */
 	public static final String CLASS_TAG = "TeclaIME";
 
-//	private static final int KEYCODE_SHIELD_HEADER1 = 59;
-//	private static final int KEYCODE_SHIELD_HEADER2 = 10;
-//	private static final int KEYCODE_SHIELD_SP1 = 124;
-//	private static final int KEYCODE_SHIELD_SP2 = 122;
-//	private static final int KEYCODE_SHIELD_J1 = 92;
-//	private static final int KEYCODE_SHIELD_J2 = 112;
-//	private static final int KEYCODE_SHIELD_J3 = 123;
-//	private static final int KEYCODE_SHIELD_J4 = 93;
-//	private static final int KEYCODE_SHIELD_ALLUP = 7;
-
-//	private static final int TOTAL_SHIELD_KEY_COUNT = 6;
-//	private static final int SHIELD_KEYEVENT_TIMEOUT = 200;  //milliseconds
-//	private static final int MSG_REQUEST_SHOW_IME = 0x7755;
 	private static final int MSG_IMESCAN_SETUP = 0x2244;
-//	private static final int MSG_SHIELD_KEYEVENT_TIMEOUT = 0x4466;
-	
-	//private int[] mShieldKeyBuff = new int[TOTAL_SHIELD_KEY_COUNT];
-	//private int mShieldKeyCount = 0;
 	
 //	private static TeclaIME sInstance;
 	
@@ -118,33 +101,6 @@ public class TeclaIME extends InputMethodService {
 		super.onFinishInputView(finishingInput);
 	}
 	
-//	private boolean isShieldCode(int keyCode) {
-//		return (isShieldCodeHeader(keyCode) || isShieldCodeEvent(keyCode));
-//	}
-	
-//	private boolean isShieldCodeHeader(int keyCode) {
-//		switch(keyCode) {
-//		case KEYCODE_SHIELD_HEADER1:
-//		case KEYCODE_SHIELD_HEADER2:
-//			return true;
-//		}
-//		return false;
-//	}
-	
-//	private boolean isShieldCodeEvent(int keyCode) {
-//		switch(keyCode) {
-//		case KEYCODE_SHIELD_SP1:
-//		case KEYCODE_SHIELD_SP2:
-//		case KEYCODE_SHIELD_J1:
-//		case KEYCODE_SHIELD_J2:
-//		case KEYCODE_SHIELD_J3:
-//		case KEYCODE_SHIELD_J4:
-//		case KEYCODE_SHIELD_ALLUP:
-//			return true;
-//		}
-//		return false;
-//	}
-	
 	/* (non-Javadoc)
 	 * @see android.inputmethodservice.InputMethodService#onKeyDown(int, android.view.KeyEvent)
 	 */
@@ -182,6 +138,54 @@ public class TeclaIME extends InputMethodService {
 //		super.onKeyUp(keyCode, event);
 		return false;
 	}
+
+	public void pressHomeKey() {
+		Intent home = new Intent(Intent.ACTION_MAIN);
+		home.addCategory(Intent.CATEGORY_HOME);
+		home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		getApplicationContext().startActivity(home);
+	}
+	
+	public void pressBackKey() {
+		keyDownUp(KeyEvent.KEYCODE_BACK);
+	}
+	
+	/**
+	 * Helper to send a key down / key up pair to the current editor.
+	 */
+	private void keyDownUp(int keyEventCode) {
+		getCurrentInputConnection().sendKeyEvent(
+				new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
+		getCurrentInputConnection().sendKeyEvent(
+				new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
+	}	
+	
+//	private boolean isShieldCode(int keyCode) {
+//		return (isShieldCodeHeader(keyCode) || isShieldCodeEvent(keyCode));
+//	}
+	
+//	private boolean isShieldCodeHeader(int keyCode) {
+//		switch(keyCode) {
+//		case KEYCODE_SHIELD_HEADER1:
+//		case KEYCODE_SHIELD_HEADER2:
+//			return true;
+//		}
+//		return false;
+//	}
+	
+//	private boolean isShieldCodeEvent(int keyCode) {
+//		switch(keyCode) {
+//		case KEYCODE_SHIELD_SP1:
+//		case KEYCODE_SHIELD_SP2:
+//		case KEYCODE_SHIELD_J1:
+//		case KEYCODE_SHIELD_J2:
+//		case KEYCODE_SHIELD_J3:
+//		case KEYCODE_SHIELD_J4:
+//		case KEYCODE_SHIELD_ALLUP:
+//			return true;
+//		}
+//		return false;
+//	}
 	
 //	private void resetShieldKeyTimeout() {
 //		expireDelayedShieldKeyTimeout(SHIELD_KEYEVENT_TIMEOUT); // FIXME: Huge latency!
@@ -220,25 +224,23 @@ public class TeclaIME extends InputMethodService {
 //		
 //	}
 
-	public void pressHomeKey() {
-		Intent home = new Intent(Intent.ACTION_MAIN);
-		home.addCategory(Intent.CATEGORY_HOME);
-		home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		getApplicationContext().startActivity(home);
-	}
+//	private static final int KEYCODE_SHIELD_HEADER1 = 59;
+//	private static final int KEYCODE_SHIELD_HEADER2 = 10;
+//	private static final int KEYCODE_SHIELD_SP1 = 124;
+//	private static final int KEYCODE_SHIELD_SP2 = 122;
+//	private static final int KEYCODE_SHIELD_J1 = 92;
+//	private static final int KEYCODE_SHIELD_J2 = 112;
+//	private static final int KEYCODE_SHIELD_J3 = 123;
+//	private static final int KEYCODE_SHIELD_J4 = 93;
+//	private static final int KEYCODE_SHIELD_ALLUP = 7;
+
+//	private static final int TOTAL_SHIELD_KEY_COUNT = 6;
+//	private static final int SHIELD_KEYEVENT_TIMEOUT = 200;  //milliseconds
+//	private static final int MSG_REQUEST_SHOW_IME = 0x7755;
 	
-	public void pressBackKey() {
-		keyDownUp(KeyEvent.KEYCODE_BACK);
-	}
+//	private static final int MSG_SHIELD_KEYEVENT_TIMEOUT = 0x4466;
 	
-	/**
-	 * Helper to send a key down / key up pair to the current editor.
-	 */
-	private void keyDownUp(int keyEventCode) {
-		getCurrentInputConnection().sendKeyEvent(
-				new KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode));
-		getCurrentInputConnection().sendKeyEvent(
-				new KeyEvent(KeyEvent.ACTION_UP, keyEventCode));
-	}	
+	//private int[] mShieldKeyBuff = new int[TOTAL_SHIELD_KEY_COUNT];
+	//private int mShieldKeyCount = 0;
 
 }
