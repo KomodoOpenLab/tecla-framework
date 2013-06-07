@@ -12,6 +12,7 @@ import com.android.inputmethod.latin.LatinIME;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.ViewGroup;
 
 public class IMEAdapter {
 
@@ -468,17 +469,21 @@ public class IMEAdapter {
 		}
 		
 		private static void scanNextRow() {
-			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
 				WordPredictionAdapter.highlightNext();
-			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
+			} else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
 				TeclaApp.a11yservice.hidePreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
 			sCurrentRow %= sRowCount + 2;
 			updateRowKeyIndices();
-			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
-				WordPredictionAdapter.highlightNext();
-			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount) {
+				if(!WordPredictionAdapter.sSuggestionsViewGroup.isShown()) 
+					++sCurrentRow;
+				else
+					WordPredictionAdapter.highlightNext();
+			}
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
 				TeclaApp.a11yservice.showPreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		}
