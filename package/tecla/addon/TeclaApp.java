@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
@@ -46,6 +47,8 @@ public class TeclaApp extends Application {
 	private ActivityManager activity_manager;
 	private InputMethodManager ime_manager;
 
+	private Handler handler;
+	
 	private Boolean screen_on;
 
 	public static TeclaApp getInstance() {
@@ -86,6 +89,8 @@ public class TeclaApp extends Application {
 			TeclaStatic.logD(CLASS_TAG, "Screen off");
 		}
 
+		handler = new Handler();
+		
 		//Intents & Intent Filters
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
@@ -259,7 +264,27 @@ public class TeclaApp extends Application {
 	public void showToast(int resid) {
 		Toast.makeText(this, resid, Toast.LENGTH_LONG).show();
 	}
+
+	public void postDelayedFullReset(long delay) {
+		cancelFullReset();
+		handler.postDelayed(mFullResetRunnable, delay * 1000);
+	}
 	
+	public void cancelFullReset() {
+		handler.removeCallbacks(mFullResetRunnable);
+	}
+	
+	private Runnable mFullResetRunnable = new Runnable () {
+
+		public void run() {
+			Intent home = new Intent(Intent.ACTION_MAIN);
+			home.addCategory(Intent.CATEGORY_HOME);
+			home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(home);
+		}
+
+	};
+
 //	private void logRunningServices() {
 //		for (RunningServiceInfo service_info : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 //			TeclaStatic.logD(CLASS_TAG, service_info.service.getClassName());

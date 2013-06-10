@@ -4,21 +4,27 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 import android.view.View;
 import android.widget.Button;
 
-public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
+public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
 
 	private final static String CLASS_TAG = "TeclaSettings";
 
@@ -45,6 +51,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		sInstance = this;
 		
 		addPreferencesFromResource(R.xml.tecla_prefs);
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
 		mFullscreenMode = (CheckBoxPreference) findPreference(Persistence.PREF_FULLSCREEN_MODE);
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
@@ -56,6 +63,9 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
 		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
+		mPrefConnectToShield.setOnPreferenceClickListener(this);
+		mPrefConnectToShield.setOnPreferenceChangeListener(this);
+		mProgressDialog = new ProgressDialog(this);
 		
 		initOnboarding();
 	}
@@ -64,6 +74,16 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	public boolean onPreferenceClick(Preference pref) {	
 		if(pref.equals(mScanSpeedPref)) {
 			mScanSpeedDialog.show();
+			return true;
+		}
+		if(pref.equals(mPrefConnectToShield)) {
+			if (mBluetoothAdapter == null) {
+				showAlert(R.string.shield_connect_summary_BT_nosupport);
+			} else if (!mBluetoothAdapter.isEnabled()) {
+				registerReceiver(btReceiver, new IntentFilter(
+						BluetoothAdapter.ACTION_STATE_CHANGED));
+				startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+			}
 			return true;
 		}
 		return false;
@@ -233,4 +253,93 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		}
 	};
 
+	// All intents will be processed here
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND) && !mShieldFound) {
+				BluetoothDevice dev = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
+				if ((dev.getName() != null) && (
+						dev.getName().startsWith(TeclaShieldService.SHIELD_PREFIX_2) ||
+						dev.getName().startsWith(TeclaShieldService.SHIELD_PREFIX_3) )) {
+					mShieldFound = true;
+					mShieldAddress = dev.getAddress();
+					mShieldName = dev.getName();
+					TeclaStatic.logD(CLASS_TAG, "Found a Tecla Access Shield candidate");
+					cancelDiscovery();
+				}
+			}
+
+			if (intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
+				if (mShieldFound) {
+					// Shield found, try to connect
+					mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
+					mProgressDialog.setOnKeyListener(new OnKeyListener() {
+
+						public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+							return true; //Consume all keys once Shield is found (can't cancel with back key)
+						}
+						
+					});
+					mProgressDialog.setMessage(getString(R.string.connecting_tecla_shield) +
+							" " + mShieldName);
+					if(!TeclaShieldManager.connect(TeclaPrefs.this, mShieldAddress)) {
+						// Could not connect to Shield
+						dismissDialog();
+						TeclaApp.getInstance().showToast(R.string.couldnt_connect_shield);
+					}
+				} else {
+					// Shield not found
+					dismissDialog();
+					if (!mConnectionCancelled) TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
+					mPrefConnectToShield.setChecked(false);
+					mPrefTempDisconnect.setChecked(false);
+					mPrefTempDisconnect.setEnabled(false);
+				}
+			}
+
+			if (intent.getAction().equals(TeclaShieldService.ACTION_SHIELD_CONNECTED)) {
+				TeclaStatic.logD(CLASS_TAG, "Successfully started SEP");
+				dismissDialog();
+				TeclaApp.getInstance().showToast(R.string.shield_connected);
+				mPrefTempDisconnect.setEnabled(true);
+				mPrefMorse.setEnabled(true);
+				mPrefPersistentKeyboard.setChecked(true);
+			}
+
+			if (intent.getAction().equals(TeclaShieldService.ACTION_SHIELD_DISCONNECTED)) {
+				TeclaStatic.logD(CLASS_TAG, "SEP broadcast stopped");
+				dismissDialog();
+				mPrefTempDisconnect.setChecked(false);
+				mPrefTempDisconnect.setEnabled(false);
+			}
+		}
+	};
+	
+	BroadcastReceiver btReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+			if (state == BluetoothAdapter.STATE_ON){
+				TeclaStatic.logD(CLASS_TAG, "Bluetooth Turned On Successfully");
+				mPrefConnectToShield.setChecked(true);
+			}
+		}
+	};
+
+	public void showAlert(int resid) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(resid);
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+			
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
 }
