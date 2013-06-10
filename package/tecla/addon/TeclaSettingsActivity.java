@@ -28,7 +28,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
 	private CheckBoxPreference mPrefConnectToShield;
-	private CheckBoxPreference mPrefTempDisconnect;
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
 	private ProgressDialog mProgressDialog;
@@ -57,7 +56,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
 		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
-		mPrefTempDisconnect = (CheckBoxPreference) findPreference(Persistence.PREF_TEMP_SHIELD_DISCONNECT);
 		
 		initOnboarding();
 	}
@@ -96,8 +94,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 				// Should perhaps use Binding?
 				dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
-					mPrefTempDisconnect.setChecked(false);
-					mPrefTempDisconnect.setEnabled(false);
 					mPrefSelfScanning.setChecked(false);
 					mPrefInverseScanning.setChecked(false);
 				}
@@ -149,8 +145,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 				TeclaStatic.logD(CLASS_TAG, CLASS_TAG + "Tecla Shield discovery cancelled");
 				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
 				mConnectionCancelled = true;
-				mPrefTempDisconnect.setChecked(false);
-				mPrefTempDisconnect.setEnabled(false);
 				//Since we have cancelled the discovery the check state needs to be reset
 				//(triggers onSharedPreferenceChanged)
 				//mPrefConnectToShield.setChecked(false);
