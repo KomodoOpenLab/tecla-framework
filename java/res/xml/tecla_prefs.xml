@@ -31,24 +31,12 @@
             android:summary="@string/scan_speed_summary"
             android:title="@string/scan_speed" />
     </PreferenceScreen>
-    <!--
-    <PreferenceScreen
-        android:key="advanced_settings"
-        android:summary="@string/advanced_settings_summary"
-        android:title="@string/fullscreen_category" >
-        <CheckBoxPreference
-            android:key="hud_visibility"
-            android:summary="@string/hud_visibility_summary"
-            android:title="@string/hud_visibility" />
-        <CheckBoxPreference
-            android:key="single_switch_overlay"
-            android:summary="@string/single_switch_overlay_summary"
-            android:title="@string/single_switch_overlay" />
-        <CheckBoxPreference
-            android:key="hud_self_scanning"
-            android:summary="@string/hud_self_scanning_summary"
-            android:title="@string/hud_self_scanning" />
-    </PreferenceScreen>
-    -->
-
+    
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="shield_connect"
+        android:persistent="true"
+        android:summary="@string/shield_connect_summary"
+        android:title="@string/shield_connect" />
+        
 </PreferenceScreen>

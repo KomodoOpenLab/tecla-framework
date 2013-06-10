@@ -2,6 +2,7 @@ package ca.idrc.tecla.framework;
 
 import java.util.HashMap;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -17,7 +18,10 @@ public class Persistence {
 	public static final String PREF_HUD = "hud_visibility";
 	public static final String PREF_SINGLESWITCH_OVERLAY = "single_switch_overlay";
 	public static final String PREF_HUD_SELF_SCANNING = "hud_self_scanning";
+	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
 
+	public static final String PREF_SHIELD_ADDRESS = "shield_address";
+	
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 
 	public static final float MAX_SCAN_DELAY = 3000;
@@ -82,6 +86,21 @@ public class Persistence {
 	//	public Boolean isFrameworkReady() {
 	//		return is_framework_ready;
 	//	}
+
+	public String getShieldAddress() {
+		String mac = shared_prefs.getString(PREF_SHIELD_ADDRESS, "");
+		return BluetoothAdapter.checkBluetoothAddress(mac)? mac:null;
+	}
+	
+	public void setShieldAddress(String shieldAddress) {
+		prefs_editor.putString(PREF_SHIELD_ADDRESS, shieldAddress);
+		prefs_editor.commit();
+	}
+
+	public void setConnectToShield(boolean shieldConnect) {
+		prefs_editor.putBoolean(PREF_CONNECT_TO_SHIELD, shieldConnect);
+		prefs_editor.commit();
+	}
 
 	public int getScanDelay() {
 		return mScanDelay;

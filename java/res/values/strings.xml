@@ -55,4 +55,15 @@
     <string name="onboarding_a11y_warning">The Tecla Next accessibility service is not enabled. In order to use any Tecla Next features, you must first enable the Tecla Next accessibility service. Do you want to do this now?</string>
     <string name="onboarding_success">You have successfully set up Tecla Next!</string>
         
+    <!-- Option to scan and connect to Tecla shields -->
+    <string name="shield_connect">Connect to Tecla Shield</string>
+    <string name="shield_connect_summary_BT_nosupport">Bluetooth is not supported</string>
+    <string name="shield_connect_summary_BT_disabled">Bluetooth is disabled</string>
+    <string name="shield_connect_summary">Attempts a connection to a nearby Tecla Shield</string>
+    <string name="shield_disconnected">Tecla Shield disconnected</string>
+    
+    <!-- Toasts and dialogs -->
+    <string name="shield_connection_cancelled">Connection to Tecla Shield cancelled</string>
+    <string name="searching_for_shields">Searching for Tecla Shields. Please wait…</string>
+    
 </resources>
