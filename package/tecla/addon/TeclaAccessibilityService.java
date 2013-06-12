@@ -394,6 +394,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (event.isAnyPressed()) {
 			isSwitchPressed = true;
 		} else if(isSwitchPressed) { // on switch released
+			isSwitchPressed = false;
 			String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
 			String action_tecla = actions[0];
 			int max_node_index = mActiveNodes.size() - 1;
