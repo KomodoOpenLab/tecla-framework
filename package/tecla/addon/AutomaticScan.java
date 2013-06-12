@@ -25,10 +25,9 @@ public class AutomaticScan {
 	
 	private static void tick() {
 		sHandler.removeMessages(TICK);
-		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
-				&& TeclaApp.a11yservice.isHUDVisible()
-				&& !TeclaApp.a11yservice.isPreviewHUD()) {
-			TeclaApp.a11yservice.scanNextHUDButton();
+		if(TeclaApp.overlay.isVisible()
+				&& !TeclaApp.overlay.isPreview()) {
+			TeclaApp.overlay.scanNextHUDButton();
 		} else if(TeclaApp.getInstance().isSupportedIMERunning()) {
 			IMEAdapter.scanNext();			
 		}
