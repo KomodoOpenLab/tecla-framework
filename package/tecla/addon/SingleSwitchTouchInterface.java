@@ -29,7 +29,6 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		rView.setBackgroundResource(R.drawable.screen_switch_background_normal);
 		rView.setOnTouchListener(mOverlayTouchListener);
 		rView.setOnLongClickListener(mOverlayLongClickListener);
-		//rView.setOnClickListener(mOverlayClickListener);
 	}
 
 	@Override
@@ -67,16 +66,6 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 			return false;
 		}
 	};
-
-	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-			else TeclaHUDOverlay.selectScanHighlighted();
-				
-		}
-	};	
 
 	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
 
