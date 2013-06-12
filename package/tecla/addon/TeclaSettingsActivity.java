@@ -93,6 +93,24 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			}
 			return true;
 		}
+		if(pref.equals(mPrefSelfScanning)) {
+			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
+			if (newValue.toString().equals("true")) {
+				TeclaApp.persistence.setSelfScanningEnabled(true);
+			} else {
+				TeclaApp.persistence.setSelfScanningEnabled(false);
+			}
+			return true;
+		}
+		if(pref.equals(mPrefInverseScanning)) {
+			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
+			if (newValue.toString().equals("true")) {
+				TeclaApp.persistence.setInverseScanningEnabled(true);
+			} else {
+				TeclaApp.persistence.setInverseScanningEnabled(false);				
+			}
+			return true;
+		}
 		return false;
 	}
 
