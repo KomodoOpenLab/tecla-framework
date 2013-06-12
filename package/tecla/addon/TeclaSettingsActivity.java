@@ -52,6 +52,8 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
 		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
+		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
+		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
 		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
