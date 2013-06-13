@@ -51,10 +51,12 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
+		
 		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
 		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
 		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
 		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
+		
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
@@ -99,10 +101,8 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setSelfScanningEnabled(true);
-				AutomaticScan.startAutoScan();
 			} else {
 				TeclaApp.persistence.setSelfScanningEnabled(false);
-				AutomaticScan.stopAutoScan();
 			}
 			return true;
 		}
@@ -110,8 +110,10 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setInverseScanningEnabled(true);
+				TeclaApp.setFullscreenSwitchLongClick(false);
 			} else {
-				TeclaApp.persistence.setInverseScanningEnabled(false);				
+				TeclaApp.persistence.setInverseScanningEnabled(false);
+				TeclaApp.setFullscreenSwitchLongClick(true);	
 			}
 			return true;
 		}

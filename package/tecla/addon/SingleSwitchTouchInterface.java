@@ -28,7 +28,10 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		View rView = getRootView();
 		rView.setBackgroundResource(R.drawable.screen_switch_background_normal);
 		rView.setOnTouchListener(mOverlayTouchListener);
-		rView.setOnLongClickListener(mOverlayLongClickListener);
+		
+		if(!TeclaApp.persistence.isInverseScanningEnabled()) 
+			setLongClick(true);
+		
 		//rView.setOnClickListener(mOverlayClickListener);
 	}
 
@@ -78,6 +81,12 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		}
 	};	
 
+	public void setLongClick(boolean enabled) {
+		View rView = getRootView();
+		if(enabled) rView.setOnLongClickListener(mOverlayLongClickListener);
+		else rView.setOnLongClickListener(null);
+	}
+	
 	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
 
 		@Override
