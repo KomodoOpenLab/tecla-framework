@@ -323,6 +323,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
 			isSwitchPressed = true;
+			actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
 			if(TeclaApp.persistence.isInverseScanningEnabled()) {
 				AutomaticScan.startAutoScan();
 			}
