@@ -356,6 +356,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
 		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
+	
 	private int getStatusBarHeight() {
 		  int result = 0;
 		  int resourceId = this.getRootView().getResources().getIdentifier("status_bar_height", "dimen", "android");
