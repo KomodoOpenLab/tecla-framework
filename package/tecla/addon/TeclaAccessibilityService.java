@@ -317,6 +317,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	};
 
 	private boolean isSwitchPressed = false;
+	private String[] actions = null;
 	private void handleSwitchEvent(Bundle extras) {
 		TeclaStatic.logD(CLASS_TAG, "Received switch event.");
 		SwitchEvent event = new SwitchEvent(extras);
@@ -332,7 +333,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				else TeclaHUDOverlay.selectScanHighlighted();
 				AutomaticScan.stopAutoScan();
 			} else {
-				String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
 				String action_tecla = actions[0];
 				int max_node_index = mActiveNodes.size() - 1;
 				switch(Integer.parseInt(action_tecla)) {
@@ -382,9 +382,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mVisualOverlay != null) {
 			mVisualOverlay.hide();
 		}
-		if (mVisualOverlay != null) {
-			mVisualOverlay.hide();
-		}
+		
 		if (mFullscreenSwitch != null) {
 			if(mFullscreenSwitch.isVisible()) {
 				mFullscreenSwitch.hide();
