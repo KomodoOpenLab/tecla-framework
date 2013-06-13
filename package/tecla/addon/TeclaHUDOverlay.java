@@ -92,10 +92,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			mHUDAnimators.add((AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.hud_alpha_animator));
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
 		}
-
-		if(TeclaApp.persistence.isSelfScanningEnabled()) {
-			AutomaticScan.startAutoScan();
-		}
 	}
 
 	// memory storage for HUD values during preview
