@@ -111,9 +111,17 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setInverseScanningEnabled(true);
 				TeclaApp.setFullscreenSwitchLongClick(false);
+				if(TeclaApp.persistence.isFullscreenEnabled() 
+						&& TeclaApp.persistence.isSelfScanningEnabled()) {
+					AutomaticScan.stopAutoScan();
+				}
 			} else {
 				TeclaApp.persistence.setInverseScanningEnabled(false);
-				TeclaApp.setFullscreenSwitchLongClick(true);	
+				TeclaApp.setFullscreenSwitchLongClick(true);
+				if(TeclaApp.persistence.isFullscreenEnabled() 
+						&& TeclaApp.persistence.isSelfScanningEnabled()) {
+					AutomaticScan.startAutoScan();
+				}
 			}
 			return true;
 		}
