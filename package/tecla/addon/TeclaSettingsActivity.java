@@ -120,7 +120,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		return false;
 	}
 
-	
 	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
 //	@Override
 //	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
@@ -234,7 +233,14 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	protected void onResume() {
 		super.onResume();
 		
-		initOnboarding();
+		initOnboarding();	
+		updatePreferences();
+	}
+	
+	private void updatePreferences() {
+		mFullscreenMode.setChecked(TeclaApp.persistence.isFullscreenEnabled());
+		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
+		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningEnabled());;
 	}
 	
 	@Override
