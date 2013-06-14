@@ -15,8 +15,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +52,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private ArrayList<AnimatorSet> mHUDAnimators;
 	private byte mScanIndex;
 
+	private byte mPage;
+	
 	public TeclaHUDOverlay(Context context) {
 		super(context);
 
@@ -78,6 +78,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		rView.setOnLongClickListener(mOverlayLongClickListener);
 		rView.setOnClickListener(mOverlayClickListener);*/
 
+		mPage = 0;
 		findAllButtons();        
 		fixHUDLayout();
 
@@ -222,6 +223,12 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 				TeclaApp.ime.pressHomeKey();
 			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
 			break;
+		case HUD_BTN_BOTTOMRIGHT:
+			++mPage;
+			mPage%=2;
+			fixHUDLayout();
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setHighlighted(true);
+			break;
 		}
 		
 		if(TeclaApp.persistence.isSelfScanningEnabled())
@@ -342,6 +349,26 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		int stroke_width = Math.round(stroke_width_proportion * size_reference);
 
+		if(mPage == 0) {
+			mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
+			mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
+			mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page1_normal), mResources.getDrawable(R.drawable.hud_icon_page1_focused));
+			mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
+			mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
+			mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
+			mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
+		} else if(mPage == 1) {
+			mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
+			mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
+			mHUDPad.get(HUD_BTN_LEFT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_TOP).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_RIGHT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(null, null);
+		}
+		
 		mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMLEFT, stroke_width, false);
@@ -351,15 +378,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
 
-		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
-		mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
-		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
-		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
-		mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
-		mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
-		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
-		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
+	
 	private int getStatusBarHeight() {
 		  int result = 0;
 		  int resourceId = this.getRootView().getResources().getIdentifier("status_bar_height", "dimen", "android");
