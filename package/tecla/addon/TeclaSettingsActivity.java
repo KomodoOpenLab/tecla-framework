@@ -101,8 +101,12 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setSelfScanningEnabled(true);
+				if(TeclaApp.persistence.isFullscreenEnabled() )
+					AutomaticScan.startAutoScan();
 			} else {
 				TeclaApp.persistence.setSelfScanningEnabled(false);
+				if(TeclaApp.persistence.isFullscreenEnabled() )
+					AutomaticScan.stopAutoScan();
 			}
 			return true;
 		}
