@@ -554,7 +554,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		Rect node1_rect = new Rect(); 
 		node1.getBoundsInScreen(node1_rect);	
 		Rect node2_rect = new Rect(); 
-		node1.getBoundsInScreen(node2_rect);	
+		node2.getBoundsInScreen(node2_rect);	
 		if(node1_rect.left == node2_rect.left
 				&& node1_rect.right == node2_rect.right
 				&& node1_rect.top == node2_rect.top
