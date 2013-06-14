@@ -182,59 +182,86 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		if(node != null) parent = node.getParent();
 		int actions = 0;
 		if(parent != null) actions = node.getParent().getActions();
-				
-		switch (mScanIndex){
-		case HUD_BTN_TOP:
-			if(TeclaAccessibilityService.isFirstScrollNode(node) 
-					&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
-					== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
-				parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-			} else
-				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
-			break;
-		case HUD_BTN_BOTTOM:
-			if(TeclaAccessibilityService.isLastScrollNode(node)
-					&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
-					== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-			} else 
-				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
-			break;
-		case HUD_BTN_LEFT:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
-			break;
-		case HUD_BTN_RIGHT:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
-			break;
-		case HUD_BTN_TOPRIGHT:
-			TeclaAccessibilityService.clickActiveNode();
-			break;
-		case HUD_BTN_BOTTOMLEFT:
-			TeclaApp.a11yservice.sendGlobalBackAction();
-			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
-				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
-				TeclaApp.ime.pressBackKey();
-			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
-			break;
-		case HUD_BTN_TOPLEFT:
-			TeclaApp.a11yservice.sendGlobalNotificationAction();
-			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
-				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
-				TeclaApp.ime.pressHomeKey();
-			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
-			break;
-		case HUD_BTN_BOTTOMRIGHT:
-			++mPage;
-			mPage%=2;
-			fixHUDLayout();
-			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setHighlighted(true);
-			break;
+		
+		if(mPage == 0) {
+			switch (mScanIndex){
+			case HUD_BTN_TOP:
+				if(TeclaAccessibilityService.isFirstScrollNode(node) 
+						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+					parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				} else
+					TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+				break;
+			case HUD_BTN_BOTTOM:
+				if(TeclaAccessibilityService.isLastScrollNode(node)
+						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
+					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				} else 
+					TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+				break;
+			case HUD_BTN_LEFT:
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
+				break;
+			case HUD_BTN_RIGHT:
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
+				break;
+			case HUD_BTN_TOPRIGHT:
+				TeclaAccessibilityService.clickActiveNode();
+				break;
+			case HUD_BTN_BOTTOMLEFT:
+				TeclaApp.a11yservice.sendGlobalBackAction();
+				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+					TeclaApp.ime.pressBackKey();
+				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
+				break;
+			case HUD_BTN_TOPLEFT:
+				TeclaApp.a11yservice.sendGlobalNotificationAction();
+				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+					TeclaApp.ime.pressHomeKey();
+				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
+				break;
+			case HUD_BTN_BOTTOMRIGHT:
+				turnPage();
+				break;
+			}
+		} else if(mPage == 1) {
+			switch (mScanIndex){
+			case HUD_BTN_TOP:
+				break;
+			case HUD_BTN_BOTTOM:
+				break;
+			case HUD_BTN_LEFT:
+				break;
+			case HUD_BTN_RIGHT:
+				break;
+			case HUD_BTN_TOPRIGHT:
+				break;
+			case HUD_BTN_BOTTOMLEFT:
+				break;
+			case HUD_BTN_TOPLEFT:
+				TeclaApp.a11yservice.sendGlobalHomeAction();
+				break;
+			case HUD_BTN_BOTTOMRIGHT:
+				turnPage();
+				break;
+			}
 		}
 		
 		if(TeclaApp.persistence.isSelfScanningEnabled())
 			AutomaticScan.resetTimer();
 	}
 
+	private void turnPage() {
+		++mPage;
+		mPage%=2;
+		fixHUDLayout();
+		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setHighlighted(true);		
+	}
+	
 	protected void scanPrevious() {
 
 		// Move highlight out of previous button
