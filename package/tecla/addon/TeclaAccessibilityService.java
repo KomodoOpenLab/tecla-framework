@@ -320,6 +320,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		int r2 = 0;
 		double ratio_min = Double.MAX_VALUE;
 		double ratio = 0;
+		double K = 2;
 		Rect refOutBounds = new Rect();
 		if(refnode == null) return null;
 		refnode.getBoundsInScreen(refOutBounds);
@@ -337,19 +338,19 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			switch (direction ) {
 			case DIRECTION_UP:
 				if(dy <= 0) continue;
-				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*2));
+				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*K));
 				break;  
 			case DIRECTION_DOWN:
 				if(dy >= 0) continue;
-				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*2));
+				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*K));
 				break;  
 			case DIRECTION_LEFT:
 				if(dx <= 0) continue;
-				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*2));
+				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*K));
 				break; 
 			case DIRECTION_RIGHT:
 				if(dx >= 0) continue;
-				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*2));
+				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*K));
 				break; 
 			default: 
 				break; 
@@ -365,6 +366,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				}
 			}
 		}
+		if(ratio_min >= 0.95*K) result = null;
 		return result;		
 	}
 
