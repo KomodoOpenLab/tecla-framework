@@ -289,57 +289,52 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
 		int r2_min = Integer.MAX_VALUE;
-		int r2;
-		double ratio;
+		int r2 = 0;
+		double ratio_min = Double.MAX_VALUE;
+		double ratio = 0;
 		Rect refOutBounds = new Rect();
 		if(refnode == null) return null;
 		refnode.getBoundsInScreen(refOutBounds);
 		int x = refOutBounds.centerX();
 		int y = refOutBounds.centerY();
+		int dx, dy;
 		Rect outBounds = new Rect();
 		AccessibilityNodeInfo result = null; 
 		for (AccessibilityNodeInfo node: sInstance.mActiveNodes ) {
 			if(refnode.equals(node) && direction != DIRECTION_ANY) continue; 
 			node.getBoundsInScreen(outBounds);
-			r2 = (x - outBounds.centerX())*(x - outBounds.centerX()) 
-					+ (y - outBounds.centerY())*(y - outBounds.centerY());
+			dx = x - outBounds.centerX();
+			dy = y - outBounds.centerY();
+			r2 = dx*dx + dy*dy;
 			switch (direction ) {
 			case DIRECTION_UP:
-				ratio =(y - outBounds.centerY())/Math.sqrt(r2);
-				if(ratio < Math.PI/4) continue; 
-				break; 
+				if(dy <= 0) continue;
+				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*2));
+				break;  
 			case DIRECTION_DOWN:
-				ratio =(outBounds.centerY() - y)/Math.sqrt(r2);
-				if(ratio < Math.PI/4) continue;
-				break; 
+				if(dy >= 0) continue;
+				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*2));
+				break;  
 			case DIRECTION_LEFT:
-				ratio =(x - outBounds.centerX())/Math.sqrt(r2);
-				if(ratio <= Math.PI/4) continue;
+				if(dx <= 0) continue;
+				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*2));
 				break; 
 			case DIRECTION_RIGHT:
-				ratio =(outBounds.centerX() - x)/Math.sqrt(r2);
-				if(ratio <= Math.PI/4) continue;
-				break; 
-			case DIRECTION_UP_NORATIOCONSTRAINT:
-				if(y - outBounds.centerY() <= 0) continue; 
-				break; 
-			case DIRECTION_DOWN_NORATIOCONSTRAINT:
-				if(outBounds.centerY() - y <= 0) continue;
-				break; 
-			case DIRECTION_LEFT_NORATIOCONSTRAINT:
-				if(x - outBounds.centerX() <= 0) continue;
-				break; 
-			case DIRECTION_RIGHT_NORATIOCONSTRAINT:
-				if(outBounds.centerX() - x <= 0) continue;
-				break; 
-			case DIRECTION_ANY:
+				if(dx >= 0) continue;
+				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*2));
 				break; 
 			default: 
 				break; 
 			}
-			if(r2 < r2_min) {
-				r2_min = r2;
-				result = node; 
+			if(ratio <= ratio_min) {
+				if(ratio < ratio_min) {
+					ratio_min = ratio;
+					r2_min = r2;
+					result = node;					
+				} else if(r2 < r2_min) {
+					r2_min = r2;
+					result = node;						
+				}
 			}
 		}
 		return result;		
