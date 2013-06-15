@@ -33,10 +33,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public final static int DIRECTION_LEFT = 1;
 	public final static int DIRECTION_RIGHT = 2;
 	public final static int DIRECTION_DOWN = 3;
-	private final static int DIRECTION_UP_NORATIOCONSTRAINT = 4;
-	private final static int DIRECTION_LEFT_NORATIOCONSTRAINT = 5;
-	private final static int DIRECTION_RIGHT_NORATIOCONSTRAINT = 6;
-	private final static int DIRECTION_DOWN_NORATIOCONSTRAINT = 7;
 	private final static int DIRECTION_ANY = 8;
 
 	private static TeclaAccessibilityService sInstance;
@@ -475,25 +471,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				return;
 			} 
 			mActionLock.lock();
-			node = findNeighbourNode(current_node, direction );
-			if(node == null) {
-				switch (direction ) {
-				case DIRECTION_UP:
-					node = findNeighbourNode(current_node, DIRECTION_UP_NORATIOCONSTRAINT);
-					break; 
-				case DIRECTION_DOWN:
-					node = findNeighbourNode(current_node, DIRECTION_DOWN_NORATIOCONSTRAINT);
-					break; 
-				case DIRECTION_LEFT:
-					node = findNeighbourNode(current_node, DIRECTION_LEFT_NORATIOCONSTRAINT);
-					break; 
-				case DIRECTION_RIGHT:
-					node = findNeighbourNode(current_node, DIRECTION_RIGHT_NORATIOCONSTRAINT);
-					break; 
-				default: 
-					break; 
-				}
-			}			
+			node = findNeighbourNode(current_node, direction);		
 			if(node != null) {
 				sInstance.mSelectedNode = node;
 				if(node.getClassName().toString().contains("EditText")) {
