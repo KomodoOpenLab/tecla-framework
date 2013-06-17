@@ -53,6 +53,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private ArrayList<TeclaHUDButtonView> mHUDPad;
 	private ArrayList<AnimatorSet> mHUDAnimators;
 	private byte mScanIndex;
+	private boolean mStatusBarVisible;
 
 	public TeclaHUDOverlay(Context context) {
 		super(context);
@@ -73,7 +74,9 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		setContentView(R.layout.tecla_hud);
 
-		findAllButtons();        
+		findAllButtons();  
+		
+		mStatusBarVisible = (params.systemUiVisibility == View.SYSTEM_UI_FLAG_LOW_PROFILE);
 		fixHUDLayout();
 
 		mScanIndex = 0;
@@ -134,14 +137,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Configuration conf = context.getResources().getConfiguration();
-
-			fixHUDLayout(); // resizes properly for both orientations
-			//			if(conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			//				fixHUDLayout();
-			//			} else {
-			//				fixHUDLayout();
-			//			}
+			if(!updateHUDHeight())
+				fixHUDLayout();
 		}		
 	};
 
@@ -273,7 +270,19 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPadAlphaVal = new float[mHUDPad.size()];
 	}
 
-	private void fixHUDLayout () {
+	public boolean updateHUDHeight() {
+		boolean updated = false;
+		final WindowManager.LayoutParams params = getParams();
+		boolean statusBarVisible = (params.systemUiVisibility == View.SYSTEM_UI_FLAG_LOW_PROFILE);
+		if(statusBarVisible != mStatusBarVisible) {
+			mStatusBarVisible = statusBarVisible;
+			fixHUDLayout();
+			updated = true; 
+		}
+		return updated;
+	}
+	
+	private void fixHUDLayout() {
 		Display display = mWindowManager.getDefaultDisplay();
 		Point display_size = new Point();
 		display.getSize(display_size);
@@ -283,10 +292,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		int size_reference = 0;
 		if (display_width <= display_height) { // Portrait (use width)
 			size_reference = Math.round(display_width * 0.24f);
-			display_height -= getStatusBarHeight();
+			if(mStatusBarVisible) display_height -= getStatusBarHeight();
 		} else { // Landscape (use height)
 			size_reference = Math.round(display_height * 0.24f);
-			display_width -= getStatusBarHeight();
+			if(mStatusBarVisible) display_width -= getStatusBarHeight();
 		}
 
 		ArrayList<ViewGroup.LayoutParams> hudParams = new ArrayList<ViewGroup.LayoutParams>();
