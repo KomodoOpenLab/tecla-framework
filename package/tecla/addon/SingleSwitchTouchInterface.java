@@ -32,7 +32,6 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		if(!TeclaApp.persistence.isInverseScanningEnabled()) 
 			setLongClick(true);
 		
-		//rView.setOnClickListener(mOverlayClickListener);
 	}
 
 	@Override
@@ -71,16 +70,6 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		}
 	};
 
-	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-			else TeclaHUDOverlay.selectScanHighlighted();
-				
-		}
-	};	
-
 	public void setLongClick(boolean enabled) {
 		View rView = getRootView();
 		if(enabled) rView.setOnLongClickListener(mOverlayLongClickListener);
@@ -92,6 +81,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		@Override
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
+			sInstance.getRootView().setBackgroundResource(R.drawable.screen_switch_background_normal);
 			TeclaApp.persistence.setFullscreenEnabled(false);
 			TeclaApp.getInstance().turnFullscreenOff();
 			return true;
