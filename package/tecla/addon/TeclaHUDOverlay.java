@@ -74,11 +74,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		setContentView(R.layout.tecla_hud);
 
-		/*View rView = getRootView();
-
-		rView.setOnLongClickListener(mOverlayLongClickListener);
-		rView.setOnClickListener(mOverlayClickListener);*/
-
 		findAllButtons();  
 		
 		mStatusBarVisible = (params.systemUiVisibility == View.SYSTEM_UI_FLAG_LOW_PROFILE);
@@ -94,10 +89,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		for (int i = 0; i < mHUDPad.size(); i++) {
 			mHUDAnimators.add((AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.hud_alpha_animator));
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
-		}
-
-		if(TeclaApp.persistence.isSelfScanningEnabled()) {
-			AutomaticScan.startAutoScan();
 		}
 	}
 
@@ -147,26 +138,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}		
 	};
 
-	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-			else scanTrigger();
-		}
-	};	
-
-//	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
-//
-//		@Override
-//		public boolean onLongClick(View v) {
-//			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-//			TeclaApp.persistence.setHUDCancelled(true);
-//			TeclaApp.a11yservice.shutdownInfrastructure();
-//			return true;
-//		}
-//	};
-//
 	public static void selectScanHighlighted() {
 		TeclaHUDOverlay.sInstance.scanTrigger();
 	}
