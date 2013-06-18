@@ -76,8 +76,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			TeclaApp.setVisualOverlay(mVisualOverlay);
 		}
 		
-		if (mFullscreenSwitch == null)
-			mFullscreenSwitch = new SingleSwitchTouchInterface(this);
+		if (mFullscreenSwitch == null) {
+			mFullscreenSwitch = new SingleSwitchTouchInterface(this);	
+			TeclaApp.setFullscreenSwitch(mFullscreenSwitch);		
+		}
 
 		// Bind to SwitchEventProvider
 		Intent intent = new Intent(this, SwitchEventProvider.class);
@@ -315,34 +317,49 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	};
 
+	private boolean isSwitchPressed = false;
+	private String[] actions = null;
 	private void handleSwitchEvent(Bundle extras) {
 		TeclaStatic.logD(CLASS_TAG, "Received switch event.");
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
-			String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
-			String action_tecla = actions[0];
-			int max_node_index = mActiveNodes.size() - 1;
-			switch(Integer.parseInt(action_tecla)) {
-
-			case SwitchEvent.ACTION_NEXT:
-				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
-				else mVisualOverlay.scanNext();
-				break;
-			case SwitchEvent.ACTION_PREV:
-				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
-				else mVisualOverlay.scanPrevious();
-				break;
-			case SwitchEvent.ACTION_SELECT:
-				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-				else TeclaHUDOverlay.selectScanHighlighted();				
-				break;
-			case SwitchEvent.ACTION_CANCEL:
-				//TODO: Programmatic back key?
-			default:
-				break;
+			isSwitchPressed = true;
+			actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
+			if(TeclaApp.persistence.isInverseScanningEnabled()) {
+				AutomaticScan.startAutoScan();
 			}
-			if(TeclaApp.persistence.isSelfScanningEnabled())
-				AutomaticScan.setExtendedTimer();
+		} else if(isSwitchPressed) { // on switch released
+			isSwitchPressed = false;
+			if(TeclaApp.persistence.isInverseScanningEnabled()) {
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+				else TeclaHUDOverlay.selectScanHighlighted();
+				AutomaticScan.stopAutoScan();
+			} else {
+				String action_tecla = actions[0];
+				int max_node_index = mActiveNodes.size() - 1;
+				switch(Integer.parseInt(action_tecla)) {
+
+				case SwitchEvent.ACTION_NEXT:
+					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
+					else mVisualOverlay.scanNext();
+					break;
+				case SwitchEvent.ACTION_PREV:
+					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
+					else mVisualOverlay.scanPrevious();
+					break;
+				case SwitchEvent.ACTION_SELECT:
+					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+					else TeclaHUDOverlay.selectScanHighlighted();				
+					break;
+				case SwitchEvent.ACTION_CANCEL:
+					//TODO: Programmatic back key?
+				default:
+					break;
+				}
+				if(TeclaApp.persistence.isSelfScanningEnabled())
+					AutomaticScan.setExtendedTimer();
+			}
+			
 		}
 	}
 
@@ -367,9 +384,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mVisualOverlay != null) {
 			mVisualOverlay.hide();
 		}
-		if (mVisualOverlay != null) {
-			mVisualOverlay.hide();
-		}
+		
 		if (mFullscreenSwitch != null) {
 			if(mFullscreenSwitch.isVisible()) {
 				mFullscreenSwitch.hide();
