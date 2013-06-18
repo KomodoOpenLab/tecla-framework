@@ -153,6 +153,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private void searchAndUpdateNodes() {
 		//		TeclaHighlighter.clearHighlight();
 		searchActiveNodesBFS(mOriginalNode);
+		
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
@@ -176,6 +177,37 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				//}
 			}
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
+		}
+		removeActiveParents();
+	}
+	
+	private void removeActiveParents() {
+		ArrayList<Rect> node_rects = new ArrayList<Rect>();
+		AccessibilityNodeInfo node;
+		Rect rect;
+		int i;
+		for(i=0; i<mActiveNodes.size(); ++i) {
+			rect = new Rect();
+			node = mActiveNodes.get(i);
+			node.getBoundsInScreen(rect);
+			node_rects.add(rect);
+		}
+		i=0;
+		Rect rect2;
+		while(i<node_rects.size()) {
+			rect = node_rects.get(i);
+			boolean removedANode = false;
+			for(int j=0; j<node_rects.size(); ++j) {
+				if(i==j) continue;
+				rect2 = node_rects.get(j);
+				if(rect.contains(rect2)) {
+					node_rects.remove(i); 
+					mActiveNodes.remove(i);
+					removedANode = true;
+					break;
+				}
+			}
+			if(!removedANode) ++i;
 		}
 	}
 
