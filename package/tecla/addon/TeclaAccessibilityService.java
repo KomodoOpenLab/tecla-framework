@@ -33,10 +33,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public final static int DIRECTION_LEFT = 1;
 	public final static int DIRECTION_RIGHT = 2;
 	public final static int DIRECTION_DOWN = 3;
-	private final static int DIRECTION_UP_NORATIOCONSTRAINT = 4;
-	private final static int DIRECTION_LEFT_NORATIOCONSTRAINT = 5;
-	private final static int DIRECTION_RIGHT_NORATIOCONSTRAINT = 6;
-	private final static int DIRECTION_DOWN_NORATIOCONSTRAINT = 7;
 	private final static int DIRECTION_ANY = 8;
 
 	private static TeclaAccessibilityService sInstance;
@@ -251,59 +247,56 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private static AccessibilityNodeInfo findNeighbourNode(AccessibilityNodeInfo refnode, int direction) {
 		int r2_min = Integer.MAX_VALUE;
-		int r2;
-		double ratio;
+		int r2 = 0;
+		double ratio_min = Double.MAX_VALUE;
+		double ratio = 0;
+		double K = 2;
 		Rect refOutBounds = new Rect();
 		if(refnode == null) return null;
 		refnode.getBoundsInScreen(refOutBounds);
 		int x = refOutBounds.centerX();
 		int y = refOutBounds.centerY();
+		int dx, dy;
 		Rect outBounds = new Rect();
 		AccessibilityNodeInfo result = null; 
 		for (AccessibilityNodeInfo node: sInstance.mActiveNodes ) {
 			if(refnode.equals(node) && direction != DIRECTION_ANY) continue; 
 			node.getBoundsInScreen(outBounds);
-			r2 = (x - outBounds.centerX())*(x - outBounds.centerX()) 
-					+ (y - outBounds.centerY())*(y - outBounds.centerY());
+			dx = x - outBounds.centerX();
+			dy = y - outBounds.centerY();
+			r2 = dx*dx + dy*dy;
 			switch (direction ) {
 			case DIRECTION_UP:
-				ratio =(y - outBounds.centerY())/Math.sqrt(r2);
-				if(ratio < Math.PI/4) continue; 
-				break; 
+				if(dy <= 0) continue;
+				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*K));
+				break;  
 			case DIRECTION_DOWN:
-				ratio =(outBounds.centerY() - y)/Math.sqrt(r2);
-				if(ratio < Math.PI/4) continue;
-				break; 
+				if(dy >= 0) continue;
+				ratio = Math.round(Math.abs(dx/Math.sqrt(r2)*K));
+				break;  
 			case DIRECTION_LEFT:
-				ratio =(x - outBounds.centerX())/Math.sqrt(r2);
-				if(ratio <= Math.PI/4) continue;
+				if(dx <= 0) continue;
+				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*K));
 				break; 
 			case DIRECTION_RIGHT:
-				ratio =(outBounds.centerX() - x)/Math.sqrt(r2);
-				if(ratio <= Math.PI/4) continue;
-				break; 
-			case DIRECTION_UP_NORATIOCONSTRAINT:
-				if(y - outBounds.centerY() <= 0) continue; 
-				break; 
-			case DIRECTION_DOWN_NORATIOCONSTRAINT:
-				if(outBounds.centerY() - y <= 0) continue;
-				break; 
-			case DIRECTION_LEFT_NORATIOCONSTRAINT:
-				if(x - outBounds.centerX() <= 0) continue;
-				break; 
-			case DIRECTION_RIGHT_NORATIOCONSTRAINT:
-				if(outBounds.centerX() - x <= 0) continue;
-				break; 
-			case DIRECTION_ANY:
+				if(dx >= 0) continue;
+				ratio = Math.round(Math.abs(dy/Math.sqrt(r2)*K));
 				break; 
 			default: 
 				break; 
 			}
-			if(r2 < r2_min) {
-				r2_min = r2;
-				result = node; 
+			if(ratio <= ratio_min) {
+				if(ratio < ratio_min) {
+					ratio_min = ratio;
+					r2_min = r2;
+					result = node;					
+				} else if(r2 < r2_min) {
+					r2_min = r2;
+					result = node;						
+				}
 			}
 		}
+		if(ratio_min >= 0.95*K) result = null;
 		return result;		
 	}
 
@@ -450,25 +443,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				return;
 			} 
 			mActionLock.lock();
-			node = findNeighbourNode(current_node, direction );
-			if(node == null) {
-				switch (direction ) {
-				case DIRECTION_UP:
-					node = findNeighbourNode(current_node, DIRECTION_UP_NORATIOCONSTRAINT);
-					break; 
-				case DIRECTION_DOWN:
-					node = findNeighbourNode(current_node, DIRECTION_DOWN_NORATIOCONSTRAINT);
-					break; 
-				case DIRECTION_LEFT:
-					node = findNeighbourNode(current_node, DIRECTION_LEFT_NORATIOCONSTRAINT);
-					break; 
-				case DIRECTION_RIGHT:
-					node = findNeighbourNode(current_node, DIRECTION_RIGHT_NORATIOCONSTRAINT);
-					break; 
-				default: 
-					break; 
-				}
-			}			
+			node = findNeighbourNode(current_node, direction);		
 			if(node != null) {
 				sInstance.mSelectedNode = node;
 				if(node.getClassName().toString().contains("EditText")) {
