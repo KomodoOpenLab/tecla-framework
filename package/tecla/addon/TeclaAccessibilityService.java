@@ -124,7 +124,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
-						mVisualOverlay.checkAndUpdateHUDHeight();
+//						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
 						if(mSelectedNode.getClassName().toString().contains("EditText"))
 								TeclaApp.ime.showWindow(true);
