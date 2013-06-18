@@ -315,11 +315,16 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	};
 
+	private boolean isSwitchPressed = false;
+	private String[] actions = null;
 	private void handleSwitchEvent(Bundle extras) {
 		TeclaStatic.logD(CLASS_TAG, "Received switch event.");
 		SwitchEvent event = new SwitchEvent(extras);
 		if (event.isAnyPressed()) {
-			String[] actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
+			isSwitchPressed = true;
+			actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
+		} else if(isSwitchPressed) { // on switch released
+			isSwitchPressed = false;
 			String action_tecla = actions[0];
 			int max_node_index = mActiveNodes.size() - 1;
 			switch(Integer.parseInt(action_tecla)) {
