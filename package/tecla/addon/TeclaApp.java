@@ -35,7 +35,7 @@ public class TeclaApp extends Application {
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
-	public static TeclaHighlighter highlighter;
+	public static TeclaVisualOverlay overlay;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -122,8 +122,8 @@ public class TeclaApp extends Application {
 		getInstance().processFrameworkOptions();
 	}
 
-	public static void setHighlighter (TeclaHighlighter highlighter_instance) {
-		highlighter = highlighter_instance;
+	public static void setVisualOverlay (TeclaVisualOverlay overlay_instance) {
+		overlay = overlay_instance;
 	}
 	
 	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
@@ -143,7 +143,7 @@ public class TeclaApp extends Application {
 		persistence.setSelfScanningEnabled(true);
 		AutomaticScan.startAutoScan();
 		if (a11yservice != null) {
-			a11yservice.showHUD();
+			TeclaApp.overlay.show();
 			a11yservice.showFullscreenSwitch();
 			a11yservice.sendGlobalHomeAction();
 		}
@@ -153,7 +153,7 @@ public class TeclaApp extends Application {
 		TeclaApp.a11yservice.hideFullscreenSwitch();
 		TeclaApp.persistence.setSelfScanningEnabled(false);
 		AutomaticScan.stopAutoScan();				
-		TeclaApp.a11yservice.hideHUD();
+		TeclaApp.overlay.hide();
 	}
 	
 	public void answerCall() {
