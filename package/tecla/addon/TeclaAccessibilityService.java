@@ -516,11 +516,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		Rect parent_rect = new Rect();
 		node.getBoundsInScreen(node_rect);
 		parent.getBoundsInScreen(parent_rect);
-		if(node_rect.top >= parent_rect.top
-				&& node_rect.bottom <= parent_rect.bottom
-				&& node_rect.left >= parent_rect.left
-				&& node_rect.right <= parent_rect.right) 
-			return true;
+		if(parent_rect.contains(node_rect)) return true;
 		return false;
 	}
 
