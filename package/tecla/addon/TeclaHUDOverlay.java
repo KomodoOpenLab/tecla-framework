@@ -15,8 +15,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +51,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private ArrayList<TeclaHUDButtonView> mHUDPad;
 	private ArrayList<AnimatorSet> mHUDAnimators;
 	private byte mScanIndex;
+	private boolean mStatusBarVisible;
 
+	private byte mPage;
+	
 	public TeclaHUDOverlay(Context context) {
 		super(context);
 
@@ -73,12 +74,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		setContentView(R.layout.tecla_hud);
 
-		/*View rView = getRootView();
-
-		rView.setOnLongClickListener(mOverlayLongClickListener);
-		rView.setOnClickListener(mOverlayClickListener);*/
-
-		findAllButtons();        
+		mPage = 0;
+		findAllButtons();  
+		
+		mStatusBarVisible = (params.systemUiVisibility == View.SYSTEM_UI_FLAG_LOW_PROFILE);
 		fixHUDLayout();
 
 		mScanIndex = 0;
@@ -91,10 +90,6 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		for (int i = 0; i < mHUDPad.size(); i++) {
 			mHUDAnimators.add((AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.hud_alpha_animator));
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
-		}
-
-		if(TeclaApp.persistence.isSelfScanningEnabled()) {
-			AutomaticScan.startAutoScan();
 		}
 	}
 
@@ -139,37 +134,11 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Configuration conf = context.getResources().getConfiguration();
-
-			fixHUDLayout(); // resizes properly for both orientations
-			//			if(conf.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			//				fixHUDLayout();
-			//			} else {
-			//				fixHUDLayout();
-			//			}
+			if(!updateHUDHeight())
+				fixHUDLayout();
 		}		
 	};
 
-	private View.OnClickListener mOverlayClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-			else scanTrigger();
-		}
-	};	
-
-//	private View.OnLongClickListener mOverlayLongClickListener =  new View.OnLongClickListener() {
-//
-//		@Override
-//		public boolean onLongClick(View v) {
-//			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-//			TeclaApp.persistence.setHUDCancelled(true);
-//			TeclaApp.a11yservice.shutdownInfrastructure();
-//			return true;
-//		}
-//	};
-//
 	public static void selectScanHighlighted() {
 		TeclaHUDOverlay.sInstance.scanTrigger();
 	}
@@ -181,53 +150,86 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		if(node != null) parent = node.getParent();
 		int actions = 0;
 		if(parent != null) actions = node.getParent().getActions();
-				
-		switch (mScanIndex){
-		case HUD_BTN_TOP:
-			if(TeclaAccessibilityService.isFirstScrollNode(node) 
-					&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
-					== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
-				parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-			} else
-				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
-			break;
-		case HUD_BTN_BOTTOM:
-			if(TeclaAccessibilityService.isLastScrollNode(node)
-					&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
-					== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
-				node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-			} else 
-				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
-			break;
-		case HUD_BTN_LEFT:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
-			break;
-		case HUD_BTN_RIGHT:
-			TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
-			break;
-		case HUD_BTN_TOPRIGHT:
-			TeclaAccessibilityService.clickActiveNode();
-			break;
-		case HUD_BTN_BOTTOMLEFT:
-			TeclaApp.a11yservice.sendGlobalBackAction();
-			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
-				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
-				TeclaApp.ime.pressBackKey();
-			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
-			break;
-		case HUD_BTN_TOPLEFT:
-			TeclaApp.a11yservice.sendGlobalHomeAction();
-			/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
-				TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
-				TeclaApp.ime.pressHomeKey();
-			} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
-			break;
+		
+		if(mPage == 0) {
+			switch (mScanIndex){
+			case HUD_BTN_TOP:
+				if(TeclaAccessibilityService.isFirstScrollNode(node) 
+						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+					parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				} else
+					TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+				break;
+			case HUD_BTN_BOTTOM:
+				if(TeclaAccessibilityService.isLastScrollNode(node)
+						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
+					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				} else 
+					TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+				break;
+			case HUD_BTN_LEFT:
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
+				break;
+			case HUD_BTN_RIGHT:
+				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
+				break;
+			case HUD_BTN_TOPRIGHT:
+				TeclaAccessibilityService.clickActiveNode();
+				break;
+			case HUD_BTN_BOTTOMLEFT:
+				TeclaApp.a11yservice.sendGlobalBackAction();
+				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+					TeclaApp.ime.pressBackKey();
+				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
+				break;
+			case HUD_BTN_TOPLEFT:
+				TeclaApp.a11yservice.sendGlobalNotificationAction();
+				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+					TeclaApp.ime.pressHomeKey();
+				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
+				break;
+			case HUD_BTN_BOTTOMRIGHT:
+				turnPage();
+				break;
+			}
+		} else if(mPage == 1) {
+			switch (mScanIndex){
+			case HUD_BTN_TOP:
+				break;
+			case HUD_BTN_BOTTOM:
+				break;
+			case HUD_BTN_LEFT:
+				break;
+			case HUD_BTN_RIGHT:
+				break;
+			case HUD_BTN_TOPRIGHT:
+				break;
+			case HUD_BTN_BOTTOMLEFT:
+				break;
+			case HUD_BTN_TOPLEFT:
+				TeclaApp.a11yservice.sendGlobalHomeAction();
+				break;
+			case HUD_BTN_BOTTOMRIGHT:
+				turnPage();
+				break;
+			}
 		}
 		
 		if(TeclaApp.persistence.isSelfScanningEnabled())
 			AutomaticScan.resetTimer();
 	}
 
+	private void turnPage() {
+		++mPage;
+		mPage%=2;
+		fixHUDLayout();
+		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setHighlighted(true);		
+	}
+	
 	protected void scanPrevious() {
 
 		// Move highlight out of previous button
@@ -298,7 +300,19 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPadAlphaVal = new float[mHUDPad.size()];
 	}
 
-	private void fixHUDLayout () {
+	public boolean updateHUDHeight() {
+		boolean updated = false;
+		final WindowManager.LayoutParams params = getParams();
+		boolean statusBarVisible = (params.systemUiVisibility == View.SYSTEM_UI_FLAG_LOW_PROFILE);
+		if(statusBarVisible != mStatusBarVisible) {
+			mStatusBarVisible = statusBarVisible;
+			fixHUDLayout();
+			updated = true; 
+		}
+		return updated;
+	}
+	
+	private void fixHUDLayout() {
 		Display display = mWindowManager.getDefaultDisplay();
 		Point display_size = new Point();
 		display.getSize(display_size);
@@ -308,10 +322,10 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		int size_reference = 0;
 		if (display_width <= display_height) { // Portrait (use width)
 			size_reference = Math.round(display_width * 0.24f);
-			display_height -= getStatusBarHeight();
+			if(mStatusBarVisible) display_height -= getStatusBarHeight();
 		} else { // Landscape (use height)
 			size_reference = Math.round(display_height * 0.24f);
-			display_width -= getStatusBarHeight();
+			if(mStatusBarVisible) display_width -= getStatusBarHeight();
 		}
 
 		ArrayList<ViewGroup.LayoutParams> hudParams = new ArrayList<ViewGroup.LayoutParams>();
@@ -342,6 +356,26 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		int stroke_width = Math.round(stroke_width_proportion * size_reference);
 
+		if(mPage == 0) {
+			mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
+			mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
+			mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page1_normal), mResources.getDrawable(R.drawable.hud_icon_page1_focused));
+			mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
+			mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
+			mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
+			mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
+		} else if(mPage == 1) {
+			mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
+			mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
+			mHUDPad.get(HUD_BTN_LEFT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_TOP).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_RIGHT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(null, null);
+		}
+		
 		mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMLEFT, stroke_width, false);
@@ -351,15 +385,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
 		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
 
-		mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
-		mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
-		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
-		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
-		mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
-		mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
-		mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
-		mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
 	}
+	
 	private int getStatusBarHeight() {
 		  int result = 0;
 		  int resourceId = this.getRootView().getResources().getIdentifier("status_bar_height", "dimen", "android");

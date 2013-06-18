@@ -51,8 +51,12 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
+		
 		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
+		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
+		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
 		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
+		
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
@@ -88,15 +92,48 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.getInstance().turnFullscreenOn();
+				mPrefSelfScanning.setChecked(true);
 			} else {
 				TeclaApp.getInstance().turnFullscreenOff();
+				mPrefSelfScanning.setChecked(false);
+			}
+			return true;
+		}
+		if(pref.equals(mPrefSelfScanning)) {
+			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
+			if (newValue.toString().equals("true")) {
+				TeclaApp.persistence.setSelfScanningEnabled(true);
+				if(TeclaApp.persistence.isFullscreenEnabled() )
+					AutomaticScan.startAutoScan();
+			} else {
+				TeclaApp.persistence.setSelfScanningEnabled(false);
+				if(TeclaApp.persistence.isFullscreenEnabled() )
+					AutomaticScan.stopAutoScan();
+			}
+			return true;
+		}
+		if(pref.equals(mPrefInverseScanning)) {
+			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
+			if (newValue.toString().equals("true")) {
+				TeclaApp.persistence.setInverseScanningEnabled(true);
+				TeclaApp.setFullscreenSwitchLongClick(false);
+				if(TeclaApp.persistence.isFullscreenEnabled() 
+						&& TeclaApp.persistence.isSelfScanningEnabled()) {
+					AutomaticScan.stopAutoScan();
+				}
+			} else {
+				TeclaApp.persistence.setInverseScanningEnabled(false);
+				TeclaApp.setFullscreenSwitchLongClick(true);
+				if(TeclaApp.persistence.isFullscreenEnabled() 
+						&& TeclaApp.persistence.isSelfScanningEnabled()) {
+					AutomaticScan.startAutoScan();
+				}
 			}
 			return true;
 		}
 		return false;
 	}
 
-	
 	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
 //	@Override
 //	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
@@ -210,7 +247,14 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	protected void onResume() {
 		super.onResume();
 		
-		initOnboarding();
+		initOnboarding();	
+		updatePreferences();
+	}
+	
+	private void updatePreferences() {
+		mFullscreenMode.setChecked(TeclaApp.persistence.isFullscreenEnabled());
+		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
+		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningEnabled());;
 	}
 	
 	@Override

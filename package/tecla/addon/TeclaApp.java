@@ -5,6 +5,7 @@ import com.android.inputmethod.latin.LatinIME;
 
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
+import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.app.ActivityManager;
 import android.app.Application;
@@ -34,6 +35,8 @@ public class TeclaApp extends Application {
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
+	public static TeclaVisualOverlay overlay;
+	public static SingleSwitchTouchInterface fullscreenswitch;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -120,9 +123,22 @@ public class TeclaApp extends Application {
 		getInstance().processFrameworkOptions();
 	}
 
+	public static void setVisualOverlay (TeclaVisualOverlay overlay_instance) {
+		overlay = overlay_instance;
+	}
+	
 	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
 		a11yservice = a11yservice_instance;
 		getInstance().processFrameworkOptions();
+	}
+
+	public static void setFullscreenSwitch (SingleSwitchTouchInterface fullscreenswitch_instance) {
+		fullscreenswitch = fullscreenswitch_instance;
+	}
+	
+	public static void setFullscreenSwitchLongClick(boolean enabled) {
+		if(fullscreenswitch != null)
+			fullscreenswitch.setLongClick(enabled);
 	}
 	
 	private void processFrameworkOptions() {
@@ -135,9 +151,10 @@ public class TeclaApp extends Application {
 	
 	public void turnFullscreenOn() {
 		persistence.setSelfScanningEnabled(true);
-		AutomaticScan.startAutoScan();
+		if(!persistence.isInverseScanningEnabled())
+			AutomaticScan.startAutoScan();
 		if (a11yservice != null) {
-			a11yservice.showHUD();
+			TeclaApp.overlay.show();
 			a11yservice.showFullscreenSwitch();
 			a11yservice.sendGlobalHomeAction();
 		}
@@ -147,7 +164,7 @@ public class TeclaApp extends Application {
 		TeclaApp.a11yservice.hideFullscreenSwitch();
 		TeclaApp.persistence.setSelfScanningEnabled(false);
 		AutomaticScan.stopAutoScan();				
-		TeclaApp.a11yservice.hideHUD();
+		TeclaApp.overlay.hide();
 	}
 	
 	public void answerCall() {

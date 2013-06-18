@@ -12,6 +12,7 @@ import com.android.inputmethod.latin.LatinIME;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.ViewGroup;
 
 public class IMEAdapter {
 
@@ -393,9 +394,10 @@ public class IMEAdapter {
 										sState = SCAN_WORDPREDICTION;
 										WordPredictionAdapter.selectHighlighted();
 									} else if(sCurrentRow == sRowCount + 1) {
-										TeclaApp.ime.requestHideSelf(0);
-										TeclaApp.a11yservice.hidePreviewHUD();
-										TeclaApp.a11yservice.showHUD();
+										//TeclaApp.ime.requestHideSelf(0);
+										TeclaApp.ime.hideWindow();
+										TeclaApp.overlay.hidePreviewHUD();
+										TeclaApp.overlay.show();
 									} else {									
 										sState = SCAN_COLUMN;
 										highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
@@ -467,18 +469,22 @@ public class IMEAdapter {
 		}
 		
 		private static void scanNextRow() {
-			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
 				WordPredictionAdapter.highlightNext();
-			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaApp.a11yservice.hidePreviewHUD();
+			} else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
+				TeclaApp.overlay.hidePreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
 			sCurrentRow %= sRowCount + 2;
 			updateRowKeyIndices();
-			if(IMEStates.sCurrentRow == IMEStates.sRowCount)
-				WordPredictionAdapter.highlightNext();
-			else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaApp.a11yservice.showPreviewHUD();
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount) {
+				if(!WordPredictionAdapter.sSuggestionsViewGroup.isShown()) 
+					++sCurrentRow;
+				else
+					WordPredictionAdapter.highlightNext();
+			}
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
+				TeclaApp.overlay.showPreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 		}
 		
