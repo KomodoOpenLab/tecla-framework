@@ -45,8 +45,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
 
-	private TeclaHighlighter mTeclaHighlighter;
-	private TeclaHUDOverlay mTeclaHUDController;
+	private TeclaVisualOverlay mVisualOverlay;
 	private SingleSwitchTouchInterface mFullscreenSwitch;
 
 	protected static ReentrantLock mActionLock;
@@ -68,27 +67,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
 
-		if(mTeclaHighlighter == null) {
-			mTeclaHighlighter = new TeclaHighlighter(this);
-			TeclaApp.setHighlighter(mTeclaHighlighter);			
+		if(mVisualOverlay == null) {
+			mVisualOverlay = new TeclaVisualOverlay(this);
+			TeclaApp.setVisualOverlay(mVisualOverlay);
 		}
-
-		if (mTeclaHUDController == null) 
-			mTeclaHUDController = new TeclaHUDOverlay(this);
-
+		
 		if (mFullscreenSwitch == null)
 			mFullscreenSwitch = new SingleSwitchTouchInterface(this);
-
-//		if (TeclaApp.persistence.isHUDRunning()) {
-//			mTeclaHighlighter.show();
-//			mTeclaHUDController.show();
-//			registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
-//					new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-//			performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
-//		}
-//
-//		if(TeclaApp.persistence.isSingleSwitchOverlayEnabled())
-//			mTouchInterface.show();
 
 		// Bind to SwitchEventProvider
 		Intent intent = new Intent(this, SwitchEventProvider.class);
@@ -100,48 +85,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		sInstance = this;
 		TeclaApp.setA11yserviceInstance(this);
-}
+	}
 	
-	public boolean isHUDVisible() {
-		if (mTeclaHUDController != null) {
-			if (mTeclaHUDController.isVisible()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void hideHUD() {
-		if (mTeclaHUDController != null) {
-			if (mTeclaHUDController.isVisible()) {
-				//FIXME: Abstract into unregisterConfigReceiver() method on mTeclaHUDController
-				unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-				mTeclaHUDController.hide();
-			}
-		}
-		if (mTeclaHighlighter != null) {
-			if (mTeclaHighlighter.isVisible()) {
-				mTeclaHighlighter.hide();
-			}
-		}
-	}
-
-	public void showHUD() {
-		if (mTeclaHighlighter != null) {
-			if (!mTeclaHighlighter.isVisible()) {
-				mTeclaHighlighter.show();
-			}
-		}
-		if (mTeclaHUDController != null) {
-			if (!mTeclaHUDController.isVisible()) {
-				mTeclaHUDController.show();
-			}
-		}
-		//FIXME: Abstract into registerConfigReceiver() method on mTeclaHUDController
-		registerReceiver(mTeclaHUDController.mConfigChangeReceiver, 
-				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-	}
-
 	public void hideFullscreenSwitch() {
 		if (mFullscreenSwitch != null) {
 			if (mFullscreenSwitch.isVisible()) {
@@ -158,28 +103,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
-	public void scanNextHUDButton() {
-		mTeclaHUDController.scanNext();
-	}
-	
-	public void showPreviewHUD() {
-		mTeclaHUDController.setPreviewHUD(true);
-		showHUD();
-	}
-	
-	public void hidePreviewHUD() {
-		mTeclaHUDController.setPreviewHUD(false);
-		hideHUD();
-	}
-	
-	public boolean isPreviewHUD() {
-		return mTeclaHUDController.isPreview();
-	}
-	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
-			if (mTeclaHUDController.isVisible() && mTeclaHighlighter.isVisible()) {
+			if (mVisualOverlay.isVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
 
@@ -195,6 +122,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
+						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
 						if(mSelectedNode.getClassName().toString().contains("EditText"))
 								TeclaApp.ime.showWindow(true);
@@ -223,7 +151,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
-			TeclaApp.highlighter.highlightNode(mSelectedNode);	
+			TeclaApp.overlay.highlightNode(mSelectedNode);
 			if(mPreviousOriginalNode != null) mPreviousOriginalNode.recycle();
 		}
 		//		TeclaHighlighter.highlightNode(mActiveNodes.get(0));
@@ -374,8 +302,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if(sInstance.mActiveNodes.size() == 0) return;
 		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0); 
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-		if(sInstance.isHUDVisible()) 
-			TeclaApp.highlighter.clearHighlight();
+		if(sInstance.mVisualOverlay.isVisible()) 
+			TeclaApp.overlay.clearHighlight();
 	}
 
 	//	public static void selectActiveNode(int index) {
@@ -423,11 +351,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 			case SwitchEvent.ACTION_NEXT:
 				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
-				else mTeclaHUDController.scanNext();
+				else mVisualOverlay.scanNext();
 				break;
 			case SwitchEvent.ACTION_PREV:
 				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
-				else mTeclaHUDController.scanPrevious();
+				else mVisualOverlay.scanPrevious();
 				break;
 			case SwitchEvent.ACTION_SELECT:
 				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
@@ -461,16 +389,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
 		if (mBound) unbindService(mConnection);
 		SEPManager.stop(getApplicationContext());
-		if (mTeclaHUDController != null) {
-			if(mTeclaHUDController.isVisible()) {
-				unregisterReceiver(mTeclaHUDController.mConfigChangeReceiver);
-				mTeclaHUDController.hide();
-			}
+		if (mVisualOverlay != null) {
+			mVisualOverlay.hide();
 		}
-		if (mTeclaHighlighter != null) {
-			if (mTeclaHighlighter.isVisible()) {
-				mTeclaHighlighter.hide();
-			}
+		if (mVisualOverlay != null) {
+			mVisualOverlay.hide();
 		}
 		if (mFullscreenSwitch != null) {
 			if(mFullscreenSwitch.isVisible()) {
@@ -514,7 +437,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			mActionLock.unlock(); 			
 			
-			TeclaApp.highlighter.highlightNode(sInstance.mSelectedNode);
+			TeclaApp.overlay.highlightNode(sInstance.mSelectedNode);
 		}
 	}
 
