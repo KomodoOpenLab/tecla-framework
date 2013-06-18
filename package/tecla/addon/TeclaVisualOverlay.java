@@ -10,48 +10,43 @@ public class TeclaVisualOverlay {
 
 	private Context mContext;
 	private TeclaHighlighter mHighlighter;
-	private TeclaHUDOverlay mHUDController;
+	private TeclaHUDOverlay mHUD;
 	
 	public TeclaVisualOverlay(Context context) {
 		mContext = context;
 		mHighlighter = new TeclaHighlighter(context);
-		mHUDController = new TeclaHUDOverlay(context);
+		mHUD = new TeclaHUDOverlay(context);
 	}
 	
 	public void show() {
 		mHighlighter.show();
-		mHUDController.show();
-		//FIXME: Abstract into registerConfigReceiver() method on mTeclaHUDController
-		mContext.registerReceiver(mHUDController.mConfigChangeReceiver, 
-			new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+		mHUD.show();
 	}
 	
 	public void hide() {
-		//FIXME: Abstract into unregisterConfigReceiver() method on mTeclaHUDController
-		mContext.unregisterReceiver(mHUDController.mConfigChangeReceiver);
 		mHighlighter.hide();
-		mHUDController.hide();
+		mHUD.hide();
 	}
 	
 	public boolean isVisible() {
-		return mHighlighter.isVisible() && mHUDController.isVisible();
+		return mHighlighter.isVisible() && mHUD.isVisible();
 	}
 	
 	public boolean isPreview() {
-		return mHUDController.isPreview();
+		return mHUD.isPreview();
 	}
 	
 	public void scanNextHUDButton() {
-		mHUDController.scanNext();
+		mHUD.scanNext();
 	}
 
 	public void showPreviewHUD() {
-		mHUDController.setPreviewHUD(true);
+		mHUD.setPreviewHUD(true);
 		show();
 	}
 
 	public void hidePreviewHUD() {
-		mHUDController.setPreviewHUD(false);
+		mHUD.setPreviewHUD(false);
 		hide();
 	}
 
@@ -64,15 +59,15 @@ public class TeclaVisualOverlay {
 	}
 	
 	public void scanNext() {
-		mHUDController.scanNext();
+		mHUD.scanNext();
 	}
 	
 	public void scanPrevious() {
-		mHUDController.scanPrevious();
+		mHUD.scanPrevious();
 	}
 
-	public void checkAndUpdateHUDHeight() {
-		if(mHUDController.isVisible())
-			mHUDController.updateHUDHeight();
-	}
+//	public void checkAndUpdateHUDHeight() {
+//		if(mHUDController.isVisible())
+//			mHUDController.didStatusBarVisibilityChange();
+//	}
 }
