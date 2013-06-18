@@ -70,4 +70,9 @@ public class TeclaVisualOverlay {
 	public void scanPrevious() {
 		mHUDController.scanPrevious();
 	}
+
+	public void checkAndUpdateHUDHeight() {
+		if(mHUDController.isVisible())
+			mHUDController.updateHUDHeight();
+	}
 }
