@@ -92,8 +92,10 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.getInstance().turnFullscreenOn();
+				mPrefSelfScanning.setChecked(true);
 			} else {
 				TeclaApp.getInstance().turnFullscreenOff();
+				mPrefSelfScanning.setChecked(false);
 			}
 			return true;
 		}
@@ -101,8 +103,12 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setSelfScanningEnabled(true);
+				if(TeclaApp.persistence.isFullscreenEnabled() )
+					AutomaticScan.startAutoScan();
 			} else {
 				TeclaApp.persistence.setSelfScanningEnabled(false);
+				if(TeclaApp.persistence.isFullscreenEnabled() )
+					AutomaticScan.stopAutoScan();
 			}
 			return true;
 		}
