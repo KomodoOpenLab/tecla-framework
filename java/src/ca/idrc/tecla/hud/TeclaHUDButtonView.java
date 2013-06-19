@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -22,7 +24,6 @@ public class TeclaHUDButtonView extends ImageButton {
 	public final static byte POSITION_BOTTOMRIGHT = 9;
 	public final static byte POSITION_BOTTOM = 10;
 	public final static byte POSITION_BOTTOMLEFT = 11;
-	public final static float CORNER_PADDING_FRACTION = 0.16f;
 	
 	private Context mContext;
 	
@@ -103,8 +104,8 @@ public class TeclaHUDButtonView extends ImageButton {
 	private void updatePadding () {
 		int w = getWidth();
 		int h = getHeight();
-		int ypad = Math.round(h * CORNER_PADDING_FRACTION);
-		int xpad = Math.round(w * CORNER_PADDING_FRACTION);
+		int outpad = Math.round(h * 0.28f);
+		int inpad = Math.round(w * 0.37f);
 		switch(mPosition) {
 		case POSITION_LEFT:
 		case POSITION_RIGHT:
@@ -113,16 +114,16 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	setPadding(0, 0, 0, 0);
 			break;
 		case POSITION_TOPLEFT:
-	    	setPadding(2 * xpad, 2 * ypad, xpad, ypad);
+	    	setPadding(outpad, outpad, inpad, inpad);
 			break;
 		case POSITION_TOPRIGHT:
-	    	setPadding(xpad, 2 * ypad, 2 * xpad, ypad);
+	    	setPadding(inpad, outpad, outpad, inpad);
 			break;
 		case POSITION_BOTTOMLEFT:
-	    	setPadding(2 * xpad, ypad, xpad, 2 * ypad);
+	    	setPadding(outpad, inpad, inpad, outpad);
 			break;
 		case POSITION_BOTTOMRIGHT:
-	    	setPadding(xpad, ypad, 2 * xpad, 2 * ypad);
+	    	setPadding(inpad, inpad, outpad, outpad);
 			break;
 		}
 	}
@@ -141,17 +142,20 @@ public class TeclaHUDButtonView extends ImageButton {
 	    	int top = outer_stroke_width;
 	    	int right = mWidth - outer_stroke_width;
 	    	int bottom = mHeight - outer_stroke_width;
+			float side_width = mWidth * Float.parseFloat(mContext.getResources().getString(R.string.side_width_proportion));
 			float pad;
+			float pie;
 
 			if (mPosition == POSITION_TOPLEFT ||
 					mPosition == POSITION_TOPRIGHT ||
 					mPosition == POSITION_BOTTOMLEFT ||
 					mPosition == POSITION_BOTTOMRIGHT) {				
-				pad = 0.28f * right;
+				pad = 0.2f * right;
+				pie = (float) Math.toDegrees(Math.atan(pad / (right - pad)));
 				mPath.moveTo(left, bottom - pad);
-		    	mPath.lineTo(right - pad, top);
-		    	mPath.lineTo(right, bottom - pad);
-		    	mPath.lineTo(right - pad, bottom);
+		    	mPath.arcTo(new RectF(mStrokeWidth, mStrokeWidth, (2 * mWidth), (2 * mHeight)), 180 + pie, 90 - (2 * pie)); //RectF(left, top, right, bottom)
+//		    	mPath.lineTo(right, side_width);
+		    	mPath.arcTo(new RectF(side_width - outer_stroke_width, side_width - outer_stroke_width, right + side_width, bottom + side_width), 270, - 90);
 		    	mPath.lineTo(left, bottom - pad);
 		    	float background_rotation = 0.0f;
 				switch(mPosition) {
@@ -173,7 +177,7 @@ public class TeclaHUDButtonView extends ImageButton {
 				case POSITION_LEFT:
 					pad = 0.2f * right;
 					mPath.moveTo(left, top);
-			    	mPath.lineTo(right, pad);
+			    	mPath.lineTo(right, pad + top);
 			    	mPath.lineTo(right, bottom - pad);
 			    	mPath.lineTo(left, bottom);
 			    	mPath.lineTo(left, top);
@@ -183,7 +187,7 @@ public class TeclaHUDButtonView extends ImageButton {
 					mPath.moveTo(left, top);
 			    	mPath.lineTo(right, top);
 			    	mPath.lineTo(right - pad, bottom);
-			    	mPath.lineTo(pad, bottom);
+			    	mPath.lineTo(left + pad, bottom);
 			    	mPath.lineTo(left, top);
 			    	break;
 				case POSITION_RIGHT:
@@ -191,13 +195,13 @@ public class TeclaHUDButtonView extends ImageButton {
 					mPath.moveTo(right, top);
 			    	mPath.lineTo(right, bottom);
 			    	mPath.lineTo(left, bottom - pad);
-			    	mPath.lineTo(left, pad);
+			    	mPath.lineTo(left, pad + top);
 			    	mPath.lineTo(right, top);
 			    	break;
 				case POSITION_BOTTOM:
 					pad = 0.2f * bottom;
 					mPath.moveTo(left, bottom);
-			    	mPath.lineTo(pad, top);
+			    	mPath.lineTo(pad + left, top);
 			    	mPath.lineTo(right - pad, top);
 			    	mPath.lineTo(right, bottom);
 			    	mPath.lineTo(left, bottom);
