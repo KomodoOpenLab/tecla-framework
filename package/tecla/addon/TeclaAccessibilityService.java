@@ -127,7 +127,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						searchAndUpdateNodes();
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-						TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
 						if(mSelectedNode.getClassName().toString().contains("EditText"))
 								TeclaApp.ime.showWindow(true);
 						//searchAndUpdateNodes();
@@ -454,9 +453,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			mActionLock.unlock(); 
 
-			if(node != null)
+			if(node != null) {
+				TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
 				sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
-			else {
+			} else {
 				switch(direction) {
 				case(DIRECTION_UP):
 					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_UP);
