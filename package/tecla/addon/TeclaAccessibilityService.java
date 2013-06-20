@@ -22,6 +22,7 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -126,6 +127,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						searchAndUpdateNodes();
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+						TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
 						if(mSelectedNode.getClassName().toString().contains("EditText"))
 								TeclaApp.ime.showWindow(true);
 						//searchAndUpdateNodes();
@@ -452,8 +454,24 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			mActionLock.unlock(); 
 
-			TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
-			sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+			if(node != null)
+				sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+			else {
+				switch(direction) {
+				case(DIRECTION_UP):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_UP);
+					break;
+				case(DIRECTION_DOWN):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
+					break;
+				case(DIRECTION_LEFT):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+					break;
+				case(DIRECTION_RIGHT):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+					break;					
+				}
+			}
 		}
 	}
 
