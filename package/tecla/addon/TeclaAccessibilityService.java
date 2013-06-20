@@ -105,6 +105,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private int mLastAccessibilityEventType = 0;
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
@@ -119,13 +120,19 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
-					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
+					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+						if(mLastAccessibilityEventType == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+							mLastAccessibilityEventType = 0;
+							return;
+						}
+						mLastAccessibilityEventType = 0;
 						mPreviousOriginalNode = mOriginalNode;
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+						mLastAccessibilityEventType = AccessibilityEvent.TYPE_VIEW_FOCUSED;
 						if(mSelectedNode.getClassName().toString().contains("EditText"))
 								TeclaApp.ime.showWindow(true);
 						//searchAndUpdateNodes();
