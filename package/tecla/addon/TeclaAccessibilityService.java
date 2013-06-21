@@ -22,6 +22,7 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -45,6 +46,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
 
+	private boolean mDPadKeySent;
+	
 	private TeclaVisualOverlay mVisualOverlay;
 	private SingleSwitchTouchInterface mFullscreenSwitch;
 
@@ -61,6 +64,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 
 	private void init() {
+		mDPadKeySent = false;
 		register_receiver_called = false;
 
 		mOriginalNode = null;
@@ -105,6 +109,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private int mLastAccessibilityEventType = 0;
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
@@ -119,23 +124,42 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
-					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
+					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+						if(mLastAccessibilityEventType == AccessibilityEvent.TYPE_VIEW_FOCUSED
+								&& !mDPadKeySent) {
+							mLastAccessibilityEventType = 0;
+							return;
+						}
+						mLastAccessibilityEventType = 0;
 						mPreviousOriginalNode = mOriginalNode;
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
+						if(!mDPadKeySent)  {
+							TeclaHighlighter.highlightNode(mSelectedNode);
+							mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+							
+						}
+						mDPadKeySent = false;
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+						if(mDPadKeySent)
+							TeclaHighlighter.highlightNode(node);
+						mLastAccessibilityEventType = AccessibilityEvent.TYPE_VIEW_FOCUSED;
 						if(mSelectedNode.getClassName().toString().contains("EditText"))
 								TeclaApp.ime.showWindow(true);
 						//searchAndUpdateNodes();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
 						//searchAndUpdateNodes();
 					} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+
 						mPreviousOriginalNode = mOriginalNode;
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
+						TeclaHighlighter.highlightNode(mSelectedNode);
+						mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+						
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_CLICKED) {
 						//searchAndUpdateNodes();
 					}
@@ -153,8 +177,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
-			TeclaHighlighter.highlightNode(mSelectedNode);
-			mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 			if(mPreviousOriginalNode != null) mPreviousOriginalNode.recycle();
 		}
 	}
@@ -452,8 +474,26 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			mActionLock.unlock(); 
 
-			TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
-			sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+			if(node != null) {
+				TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
+				sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+			} else {
+				sInstance.mDPadKeySent = true;
+				switch(direction) {
+				case(DIRECTION_UP):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_UP);
+					break;
+				case(DIRECTION_DOWN):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
+					break;
+				case(DIRECTION_LEFT):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+					break;
+				case(DIRECTION_RIGHT):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+					break;					
+				}
+			}
 		}
 	}
 
