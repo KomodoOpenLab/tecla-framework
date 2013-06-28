@@ -72,6 +72,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		//getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
 		initOnboarding();
+		TeclaApp.setSettingsActivityInstance(this);
 	}
 
 	@Override
@@ -134,6 +135,12 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		return false;
 	}
 
+	public void uncheckFullScreenMode() {
+		if(!TeclaApp.persistence.isFullscreenEnabled()) {
+			mFullscreenMode.setChecked(false);
+		}
+	}
+	
 	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
 //	@Override
 //	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
@@ -260,6 +267,8 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	@Override
 	protected void onDestroy() {
 //		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
+		TeclaApp.setSettingsActivityInstance(null);
 		super.onDestroy();
 	}
 
