@@ -127,6 +127,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
+						AccessibilityNodeInfo selectednode = findSelectedNode();
+						if(selectednode != null && selectednode.getParent().isScrollable()) {
+							mSelectedNode = selectednode;
+							TeclaHighlighter.highlightNode(mSelectedNode);
+						}
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
 						mSelectedNode = node;
@@ -150,6 +155,25 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private AccessibilityNodeInfo findSelectedNode() {
+		AccessibilityNodeInfo result = null;
+		for (AccessibilityNodeInfo node: mActiveNodes) {
+			if(node.isSelected()) {
+				if(result == null)
+					result = node;
+				else {
+					Rect node_rect = new Rect();
+					Rect result_rect = new Rect();
+					node.getBoundsInScreen(node_rect);
+					result.getBoundsInScreen(result_rect);
+					if(node_rect.contains(result_rect))
+						result = node;
+				}
+			}
+		}
+		return result;
+	}
+		
 	private AccessibilityNodeInfo mFocusedNode;
 	private void searchAndUpdateNodes() {
 		//		TeclaHighlighter.clearHighlight();
@@ -183,7 +207,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
-		removeActiveParents();
+		//removeActiveParents();
 	}
 	
 	private void removeActiveParents() {
@@ -438,19 +462,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			direction = dir;
 		}
 		public void run() {
+			if(hasScrollableParent(current_node)) {
+				navigateWithDPad(direction);
+				return;
+			}
 			AccessibilityNodeInfo node;
-			if(direction == DIRECTION_UP
-					&& isFirstScrollNode(current_node) 
-					&& !isInsideParent(current_node)) {
-				current_node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-				return;
-			} 
-			if(direction == DIRECTION_DOWN	
-					&& isLastScrollNode(current_node) 
-					&& !isInsideParent(current_node)) {
-				current_node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-				return;
-			} 
 			mActionLock.lock();
 			node = findNeighbourNode(current_node, direction);		
 			if(node != null) {
@@ -459,25 +475,29 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					node.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 				sInstance.mSelectedNode = node;
 			} else {
-				switch(direction) {
-				case(DIRECTION_UP):
-					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_UP);
-					break;
-				case(DIRECTION_DOWN):
-					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
-					break;
-				case(DIRECTION_LEFT):
-					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-					break;
-				case(DIRECTION_RIGHT):
-					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-					break;					
-				}
+				navigateWithDPad(direction);
 			}
 			mActionLock.unlock(); 
 		}
 	}
 
+	private static void navigateWithDPad(int direction) {
+		switch(direction) {
+		case(DIRECTION_UP):
+			TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_UP);
+			break;
+		case(DIRECTION_DOWN):
+			TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
+			break;
+		case(DIRECTION_LEFT):
+			TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+			break;
+		case(DIRECTION_RIGHT):
+			TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+			break;					
+		}
+	}
+	
 	public static boolean hasScrollableParent(AccessibilityNodeInfo node) {
 		if(node == null) return false;
 		AccessibilityNodeInfo parent = node.getParent();
