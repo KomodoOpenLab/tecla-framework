@@ -241,7 +241,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private void turnPage() {
 		++mPage;
 		mPage%=2;
-		updateHUDLayout();
+		updateLayout();
 		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setHighlighted(true);		
 	}
 	
@@ -322,77 +322,81 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 		    @Override
 		    public void onGlobalLayout() {
-				mWidth = mRootView.getWidth();
-				mHeight = mRootView.getHeight();
-				int size_reference = 0;
-				if (mWidth <= mHeight) { // Portrait (use width)
-					size_reference = Math.round(mWidth * 0.24f);
-				} else { // Landscape (use height)
-					size_reference = Math.round(mHeight * 0.24f);
-				}
-
-				ArrayList<ViewGroup.LayoutParams> hudParams = new ArrayList<ViewGroup.LayoutParams>();
-				for(TeclaHUDButtonView button : mHUDPad) {
-					hudParams.add(button.getLayoutParams());
-				}
-
-				hudParams.get(HUD_BTN_TOPLEFT).width = size_reference;
-				hudParams.get(HUD_BTN_TOPLEFT).height = size_reference;
-				hudParams.get(HUD_BTN_TOPRIGHT).width = size_reference;
-				hudParams.get(HUD_BTN_TOPRIGHT).height = size_reference;
-				hudParams.get(HUD_BTN_BOTTOMLEFT).width = size_reference;
-				hudParams.get(HUD_BTN_BOTTOMLEFT).height = size_reference;
-				hudParams.get(HUD_BTN_BOTTOMRIGHT).width = size_reference;
-				hudParams.get(HUD_BTN_BOTTOMRIGHT).height = size_reference;
-				hudParams.get(HUD_BTN_LEFT).width = Math.round(side_width_proportion * size_reference);
-				hudParams.get(HUD_BTN_LEFT).height = mHeight - (2 * size_reference);
-				hudParams.get(HUD_BTN_TOP).width = mWidth - (2 * size_reference);
-				hudParams.get(HUD_BTN_TOP).height = Math.round(side_width_proportion * size_reference);
-				hudParams.get(HUD_BTN_RIGHT).width = Math.round(side_width_proportion * size_reference);
-				hudParams.get(HUD_BTN_RIGHT).height = mHeight - (2 * size_reference);
-				hudParams.get(HUD_BTN_BOTTOM).width = mWidth - (2 * size_reference);
-				hudParams.get(HUD_BTN_BOTTOM).height = Math.round(side_width_proportion * size_reference);
-
-				for (int i = 0; i < mHUDPad.size(); i++) {
-					mHUDPad.get(i).setLayoutParams(hudParams.get(i));
-				}
-
-				int stroke_width = Math.round(stroke_width_proportion * size_reference);
-
-				if(mPage == 0) {
-					mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
-					mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
-					mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
-					mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page1_normal), mResources.getDrawable(R.drawable.hud_icon_page1_focused));
-					mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
-					mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
-					mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
-					mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
-				} else if(mPage == 1) {
-					mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
-					mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(null, null);
-					mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(null, null);
-					mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
-					mHUDPad.get(HUD_BTN_LEFT).setDrawables(null, null);
-					mHUDPad.get(HUD_BTN_TOP).setDrawables(null, null);
-					mHUDPad.get(HUD_BTN_RIGHT).setDrawables(null, null);
-					mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(null, null);
-				}
-				
-				mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width, false);
-				mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width, false);
-				mHUDPad.get(HUD_BTN_BOTTOMLEFT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMLEFT, stroke_width, false);
-				mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMRIGHT, stroke_width, false);
-				mHUDPad.get(HUD_BTN_LEFT).setProperties(TeclaHUDButtonView.POSITION_LEFT, stroke_width, false);
-				mHUDPad.get(HUD_BTN_TOP).setProperties(TeclaHUDButtonView.POSITION_TOP, stroke_width, true);
-				mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
-				mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
-
+				updateLayout();
 		        ViewTreeObserver obs = mRootView.getViewTreeObserver();
 		        obs.removeGlobalOnLayoutListener(this);
 		    }
 
 		});
+	}
+	
+	private void updateLayout() {
+		mWidth = mRootView.getWidth();
+		mHeight = mRootView.getHeight();
+		int size_reference = 0;
+		if (mWidth <= mHeight) { // Portrait (use width)
+			size_reference = Math.round(mWidth * 0.24f);
+		} else { // Landscape (use height)
+			size_reference = Math.round(mHeight * 0.24f);
+		}
+
+		ArrayList<ViewGroup.LayoutParams> hudParams = new ArrayList<ViewGroup.LayoutParams>();
+		for(TeclaHUDButtonView button : mHUDPad) {
+			hudParams.add(button.getLayoutParams());
+		}
+
+		hudParams.get(HUD_BTN_TOPLEFT).width = size_reference;
+		hudParams.get(HUD_BTN_TOPLEFT).height = size_reference;
+		hudParams.get(HUD_BTN_TOPRIGHT).width = size_reference;
+		hudParams.get(HUD_BTN_TOPRIGHT).height = size_reference;
+		hudParams.get(HUD_BTN_BOTTOMLEFT).width = size_reference;
+		hudParams.get(HUD_BTN_BOTTOMLEFT).height = size_reference;
+		hudParams.get(HUD_BTN_BOTTOMRIGHT).width = size_reference;
+		hudParams.get(HUD_BTN_BOTTOMRIGHT).height = size_reference;
+		hudParams.get(HUD_BTN_LEFT).width = Math.round(side_width_proportion * size_reference);
+		hudParams.get(HUD_BTN_LEFT).height = mHeight - (2 * size_reference);
+		hudParams.get(HUD_BTN_TOP).width = mWidth - (2 * size_reference);
+		hudParams.get(HUD_BTN_TOP).height = Math.round(side_width_proportion * size_reference);
+		hudParams.get(HUD_BTN_RIGHT).width = Math.round(side_width_proportion * size_reference);
+		hudParams.get(HUD_BTN_RIGHT).height = mHeight - (2 * size_reference);
+		hudParams.get(HUD_BTN_BOTTOM).width = mWidth - (2 * size_reference);
+		hudParams.get(HUD_BTN_BOTTOM).height = Math.round(side_width_proportion * size_reference);
+
+		for (int i = 0; i < mHUDPad.size(); i++) {
+			mHUDPad.get(i).setLayoutParams(hudParams.get(i));
+		}
+
+		int stroke_width = Math.round(stroke_width_proportion * size_reference);
+
+		if(mPage == 0) {
+			mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_notification_normal), mResources.getDrawable(R.drawable.hud_icon_notification_focused));
+			mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_select_normal), mResources.getDrawable(R.drawable.hud_icon_select_focused));
+			mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_undo_normal), mResources.getDrawable(R.drawable.hud_icon_undo_focused));
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page1_normal), mResources.getDrawable(R.drawable.hud_icon_page1_focused));
+			mHUDPad.get(HUD_BTN_LEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_left_normal), mResources.getDrawable(R.drawable.hud_icon_left_focused));
+			mHUDPad.get(HUD_BTN_TOP).setDrawables(mResources.getDrawable(R.drawable.hud_icon_up_normal), mResources.getDrawable(R.drawable.hud_icon_up_focused));
+			mHUDPad.get(HUD_BTN_RIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_right_normal), mResources.getDrawable(R.drawable.hud_icon_right_focused));
+			mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(mResources.getDrawable(R.drawable.hud_icon_down_normal), mResources.getDrawable(R.drawable.hud_icon_down_focused));
+		} else if(mPage == 1) {
+			mHUDPad.get(HUD_BTN_TOPLEFT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_home_normal), mResources.getDrawable(R.drawable.hud_icon_home_focused));
+			mHUDPad.get(HUD_BTN_TOPRIGHT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOMLEFT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setDrawables(mResources.getDrawable(R.drawable.hud_icon_page2_normal), mResources.getDrawable(R.drawable.hud_icon_page2_focused));
+			mHUDPad.get(HUD_BTN_LEFT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_TOP).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_RIGHT).setDrawables(null, null);
+			mHUDPad.get(HUD_BTN_BOTTOM).setDrawables(null, null);
+		}
+		
+		mHUDPad.get(HUD_BTN_TOPLEFT).setProperties(TeclaHUDButtonView.POSITION_TOPLEFT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_TOPRIGHT).setProperties(TeclaHUDButtonView.POSITION_TOPRIGHT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_BOTTOMLEFT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMLEFT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_BOTTOMRIGHT).setProperties(TeclaHUDButtonView.POSITION_BOTTOMRIGHT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_LEFT).setProperties(TeclaHUDButtonView.POSITION_LEFT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_TOP).setProperties(TeclaHUDButtonView.POSITION_TOP, stroke_width, true);
+		mHUDPad.get(HUD_BTN_RIGHT).setProperties(TeclaHUDButtonView.POSITION_RIGHT, stroke_width, false);
+		mHUDPad.get(HUD_BTN_BOTTOM).setProperties(TeclaHUDButtonView.POSITION_BOTTOM, stroke_width, false);
+
 	}
 	
 }
