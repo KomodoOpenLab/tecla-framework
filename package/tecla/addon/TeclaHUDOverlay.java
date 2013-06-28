@@ -92,8 +92,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 			mHUDAnimators.get(i).setTarget(mHUDPad.get(i));
 		}
 		
-		mContext.registerReceiver(mConfigChangeReceiver, 
-				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+		
 
 	}
 
@@ -135,7 +134,8 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 				sInstance.updateHUDLayout();
 			}
 		});
-		
+		mContext.registerReceiver(mConfigChangeReceiver, 
+				new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
 		updateHUDLayout();
 	}
 	
