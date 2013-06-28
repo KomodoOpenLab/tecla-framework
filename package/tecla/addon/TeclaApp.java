@@ -37,6 +37,7 @@ public class TeclaApp extends Application {
 	public static TeclaAccessibilityService a11yservice;
 	public static TeclaVisualOverlay overlay;
 	public static SingleSwitchTouchInterface fullscreenswitch;
+	public static TeclaSettingsActivity settingsactivity;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -132,6 +133,10 @@ public class TeclaApp extends Application {
 		getInstance().processFrameworkOptions();
 	}
 
+	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
+		settingsactivity = settingsactivity_instance;
+	}
+
 	public static void setFullscreenSwitch (SingleSwitchTouchInterface fullscreenswitch_instance) {
 		fullscreenswitch = fullscreenswitch_instance;
 	}
@@ -158,6 +163,7 @@ public class TeclaApp extends Application {
 			a11yservice.showFullscreenSwitch();
 			a11yservice.sendGlobalHomeAction();
 		}
+		TeclaApp.persistence.setFullscreenEnabled(true);
 	}
 	
 	public void turnFullscreenOff() {
@@ -165,6 +171,10 @@ public class TeclaApp extends Application {
 		TeclaApp.persistence.setSelfScanningEnabled(false);
 		AutomaticScan.stopAutoScan();				
 		TeclaApp.overlay.hide();
+		TeclaApp.persistence.setFullscreenEnabled(false);
+		if(TeclaApp.settingsactivity != null) {
+			TeclaApp.settingsactivity.uncheckFullScreenMode();
+		}
 	}
 	
 	public void answerCall() {
