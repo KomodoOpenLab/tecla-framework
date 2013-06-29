@@ -1,16 +1,11 @@
 package com.android.tecla.addon;
 
-import android.os.Handler;
-import android.os.Message;
-
-import com.android.inputmethod.keyboard.Key;
-import com.android.inputmethod.keyboard.Keyboard;
 import com.android.inputmethod.keyboard.KeyboardView;
 
 public class LatinIMEAdapter implements TeclaIMEAdapter {
 
 	private static final String CLASS_TAG = "LatinIMEAdapter";
-	
+
 	@Override
 	public void scanDown() {
 		// TODO Auto-generated method stub
@@ -48,7 +43,26 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 	}
 
 	@Override
+	public void stepOut() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void selectScanHighlighted() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isShowingKeyboard() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
 	public boolean setKeyboardView(KeyboardView kbv) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

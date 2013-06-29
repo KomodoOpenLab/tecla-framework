@@ -107,7 +107,7 @@ public class IMEAdapter {
 		return true;
 	}
 	
-	public static void selectHighlighted() {
+	private static void selectHighlighted() {
 		if(sKeyboard != sKeyboardView.getKeyboard()) return;		
 		int index = IMEStates.getCurrentKeyIndex();
 		if(index < 0 || index >= sKeys.length) return;
