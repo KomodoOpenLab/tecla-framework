@@ -20,9 +20,10 @@ public class TeclaIME extends InputMethodService {
 	 */
 	public static final String CLASS_TAG = "TeclaIME";
 
-	private static final int MSG_IMESCAN_SETUP = 0x2244;
-	
 //	private static TeclaIME sInstance;
+	
+	private static final int MSG_IMESCAN_SETUP = 0x2244;
+	protected TeclaIMEAdapter mIMEAdapter;
 	
 	private Handler mHandler = new Handler() {
 
@@ -30,14 +31,14 @@ public class TeclaIME extends InputMethodService {
 		public void handleMessage(Message msg) {
 			if(msg.what == MSG_IMESCAN_SETUP) {
 				KeyboardView kbv = KeyboardSwitcher.getInstance().getKeyboardView();
-				boolean kb_ready = IMEAdapter.setKeyboardView(kbv);
+				boolean kb_ready = mIMEAdapter.setKeyboardView(kbv);
 				if(!kb_ready) {
 					++ msg.arg1;
 					if(msg.arg1 < 10) {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
 				} else {
-					IMEAdapter.selectScanHighlighted();
+					mIMEAdapter.selectScanHighlighted();
 				}
 			}
 //			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
@@ -64,6 +65,8 @@ public class TeclaIME extends InputMethodService {
 	public void onCreate() {
 		super.onCreate();
 //		sInstance = this;
+		mIMEAdapter = new LatinIMEAdapter();
+		
 		TeclaApp.setIMEInstance(this);
 		TeclaStatic.logD(CLASS_TAG, "Created " + TeclaIME.class.getName());
 	}
@@ -86,7 +89,7 @@ public class TeclaIME extends InputMethodService {
 
 	@Override
 	public void onFinishInputView(boolean finishingInput) {
-		IMEAdapter.setKeyboardView(null);
+		mIMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
 		if(TeclaApp.persistence.shouldShowHUD()
 				&& !TeclaApp.overlay.isVisible()) {
