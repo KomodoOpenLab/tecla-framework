@@ -146,6 +146,10 @@ public class TeclaIME extends InputMethodService {
 	public void pressBackKey() {
 		keyDownUp(KeyEvent.KEYCODE_BACK);
 	}
+
+	public void sendKey(int keycode) {
+		keyDownUp(keycode);
+	}
 	
 	/**
 	 * Helper to send a key down / key up pair to the current editor.
