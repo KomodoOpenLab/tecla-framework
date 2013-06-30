@@ -24,6 +24,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 public class TeclaApp extends Application {
 
@@ -264,6 +265,14 @@ public class TeclaApp extends Application {
 	
 	public String byte2Hex(int bite) {
 		return String.format("0x%02x", bite);
+	}
+
+	public void showToast(int resid) {
+		Toast.makeText(this, resid, Toast.LENGTH_LONG).show();
+	}
+	
+	public void showToast(String msg) {
+		Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 	}
 
 //	private void logRunningServices() {
