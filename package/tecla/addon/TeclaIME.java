@@ -23,7 +23,7 @@ public class TeclaIME extends InputMethodService {
 //	private static TeclaIME sInstance;
 	
 	private static final int MSG_IMESCAN_SETUP = 0x2244;
-	protected TeclaIMEAdapter mIMEAdapter;
+	private TeclaIMEAdapter mIMEAdapter;
 	
 	private Handler mHandler = new Handler() {
 
@@ -61,12 +61,16 @@ public class TeclaIME extends InputMethodService {
 		
 	};
 
+	protected TeclaIMEAdapter getIMEAdapter() {
+		if(mIMEAdapter == null)
+			mIMEAdapter = new LatinIMEAdapter();
+		return mIMEAdapter;
+	}
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 //		sInstance = this;
-		mIMEAdapter = new LatinIMEAdapter();
-		
 		TeclaApp.setIMEInstance(this);
 		TeclaStatic.logD(CLASS_TAG, "Created " + TeclaIME.class.getName());
 	}
