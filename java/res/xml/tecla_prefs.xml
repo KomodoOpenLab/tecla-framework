@@ -303,24 +303,4 @@
         </PreferenceScreen>
     </PreferenceCategory>
     
-    <!--
-    <PreferenceScreen
-        android:key="advanced_settings"
-        android:summary="@string/advanced_settings_summary"
-        android:title="@string/fullscreen_category" >
-        <CheckBoxPreference
-            android:key="hud_visibility"
-            android:summary="@string/hud_visibility_summary"
-            android:title="@string/hud_visibility" />
-        <CheckBoxPreference
-            android:key="single_switch_overlay"
-            android:summary="@string/single_switch_overlay_summary"
-            android:title="@string/single_switch_overlay" />
-        <CheckBoxPreference
-            android:key="hud_self_scanning"
-            android:summary="@string/hud_self_scanning_summary"
-            android:title="@string/hud_self_scanning" />
-    </PreferenceScreen>
-    -->
-
 </PreferenceScreen>
