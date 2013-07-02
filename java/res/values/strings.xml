@@ -55,6 +55,123 @@
     <string name="onboarding_a11y_warning">The Tecla Next accessibility service is not enabled. In order to use any Tecla Next features, you must first enable the Tecla Next accessibility service. Do you want to do this now?</string>
     <string name="onboarding_success">You have successfully set up Tecla Next!</string>
     
+    <!-- Tecla: IME Preferences Strings -->
+    <!-- Category title for tecla shield -->
+    <string name="alternative_input_category">Alternative input settings</string>
+
+    <!-- Option to scan and connect to Tecla shields -->
+    <string name="shield_connect">Connect to Tecla Shield</string>
+    <string name="shield_connect_summary_BT_nosupport">Bluetooth is not supported</string>
+    <string name="shield_connect_summary_BT_disabled">Bluetooth is disabled</string>
+    <string name="shield_connect_summary">Attempts a connection to a nearby Tecla Shield</string>
+    
+	<!-- Option to temporarily disconnect Tecla shield -->
+	<string name="shield_temp_disconnect">Temporarily Disconnect Tecla Shield</string>
+	<string name="shield_temp_disconnect_summary">Check to allow another device to connect to Tecla Shield</string>
+	
+    <!-- Option to enable fullscreen switch mode -->
+    <string name="fullscreen_switch">Fullscreen switch mode</string>
+    <string name="fullscreen_switch_summary">Uses the entire screen as a single switch</string>
+
+    <!-- Option to enable speakerphone switch mode -->
+    <string name="speakerphone_switch">Always use speakerphone</string>
+    <string name="speakerphone_switch_summary">Turn on speakerphone for voice calls, voice commands and voice input.</string>
+
+    <!-- Option to enable speech input -->
+    <string name="pref_voice_input">Enable voice input</string>
+    <string name="pref_voice_input_summary">Adds a key for quick access to voice commands and speech recognition</string>
+    
+    <!-- Option to show the UI navigation keyboard on the screen -->
+    <string name="persistent_keyboard">Show navigation keyboard</string>
+    <string name="persistent_keyboard_summary">Shows a small navigation keyboard when not entering text</string>
+    
+    <!-- Option to enable fullscreen switch mode -->
+    <string name="fullscreen_switch">Fullscreen switch mode</string>
+    <string name="fullscreen_switch_summary">Uses the entire screen as a single switch</string>
+    
+    <!-- Option to autohide the UI navigation keyboard on the screen -->
+    <string name="autohide_timeout">Navigation keyboard timeout</string>
+    <string name="autohide_timeout_summary">Adjust the delay before the navigation keyboard automatically hides</string>
+    <string name="autohide_timeout_dlg_title">Hide navigation keyboard</string>    
+    
+    <string-array name="switch_actions">
+        <item>None</item>
+        <item>Step-scan next</item>
+        <item>Step-scan previous</item>
+        <item>Step out, cancel</item>
+        <item>Select highlighted</item>
+    </string-array>
+    <string-array name="morse_actions">
+        <item>None</item>
+        <item>Morse dit</item>
+        <item>Morse dah</item>
+        <item>Morse end of char</item>
+        <item>Morse backspace</item>
+        <item>Hide Morse IME view</item>
+    </string-array>
+    <string-array name="morse_key_mode_array">
+        <item>Triple-key mode</item>
+        <item>Double-key mode</item>
+        <item>Single-key mode</item>
+    </string-array>
+        
+    <!-- Category title for Morse settings -->
+    <string name="morse_input_settings">Morse input settings</string>
+    <string name="morse_settings_summary">Adjust Morse input mode and preferences</string>
+    
+    <!-- Option to enable Morse input method -->
+    <string name="morse_mode">Enable Morse input</string>
+    <string name="morse_mode_summary">Provides a Morse input method that replaces the standard keyboard</string>
+    
+    <!-- Option to enable Morse HUD display -->
+    <string name="morse_show_hud">Show Morse HUD</string>
+    <string name="morse_show_hud_summary">Displays a set of Morse keys/values above the keyboard</string>
+    
+    <!-- Morse key mode strings -->
+	<string name="morse_key_mode">Morse input method</string>
+	
+	<!-- Morse speed ratio strings -->
+	<string name="morse_time_unit_title">Morse time unit</string>
+	<string name="morse_time_unit_dlg_title">Select your Morse time unit</string>
+	
+	<!-- Morse repeat delay strings -->
+    <string name="mrepeat_frequency">Configure repeat frequency</string>
+    <string name="mrepeat_frequency_summary">Adjust the repeat frequency of a dit/dah when holding down a switch</string>
+    <string name="mrepeat_frequency_dlg_title">Configure the repeat frequency</string>
+	
+    <!-- Options to set full reset timeout -->
+    <string name="fullreset_timeout">Long press reset delay</string>
+    <string name="fullreset_timeout_summary">Adjust the long press delay before returning to Home</string>
+    
+    <!-- Switch configuration strings -->
+    <string name="define_switch_action">Configure switch actions</string>
+    <string name="define_switch_action_summary">Customize the actions assigned to each switch input</string>
+    <string name="switch_j1">ECU 1 / Forward</string>
+    <string name="switch_j2">ECU 2 / Reverse</string>
+    <string name="switch_j3">ECU 3 / Left</string>
+    <string name="switch_j4">ECU 4 / Right</string>
+    <string name="switch_e1">Switch 1</string>
+    <string name="switch_e2">Switch 2</string>
+    <string name="switch_j1_tecla">ECU 1 / Forward Tecla action</string>
+    <string name="switch_j2_tecla">ECU 2 / Reverse Tecla action</string>
+    <string name="switch_j3_tecla">ECU 3 / Left Tecla action</string>
+    <string name="switch_j4_tecla">ECU 4 / Right Tecla action</string>
+    <string name="switch_e1_tecla">Switch 1 Tecla action</string>
+    <string name="switch_e2_tecla">Switch 2 Tecla action</string>
+    <string name="switch_j1_morse">ECU 1 / Forward Morse action</string>
+    <string name="switch_j2_morse">ECU 2 / Reverse Morse action</string>
+    <string name="switch_j3_morse">ECU 3 / Left Morse action</string>
+    <string name="switch_j4_morse">ECU 4 / Right Morse action</string>
+    <string name="switch_e1_morse">Switch 1 Morse action</string>
+    <string name="switch_e2_morse">Switch 2 Morse action</string>
+    
+    <!-- Reset switch actions strings -->
+    <string name="switch_default">Restore default actions</string>
+    <string name="switch_default_summary">Reset switch actions to default values</string>
+    <string name="user_data_category">Reset Switch Actions</string>
+
+    <string name="advanced_input_settings">Advanced input settings</string>
+    
     <!-- TeclaShieldService strings -->
     <string name="shield_disconnected">Tecla Shield disconnected</string>
     

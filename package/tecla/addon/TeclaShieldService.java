@@ -331,7 +331,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 		Boolean success = false;
 
-		if (TeclaApp.bluetooth_adapter != null && TeclaApp.bluetooth_adapter.isEnabled()) {
+		if ( != null && TeclaApp.bluetooth_adapter.isEnabled()) {
 			TeclaStatic.logD(CLASS_TAG, "Attempting to open socket to " + shieldAddress + "...");
 
 			BluetoothDevice teclaShield;
