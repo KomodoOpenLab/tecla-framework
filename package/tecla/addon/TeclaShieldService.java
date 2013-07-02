@@ -331,11 +331,17 @@ public class TeclaShieldService extends Service implements Runnable {
 
 		Boolean success = false;
 
-		if ( != null && TeclaApp.bluetooth_adapter.isEnabled()) {
+		BluetoothAdapter bluetooth_adapter = null;
+		TeclaShieldConnect shield_connect = TeclaSettingsActivity.getTeclaShieldConnect();
+		if(shield_connect != null)
+			bluetooth_adapter = shield_connect.getBluetoothAdapter();
+		
+		if (bluetooth_adapter != null 
+				&& bluetooth_adapter.isEnabled()) {
 			TeclaStatic.logD(CLASS_TAG, "Attempting to open socket to " + shieldAddress + "...");
 
 			BluetoothDevice teclaShield;
-			teclaShield = TeclaApp.bluetooth_adapter.getRemoteDevice(shieldAddress);
+			teclaShield = bluetooth_adapter.getRemoteDevice(shieldAddress);
 
 			if (!success) {
 				killSocket();
@@ -406,7 +412,12 @@ public class TeclaShieldService extends Service implements Runnable {
 		try {
 			// See http://developer.android.com/reference/android/bluetooth/BluetoothSocket.html#connect%28%29
 			// for why the cancelDiscovery() call is necessary
-			TeclaApp.bluetooth_adapter.cancelDiscovery();
+			BluetoothAdapter bluetooth_adapter = null;
+			TeclaShieldConnect shield_connect = TeclaSettingsActivity.getTeclaShieldConnect();
+			if(shield_connect != null)
+				bluetooth_adapter = shield_connect.getBluetoothAdapter();
+			
+			bluetooth_adapter.cancelDiscovery();
 			mBluetoothSocket.connect();
 			TeclaStatic.logD(CLASS_TAG, "Connected to " + mBluetoothSocket.getRemoteDevice().getAddress());
 			return true;
@@ -476,7 +487,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 		// Send the notification.
 		// We use a layout id because it is a unique number.  We use it later to cancel.
-		TeclaApp.notification_manager.notify(R.string.shield_connected, notification);
+		TeclaApp.getInstance().notification_manager.notify(R.string.shield_connected, notification);
 	}
 
 	private void broadcastShieldConnected() {
@@ -491,7 +502,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 	private void cancelNotification() {
 		// Cancel the persistent notification.
-		TeclaApp.notification_manager.cancel(R.string.shield_connected);
+		TeclaApp.getInstance().notification_manager.cancel(R.string.shield_connected);
 	}
 	
 	SwitchEventProvider switch_event_provider;

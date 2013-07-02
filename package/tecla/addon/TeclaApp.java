@@ -10,6 +10,7 @@ import ca.idrc.tecla.highlighter.TeclaHighlighter;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.BroadcastReceiver;
@@ -47,6 +48,7 @@ public class TeclaApp extends Application {
 	private AudioManager audio_manager;
 	private ActivityManager activity_manager;
 	private InputMethodManager ime_manager;
+	public NotificationManager notification_manager;
 
 	private Handler handler;
 
@@ -81,6 +83,7 @@ public class TeclaApp extends Application {
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		activity_manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		ime_manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		notification_manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
 		handler = new Handler();
 

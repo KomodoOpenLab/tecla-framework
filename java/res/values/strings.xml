@@ -173,7 +173,9 @@
     <string name="advanced_input_settings">Advanced input settings</string>
     
     <!-- TeclaShieldService strings -->
+    <string name="shield_connected">Tecla Shield Connected</string>
     <string name="shield_disconnected">Tecla Shield disconnected</string>
+    <string name="sep_label">Tecla Shield Status</string>
     
     
         

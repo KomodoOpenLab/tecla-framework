@@ -5,16 +5,25 @@ import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
 import android.accessibilityservice.AccessibilityService;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ViewFlipper;
@@ -23,13 +32,58 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 
 	private final static String CLASS_TAG = "TeclaSettings";
 
-	private TeclaSettingsActivity sInstance;
+	private static TeclaSettingsActivity sInstance;
 
+	private TeclaShieldConnect mTeclaShieldManager;
+	
 	private CheckBoxPreference mFullscreenMode;
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
+	private CheckBoxPreference mPrefConnectToShield;
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
+	private ProgressDialog mProgressDialog;
+
+	public static final int ACTION_DISCOVERY_FINISHED_SHIELD_FOUND = 0x1111;
+	public static final int ACTION_DISCOVERY_FINISHED_SHIELD_NOT_FOUND = 0x2222;
+	public static final String SHIELD_NAME_KEY = "ShieldName";
+	public static final String SHIELD_ADDRESS_KEY = "ShieldAddress";
+	private Handler mHandler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			if(ACTION_DISCOVERY_FINISHED_SHIELD_FOUND == msg.what) {
+				// Shield found, try to connect
+				mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
+				mProgressDialog.setOnKeyListener(new OnKeyListener() {
+
+					public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+						return true; //Consume all keys once Shield is found (can't cancel with back key)
+					}
+					
+				});
+				Bundle bundle = (Bundle) msg.obj;
+				String shieldName = bundle.getString(SHIELD_NAME_KEY, "");
+				String shieldAddress = bundle.getString(SHIELD_ADDRESS_KEY, "");
+				mProgressDialog.setMessage("Connecting to Tecla Shield" +
+						" " + shieldName);
+				if(!mTeclaShieldManager.connect(sInstance.getApplicationContext(), shieldAddress)) {
+					// Could not connect to Shield
+					dismissDialog();
+					TeclaApp.getInstance().showToast("Could not connect to Tecla Shield");
+				}
+			} else if(ACTION_DISCOVERY_FINISHED_SHIELD_NOT_FOUND == msg.what) {
+				dismissDialog();
+				sInstance.mPrefConnectToShield.setChecked(false);
+			}
+			super.handleMessage(msg);
+		}
+		
+	};
+	
+	public static TeclaShieldConnect getTeclaShieldConnect() {
+		return sInstance.mTeclaShieldManager;
+	}
 	
 //	private CheckBoxPreference mPrefHUD;
 //	private CheckBoxPreference mPrefSingleSwitchOverlay;
@@ -56,10 +110,14 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
 		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
 		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
+
+		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
 		
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
+		mProgressDialog = new ProgressDialog(this);
+		
 //		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
 //		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
 //		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
@@ -72,6 +130,10 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		//getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
 		initOnboarding();
+		
+		if(mTeclaShieldManager == null)
+			mTeclaShieldManager = new TeclaShieldManager(this, mHandler);
+
 	}
 
 	@Override
@@ -131,9 +193,45 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			}
 			return true;
 		}
+		if(pref.equals(mPrefConnectToShield)) {
+			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
+			if (newValue.toString().equals("true")) {
+				if(!mTeclaShieldManager.discoverShield())
+					mPrefConnectToShield.setChecked(false);
+				else
+					showDiscoveryDialog();
+			} else {
+				mTeclaShieldManager.stopShieldService();
+			}
+			return true;
+		}
 		return false;
 	}
 
+	private void showDiscoveryDialog() {
+		mProgressDialog.setMessage("Searching for Tecla Shields. Please wait…");
+		mProgressDialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface arg0) {
+				mTeclaShieldManager.cancelDiscovery();
+				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
+				TeclaApp.getInstance().showToast("Connection to Tecla Shield cancelled");
+				//mConnectionCancelled = true;
+				mPrefConnectToShield.setChecked(false);
+				
+			}
+		});
+		mProgressDialog.show();
+	}
+
+	/*
+	 * Dismisses progress dialog without triggerint it's OnCancelListener
+	 */
+	private void dismissDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
+		}
+	}
+	
 	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
 //	@Override
 //	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
