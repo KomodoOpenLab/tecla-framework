@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
@@ -46,6 +47,8 @@ public class TeclaApp extends Application {
 	private AudioManager audio_manager;
 	private ActivityManager activity_manager;
 	private InputMethodManager ime_manager;
+
+	private Handler handler;
 
 	private Boolean screen_on;
 
@@ -78,6 +81,8 @@ public class TeclaApp extends Application {
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		activity_manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		ime_manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		handler = new Handler();
 
 		screen_on = isScreenOn();
 		
@@ -252,6 +257,26 @@ public class TeclaApp extends Application {
 	public void pokeUserActivityTimer () {
 		power_manager.userActivity(SystemClock.uptimeMillis(), true);
 	}
+
+	public void postDelayedFullReset(long delay) {
+		cancelFullReset();
+		handler.postDelayed(mFullResetRunnable, delay * 1000);
+	}
+	
+	public void cancelFullReset() {
+		handler.removeCallbacks(mFullResetRunnable);
+	}
+
+	private Runnable mFullResetRunnable = new Runnable () {
+
+		public void run() {
+			Intent home = new Intent(Intent.ACTION_MAIN);
+			home.addCategory(Intent.CATEGORY_HOME);
+			home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(home);
+		}
+
+	};
 
 	public void useSpeakerphone() {
 		audio_manager.setMode(AudioManager.MODE_IN_CALL);

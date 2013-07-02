@@ -37,6 +37,9 @@ public class SPPManager {
 	private String mShieldAddress, mShieldName;
 	private boolean mShieldFound, mConnectionCancelled;
 
+	public BluetoothAdapter getBluetoothAdapter() {
+		return mBluetoothAdapter;
+	}
 	
 	public SPPManager(Context context) {
 		mContext = context;

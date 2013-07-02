@@ -2,6 +2,7 @@ package ca.idrc.tecla.framework;
 
 import java.util.HashMap;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -9,7 +10,7 @@ import android.provider.Settings;
 
 public class Persistence {
 	public static final String PREF_FULLSCREEN_MODE = "fullscreen_mode";
-	//	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
+	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
 	public static final String PREF_SPEAKERPHONE_SWITCH = "speakerphone_switch";
 	public static final String PREF_SELF_SCANNING = "self_scanning";
 	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
@@ -17,6 +18,12 @@ public class Persistence {
 	public static final String PREF_HUD = "hud_visibility";
 	public static final String PREF_SINGLESWITCH_OVERLAY = "single_switch_overlay";
 	public static final String PREF_HUD_SELF_SCANNING = "hud_self_scanning";
+	public static final String PREF_SHIELD_ADDRESS = "shield_address";
+	public static final String PREF_MORSE_MODE = "morse_mode";
+	public static final String PREF_FULL_RESET_TIMEOUT = "full_reset_timeout";
+
+	public static final int DEFAULT_FULL_RESET_TIMEOUT = 3;
+
 
 	private static final String IME_ID = "com.android.inputmethod.latin/.LatinIME";
 
@@ -179,6 +186,33 @@ public class Persistence {
 		prefs_editor.commit();
 	}
 
+	public String getShieldAddress() {
+		String mac = shared_prefs.getString(PREF_SHIELD_ADDRESS, "");
+		return BluetoothAdapter.checkBluetoothAddress(mac)? mac:null;
+	}
+	
+	public void setShieldAddress(String shieldAddress) {
+		prefs_editor.putString(PREF_SHIELD_ADDRESS, shieldAddress);
+		prefs_editor.commit();
+	}
+
+	public boolean shouldConnectToShield() {
+		return shared_prefs.getBoolean(PREF_CONNECT_TO_SHIELD, false);
+	}
+
+	public void setConnectToShield(boolean shieldConnect) {
+		prefs_editor.putBoolean(PREF_CONNECT_TO_SHIELD, shieldConnect);
+		prefs_editor.commit();
+	}
+
+	public int getFullResetTimeout() {
+		return shared_prefs.getInt(PREF_FULL_RESET_TIMEOUT,DEFAULT_FULL_RESET_TIMEOUT);
+	}
+
+	public boolean isMorseModeEnabled() {
+		return shared_prefs.getBoolean(PREF_MORSE_MODE, false);
+	}
+	
 	//	public boolean isHUDRunning() {
 	//		return shared_prefs.getBoolean(PREF_HUD, false);
 	//	}
