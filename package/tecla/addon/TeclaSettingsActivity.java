@@ -21,7 +21,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
-public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
+public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener
+	, OnPreferenceChangeListener
+	, TeclaShieldActionListener {
 
 	private final static String CLASS_TAG = "TeclaSettings";
 
@@ -94,14 +96,14 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
+		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
 		
 		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
 		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
 		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
-		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
+		mScanSpeedPref.setOnPreferenceClickListener(sInstance);
+		mPrefConnectToShield.setOnPreferenceChangeListener(sInstance);
 
-		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
-		
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
@@ -110,7 +112,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		initOnboarding();
 		
 		if(mTeclaShieldManager == null)
-			mTeclaShieldManager = new TeclaShieldManager(this, mHandler);
+			mTeclaShieldManager = new TeclaShieldManager(this);
 
 	}
 
@@ -301,5 +303,29 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			sInstance.finish();
 		}
 	};
+
+	@Override
+	public void onTeclaShieldFound() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTeclaShieldDiscoveryFinished() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTeclaShieldConnected() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTeclaShieldDisconnected() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
