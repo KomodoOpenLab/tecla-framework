@@ -35,6 +35,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
 	private CheckBoxPreference mPrefConnectToShield;
+	private CheckBoxPreference mPrefTempDisconnect;
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
 	private ProgressDialog mProgressDialog;
@@ -59,12 +60,14 @@ public class TeclaSettingsActivity extends PreferenceActivity
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
 		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
+		mPrefTempDisconnect = (CheckBoxPreference) findPreference(Persistence.PREF_TEMP_SHIELD_DISCONNECT);
 		
 		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
 		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
 		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
 		mScanSpeedPref.setOnPreferenceClickListener(sInstance);
 		mPrefConnectToShield.setOnPreferenceChangeListener(sInstance);
+		mPrefTempDisconnect.setOnPreferenceChangeListener(sInstance);
 
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
@@ -137,6 +140,27 @@ public class TeclaSettingsActivity extends PreferenceActivity
 		}
 		if(pref.equals(mPrefConnectToShield)) {
 			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
+			if (newValue.toString().equals("true")) {
+				mConnectionCancelled = false;
+				if(!mTeclaShieldManager.discoverShield())
+					mPrefConnectToShield.setChecked(false);
+				else
+					showDiscoveryDialog();
+			} else {
+				dismissDialog();
+//				if (!mPrefFullScreenSwitch.isChecked()) {
+//					mPrefTempDisconnect.setChecked(false);
+//					mPrefTempDisconnect.setEnabled(false);
+//					mPrefSelfScanning.setChecked(false);
+//					mPrefInverseScanning.setChecked(false);
+//					mPrefPersistentKeyboard.setChecked(false);
+//				}
+				mTeclaShieldManager.stopShieldService();
+			}
+			return true;
+		}
+		if(pref.equals(mPrefTempDisconnect)) {
+			TeclaStatic.logD(CLASS_TAG, "Temp disconnect preference changed!");
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
 				if(!mTeclaShieldManager.discoverShield())

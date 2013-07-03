@@ -11,6 +11,7 @@ import android.provider.Settings;
 public class Persistence {
 	public static final String PREF_FULLSCREEN_MODE = "fullscreen_mode";
 	public static final String PREF_CONNECT_TO_SHIELD = "shield_connect";
+	public static final String PREF_TEMP_SHIELD_DISCONNECT = "shield_temp_disconnect";
 	public static final String PREF_SPEAKERPHONE_SWITCH = "speakerphone_switch";
 	public static final String PREF_SELF_SCANNING = "self_scanning";
 	public static final String PREF_INVERSE_SCANNING = "inverse_scanning";
