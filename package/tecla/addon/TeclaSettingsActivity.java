@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -148,35 +149,41 @@ public class TeclaSettingsActivity extends PreferenceActivity
 					showDiscoveryDialog();
 			} else {
 				dismissDialog();
-//				if (!mPrefFullScreenSwitch.isChecked()) {
-//					mPrefTempDisconnect.setChecked(false);
-//					mPrefTempDisconnect.setEnabled(false);
-//					mPrefSelfScanning.setChecked(false);
-//					mPrefInverseScanning.setChecked(false);
+				if (!mFullscreenMode.isChecked()) {
+					mPrefTempDisconnect.setChecked(false);
+					mPrefTempDisconnect.setEnabled(false);
+					mPrefSelfScanning.setChecked(false);
+					mPrefInverseScanning.setChecked(false);
 //					mPrefPersistentKeyboard.setChecked(false);
-//				}
+				}
 				mTeclaShieldManager.stopShieldService();
 			}
 			return true;
 		}
 		if(pref.equals(mPrefTempDisconnect)) {
-			TeclaStatic.logD(CLASS_TAG, "Temp disconnect preference changed!");
+			TeclaStatic.logD(CLASS_TAG, "Temp shield disconnect preference changed!");
 			if (newValue.toString().equals("true")) {
-				mConnectionCancelled = false;
-				if(!mTeclaShieldManager.discoverShield())
-					mPrefConnectToShield.setChecked(false);
-				else
-					showDiscoveryDialog();
-			} else {
-				dismissDialog();
-//				if (!mPrefFullScreenSwitch.isChecked()) {
-//					mPrefTempDisconnect.setChecked(false);
-//					mPrefTempDisconnect.setEnabled(false);
-//					mPrefSelfScanning.setChecked(false);
-//					mPrefInverseScanning.setChecked(false);
-//					mPrefPersistentKeyboard.setChecked(false);
-//				}
+				mPrefConnectToShield.setEnabled(false);
 				mTeclaShieldManager.stopShieldService();
+				Handler mHandler = new Handler();
+				Runnable mReconnect = new Runnable() {
+					
+					public void run() {
+						TeclaStatic.logD(CLASS_TAG, "Re-enabling discovery");
+						mTeclaShieldManager.discoverShield();
+						mPrefConnectToShield.setEnabled(true);
+					}
+				};
+				
+				// See if the handler was posted
+				if(mHandler.postDelayed(mReconnect, 90000))	// 90 second delay
+				{
+					TeclaStatic.logD(CLASS_TAG, "Posted Runnable");
+				}
+				else
+				{
+					TeclaStatic.logD(CLASS_TAG, "Could not post Runnable");
+				}
 			}
 			return true;
 		}
@@ -192,8 +199,8 @@ public class TeclaSettingsActivity extends PreferenceActivity
 				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
 				mConnectionCancelled = true;
 				mPrefConnectToShield.setChecked(false);
-//				mPrefTempDisconnect.setChecked(false);
-//				mPrefTempDisconnect.setEnabled(false);
+				mPrefTempDisconnect.setChecked(false);
+				mPrefTempDisconnect.setEnabled(false);
 			}
 		});
 		mProgressDialog.show();
@@ -321,8 +328,8 @@ public class TeclaSettingsActivity extends PreferenceActivity
 		} else {
 			dismissDialog();
 			mPrefConnectToShield.setChecked(false);
-//			mPrefTempDisconnect.setChecked(false);
-//			mPrefTempDisconnect.setEnabled(false);
+			mPrefTempDisconnect.setChecked(false);
+			mPrefTempDisconnect.setEnabled(false);
 			if (!mConnectionCancelled) 
 				TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
 		}
@@ -331,7 +338,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	@Override
 	public void onTeclaShieldConnected() {
 		dismissDialog();
-//		mPrefTempDisconnect.setEnabled(true);
+		mPrefTempDisconnect.setEnabled(true);
 //		mPrefMorse.setEnabled(true);
 //		mPrefPersistentKeyboard.setChecked(true);
 	}
@@ -339,8 +346,8 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	@Override
 	public void onTeclaShieldDisconnected() {
 		dismissDialog();
-//		mPrefTempDisconnect.setChecked(false);
-//		mPrefTempDisconnect.setEnabled(false);
+		mPrefTempDisconnect.setChecked(false);
+		mPrefTempDisconnect.setEnabled(false);
 	}
 
 	@Override
