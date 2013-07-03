@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -21,7 +19,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
-public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener
+public class TeclaSettingsActivity extends PreferenceActivity 
+	implements OnPreferenceClickListener
 	, OnPreferenceChangeListener
 	, TeclaShieldActionListener {
 
@@ -30,6 +29,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	private static TeclaSettingsActivity sInstance;
 
 	private TeclaShieldConnect mTeclaShieldManager;
+	private boolean mConnectionCancelled;
 	
 	private CheckBoxPreference mFullscreenMode;
 	private CheckBoxPreference mPrefSelfScanning;
@@ -38,43 +38,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
 	private ProgressDialog mProgressDialog;
-
-	public static final int ACTION_DISCOVERY_FINISHED_SHIELD_FOUND = 0x1111;
-	public static final int ACTION_DISCOVERY_FINISHED_SHIELD_NOT_FOUND = 0x2222;
-	public static final String SHIELD_NAME_KEY = "ShieldName";
-	public static final String SHIELD_ADDRESS_KEY = "ShieldAddress";
-	private Handler mHandler = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			if(ACTION_DISCOVERY_FINISHED_SHIELD_FOUND == msg.what) {
-				// Shield found, try to connect
-				mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
-				mProgressDialog.setOnKeyListener(new OnKeyListener() {
-
-					public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-						return true; //Consume all keys once Shield is found (can't cancel with back key)
-					}
-					
-				});
-				Bundle bundle = (Bundle) msg.obj;
-				String shieldName = bundle.getString(SHIELD_NAME_KEY, "");
-				String shieldAddress = bundle.getString(SHIELD_ADDRESS_KEY, "");
-				mProgressDialog.setMessage("Connecting to Tecla Shield" +
-						" " + shieldName);
-				if(!mTeclaShieldManager.connect(sInstance.getApplicationContext(), shieldAddress)) {
-					// Could not connect to Shield
-					dismissDialog();
-					TeclaApp.getInstance().showToast("Could not connect to Tecla Shield");
-				}
-			} else if(ACTION_DISCOVERY_FINISHED_SHIELD_NOT_FOUND == msg.what) {
-				dismissDialog();
-				sInstance.mPrefConnectToShield.setChecked(false);
-			}
-			super.handleMessage(msg);
-		}
-		
-	};
 	
 	public static TeclaShieldConnect getTeclaShieldConnect() {
 		return sInstance.mTeclaShieldManager;
@@ -83,7 +46,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		init();
 	}
 
@@ -176,11 +138,13 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		if(pref.equals(mPrefConnectToShield)) {
 			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
 			if (newValue.toString().equals("true")) {
+				mConnectionCancelled = false;
 				if(!mTeclaShieldManager.discoverShield())
 					mPrefConnectToShield.setChecked(false);
 				else
 					showDiscoveryDialog();
 			} else {
+				dismissDialog();
 				mTeclaShieldManager.stopShieldService();
 			}
 			return true;
@@ -195,7 +159,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 				mTeclaShieldManager.cancelDiscovery();
 				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
 				TeclaApp.getInstance().showToast("Connection to Tecla Shield cancelled");
-				//mConnectionCancelled = true;
+				mConnectionCancelled = true;
 				mPrefConnectToShield.setChecked(false);
 				
 			}
@@ -306,26 +270,49 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 
 	@Override
 	public void onTeclaShieldFound() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void onTeclaShieldDiscoveryFinished() {
-		// TODO Auto-generated method stub
-		
+	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, Bundle bundle) {
+		if(shieldFound) {
+			// Shield found, try to connect
+			mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
+			mProgressDialog.setOnKeyListener(new OnKeyListener() {
+
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+					return true; //Consume all keys once Shield is found (can't cancel with back key)
+				}
+				
+			});
+			String shieldName = bundle.getString(TeclaShieldManager.SHIELD_NAME_KEY, "");
+			mProgressDialog.setMessage("Connecting to Tecla Shield" +
+					" " + shieldName);
+		} else {
+			dismissDialog();
+			mPrefConnectToShield.setChecked(false);
+			if (!mConnectionCancelled) 
+				TeclaApp.getInstance().showToast("No Tecla Shields in range");
+		}
 	}
 
 	@Override
 	public void onTeclaShieldConnected() {
-		// TODO Auto-generated method stub
-		
+		dismissDialog();
+//		mPrefTempDisconnect.setEnabled(true);
+//		mPrefMorse.setEnabled(true);
+//		mPrefPersistentKeyboard.setChecked(true);
 	}
 
 	@Override
 	public void onTeclaShieldDisconnected() {
-		// TODO Auto-generated method stub
-		
+		dismissDialog();
+//		mPrefTempDisconnect.setChecked(false);
+//		mPrefTempDisconnect.setEnabled(false);
+	}
+
+	@Override
+	public void dismissProgressDialog() {
+		dismissDialog();
 	}
 
 }

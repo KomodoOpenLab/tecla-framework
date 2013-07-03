@@ -1,5 +1,6 @@
 package com.android.tecla.addon;
 
+import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
@@ -37,12 +38,14 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 	public static final String EXTRA_SHIELD_ADDRESS = "ca.idi.tecla.sdk.extra.SHIELD_ADDRESS";
 
 	private static final int REQUEST_ENABLE_BT = 1;
+
+	public static final String SHIELD_NAME_KEY = "ShieldName";
 	
 	private Context mContext;
 	private TeclaShieldActionListener mShieldListener;
 	private BluetoothAdapter mBluetoothAdapter;
 	private String mShieldAddress, mShieldName;
-	private boolean mShieldFound, mConnectionCancelled;
+	private boolean mShieldFound;
 
 	public BluetoothAdapter getBluetoothAdapter() {
 		if(mBluetoothAdapter == null)
@@ -67,12 +70,11 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 
 	}
 	
-
 	public boolean discoverShield() {
-		if(mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled())
+		if(mBluetoothAdapter == null 
+				|| !mBluetoothAdapter.isEnabled())
 			return false;
 		mShieldFound = false;
-		mConnectionCancelled = false;
 		cancelDiscovery();
 		mBluetoothAdapter.startDiscovery();
 		return true;
@@ -150,39 +152,26 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 			}
 
 			if (intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
-				Message msg = new Message();
-				if (mShieldFound) {
-					Bundle bundle = new Bundle();
-					bundle.putString(TeclaSettingsActivity.SHIELD_NAME_KEY, mShieldName);
-					bundle.putString(TeclaSettingsActivity.SHIELD_ADDRESS_KEY, mShieldAddress);
-					msg.what = TeclaSettingsActivity.ACTION_DISCOVERY_FINISHED_SHIELD_FOUND;
-					msg.obj = bundle;
-					//mSettingsActivityHandler.sendMessage(msg);
-				} else {
-					msg.what = TeclaSettingsActivity.ACTION_DISCOVERY_FINISHED_SHIELD_NOT_FOUND;
-					//mSettingsActivityHandler.sendMessage(msg);
-					if (!mConnectionCancelled) TeclaApp.getInstance().showToast("No Tecla Shields in range");
-				
+				Bundle bundle = new Bundle();
+				if (mShieldFound) 
+					bundle.putString(SHIELD_NAME_KEY, mShieldName);
+				mShieldListener.onTeclaShieldDiscoveryFinished(mShieldFound, bundle);
+				if(mShieldFound 
+						&& !connect(mContext.getApplicationContext(), mShieldAddress)) {
+					// Could not connect to Shield
+					mShieldListener.dismissProgressDialog();
+						TeclaApp.getInstance().showToast("Could not connect to Tecla Shield");
 				}
-				mShieldListener.onTeclaShieldDiscoveryFinished();
 			}
 
 			if (intent.getAction().equals(TeclaShieldService.ACTION_SHIELD_CONNECTED)) {
 				TeclaStatic.logD(CLASS_TAG, "Successfully started SEP");
-//				dismissDialog();
-//				TeclaApp.getInstance().showToast(R.string.shield_connected);
-//				mPrefTempDisconnect.setEnabled(true);
-//				mPrefMorse.setEnabled(true);
-//				mPrefPersistentKeyboard.setChecked(true);
+				TeclaApp.getInstance().showToast(R.string.shield_connected);
 				mShieldListener.onTeclaShieldConnected();
-				
 			}
 
 			if (intent.getAction().equals(TeclaShieldService.ACTION_SHIELD_DISCONNECTED)) {
 				TeclaStatic.logD(CLASS_TAG, "SEP broadcast stopped");
-//				dismissDialog();
-//				mPrefTempDisconnect.setChecked(false);
-//				mPrefTempDisconnect.setEnabled(false);
 				mShieldListener.onTeclaShieldDisconnected();
 			}
 		}
