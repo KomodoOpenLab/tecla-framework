@@ -172,6 +172,20 @@
 
     <string name="advanced_input_settings">Advanced input settings</string>
     
+    <!-- Toasts and dialogs -->
+    <string name="connecting_tecla_shield">Connecting to Tecla Shield</string>
+    <string name="couldnt_connect_shield">Could not connect to Tecla Shield</string>
+    <string name="shield_connection_cancelled">Connection to Tecla Shield cancelled</string>
+    <string name="no_shields_inrange">No Tecla Shields in range</string>
+    <string name="searching_for_shields">Searching for Tecla Shields. Please wait…</string>
+    <string name="morse_enabled">Morse input method enabled</string>
+    <string name="morse_disabled">Morse input method disabled</string>
+    <string name="fullscreen_enabled">Fullscreen switch mode enabled</string>
+    <string name="fullscreen_disabled">Fullscreen switch mode disabled</string>
+    <string name="tecla_notselected">Please select Tecla Access as your default input method before adjusting settings.</string>
+    <string name="no_voice_input_available">No speech recognition applications available!</string>
+    <string name="no_voice_actions_installed">Voice Search is not installed!</string>
+    
     <!-- TeclaShieldService strings -->
     <string name="shield_connected">Tecla Shield Connected</string>
     <string name="shield_disconnected">Tecla Shield disconnected</string>

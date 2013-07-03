@@ -145,6 +145,13 @@ public class TeclaSettingsActivity extends PreferenceActivity
 					showDiscoveryDialog();
 			} else {
 				dismissDialog();
+//				if (!mPrefFullScreenSwitch.isChecked()) {
+//					mPrefTempDisconnect.setChecked(false);
+//					mPrefTempDisconnect.setEnabled(false);
+//					mPrefSelfScanning.setChecked(false);
+//					mPrefInverseScanning.setChecked(false);
+//					mPrefPersistentKeyboard.setChecked(false);
+//				}
 				mTeclaShieldManager.stopShieldService();
 			}
 			return true;
@@ -153,15 +160,16 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	}
 
 	private void showDiscoveryDialog() {
-		mProgressDialog.setMessage("Searching for Tecla Shields. Please wait…");
+		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
 		mProgressDialog.setOnCancelListener(new OnCancelListener() {
 			public void onCancel(DialogInterface arg0) {
 				mTeclaShieldManager.cancelDiscovery();
 				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
-				TeclaApp.getInstance().showToast("Connection to Tecla Shield cancelled");
+				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
 				mConnectionCancelled = true;
 				mPrefConnectToShield.setChecked(false);
-				
+//				mPrefTempDisconnect.setChecked(false);
+//				mPrefTempDisconnect.setEnabled(false);
 			}
 		});
 		mProgressDialog.show();
@@ -273,7 +281,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	}
 
 	@Override
-	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, Bundle bundle) {
+	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, String shieldName) {
 		if(shieldFound) {
 			// Shield found, try to connect
 			mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
@@ -284,14 +292,15 @@ public class TeclaSettingsActivity extends PreferenceActivity
 				}
 				
 			});
-			String shieldName = bundle.getString(TeclaShieldManager.SHIELD_NAME_KEY, "");
-			mProgressDialog.setMessage("Connecting to Tecla Shield" +
+			mProgressDialog.setMessage(getString(R.string.connecting_tecla_shield) +
 					" " + shieldName);
 		} else {
 			dismissDialog();
 			mPrefConnectToShield.setChecked(false);
+//			mPrefTempDisconnect.setChecked(false);
+//			mPrefTempDisconnect.setEnabled(false);
 			if (!mConnectionCancelled) 
-				TeclaApp.getInstance().showToast("No Tecla Shields in range");
+				TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
 		}
 	}
 

@@ -39,8 +39,6 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 
 	private static final int REQUEST_ENABLE_BT = 1;
 
-	public static final String SHIELD_NAME_KEY = "ShieldName";
-	
 	private Context mContext;
 	private TeclaShieldActionListener mShieldListener;
 	private BluetoothAdapter mBluetoothAdapter;
@@ -152,15 +150,12 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 			}
 
 			if (intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
-				Bundle bundle = new Bundle();
-				if (mShieldFound) 
-					bundle.putString(SHIELD_NAME_KEY, mShieldName);
-				mShieldListener.onTeclaShieldDiscoveryFinished(mShieldFound, bundle);
+				mShieldListener.onTeclaShieldDiscoveryFinished(mShieldFound, mShieldFound? mShieldName : "");
 				if(mShieldFound 
 						&& !connect(mContext.getApplicationContext(), mShieldAddress)) {
 					// Could not connect to Shield
 					mShieldListener.dismissProgressDialog();
-						TeclaApp.getInstance().showToast("Could not connect to Tecla Shield");
+						TeclaApp.getInstance().showToast(R.string.couldnt_connect_shield);
 				}
 			}
 
