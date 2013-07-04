@@ -72,7 +72,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		//getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
 		initOnboarding();
-		TeclaStatic.logE("==============", "2");
 	}
 
 	@Override
