@@ -22,6 +22,7 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -29,6 +30,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	private final static String CLASS_TAG = "TeclaA11yService";
 
+	private final static String EDITTEXT_CLASSNAME = "android.widget.EditText";
+	
 	public final static int DIRECTION_UP = 0;
 	public final static int DIRECTION_LEFT = 1;
 	public final static int DIRECTION_RIGHT = 2;
@@ -119,16 +122,17 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
-					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {	
+					} else if (event_type == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
 						mPreviousOriginalNode = mOriginalNode;
 						mOriginalNode = node;				
 						mNodeIndex = 0;
 						searchAndUpdateNodes();
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-						if(mSelectedNode.getClassName().toString().contains("EditText"))
+						mSelectedNode = node;
+						TeclaHighlighter.highlightNode(mSelectedNode);
+						if(mSelectedNode.getClassName().toString().contains(EDITTEXT_CLASSNAME))
 								TeclaApp.ime.showWindow(true);
-						//searchAndUpdateNodes();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
 						//searchAndUpdateNodes();
 					} else if(event_type == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
@@ -146,6 +150,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
+	private AccessibilityNodeInfo mFocusedNode;
 	private void searchAndUpdateNodes() {
 		//		TeclaHighlighter.clearHighlight();
 		searchActiveNodesBFS(mOriginalNode);
@@ -153,14 +158,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (mActiveNodes.size() > 0 ) {
 			mSelectedNode = findNeighbourNode(mSelectedNode, DIRECTION_ANY);
 			if(mSelectedNode == null) mSelectedNode = mActiveNodes.get(0);
+			if(mFocusedNode != null) {
+				mSelectedNode = mFocusedNode;
+			}
 			TeclaHighlighter.highlightNode(mSelectedNode);
-			mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
-			if(mPreviousOriginalNode != null) mPreviousOriginalNode.recycle();
+			if(mPreviousOriginalNode != null) 
+				mPreviousOriginalNode.recycle();
 		}
 	}
 
 	private void searchActiveNodesBFS(AccessibilityNodeInfo node) {
 		mActiveNodes.clear();
+		mFocusedNode = null;
 		Queue<AccessibilityNodeInfo> q = new LinkedList<AccessibilityNodeInfo>();
 		q.add(node);
 		while (!q.isEmpty()) {
@@ -168,9 +177,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(thisnode == null) continue;
 			if(thisnode.isVisibleToUser() && thisnode.isClickable() 
 					&& !thisnode.isScrollable()) {
-				//if(thisnode.isFocused() || thisnode.isSelected()) {
 				mActiveNodes.add(thisnode);
-				//}
+				if(thisnode.isFocused())
+					mFocusedNode = thisnode;
 			}
 			for (int i=0; i<thisnode.getChildCount(); ++i) q.add(thisnode.getChild(i));
 		}
@@ -356,7 +365,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		} else if(isSwitchPressed) { // on switch released
 			isSwitchPressed = false;
 			if(TeclaApp.persistence.isInverseScanningEnabled()) {
-				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+				if(TeclaApp.ime.getIMEAdapter().isShowingKeyboard()) 
+					TeclaApp.ime.getIMEAdapter().selectScanHighlighted();
 				else TeclaHUDOverlay.selectScanHighlighted();
 				AutomaticScan.stopAutoScan();
 			} else {
@@ -365,15 +375,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				switch(Integer.parseInt(action_tecla)) {
 
 				case SwitchEvent.ACTION_NEXT:
-					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
+					if(TeclaApp.ime.getIMEAdapter().isShowingKeyboard()) 
+						TeclaApp.ime.getIMEAdapter().scanNext();
 					else mVisualOverlay.scanNext();
 					break;
 				case SwitchEvent.ACTION_PREV:
-					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
+					if(TeclaApp.ime.getIMEAdapter().isShowingKeyboard()) 
+						TeclaApp.ime.getIMEAdapter().scanPrevious();
 					else mVisualOverlay.scanPrevious();
 					break;
 				case SwitchEvent.ACTION_SELECT:
-					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
+					if(TeclaApp.ime.getIMEAdapter().isShowingKeyboard()) 
+						TeclaApp.ime.getIMEAdapter().selectScanHighlighted();
 					else TeclaHUDOverlay.selectScanHighlighted();				
 					break;
 				case SwitchEvent.ACTION_CANCEL:
@@ -445,15 +458,27 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mActionLock.lock();
 			node = findNeighbourNode(current_node, direction);		
 			if(node != null) {
-				sInstance.mSelectedNode = node;
-				if(node.getClassName().toString().contains("EditText")) {
+				TeclaHighlighter.highlightNode(node);
+				if(node.isFocusable()) 
 					node.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+				sInstance.mSelectedNode = node;
+			} else {
+				switch(direction) {
+				case(DIRECTION_UP):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_UP);
+					break;
+				case(DIRECTION_DOWN):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_DOWN);
+					break;
+				case(DIRECTION_LEFT):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+					break;
+				case(DIRECTION_RIGHT):
+					TeclaApp.ime.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
+					break;					
 				}
 			}
 			mActionLock.unlock(); 
-
-			TeclaHighlighter.highlightNode(sInstance.mSelectedNode);
-			sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 		}
 	}
 
