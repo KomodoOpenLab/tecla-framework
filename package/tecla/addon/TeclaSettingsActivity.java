@@ -72,6 +72,7 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		//getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
 		initOnboarding();
+		TeclaStatic.logE("==============", "2");
 	}
 
 	@Override
@@ -266,12 +267,6 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	/** Onboarding variables & methods **/
 	private OnboardingDialog mOnboardingDialog;
 
-	private Button mImeOkBtn;
-	private Button mImeCancelBtn;
-	private Button mA11yOkBtn;
-	private Button mA11yCancelBtn;
-	private Button mFinalOkBtn;
-
 	private void initOnboarding() {
 		if (!TeclaStatic.isDefaultIMESupported(getApplicationContext()) ||
 				!TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
@@ -282,46 +277,10 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 				mOnboardingDialog = null;
 			}
 			mOnboardingDialog = new OnboardingDialog(this);
-			mOnboardingDialog.setContentView(R.layout.tecla_onboarding);
-			mOnboardingDialog.setCancelable(false);
-			mImeOkBtn = (Button) mOnboardingDialog.findViewById(R.id.ime_ok_btn);
-			mImeCancelBtn = (Button) mOnboardingDialog.findViewById(R.id.ime_cancel_btn);
-			mA11yOkBtn = (Button) mOnboardingDialog.findViewById(R.id.a11y_ok_btn);
-			mA11yCancelBtn = (Button) mOnboardingDialog.findViewById(R.id.a11y_cancel_btn);
-			mFinalOkBtn = (Button) mOnboardingDialog.findViewById(R.id.success_btn);
-			mImeCancelBtn.setOnClickListener(mCancelOnboardingClickListener);
-			mA11yCancelBtn.setOnClickListener(mCancelOnboardingClickListener);
-			mImeOkBtn.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					TeclaApp.getInstance().pickIme();
-				}
-			});
-			mA11yOkBtn.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-					startActivity(intent);
-				}
-			});
-			mFinalOkBtn.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					mOnboardingDialog.dismiss();
-				}
-			});
+			mOnboardingDialog.setCancelButtonClickListener(mCancelOnboardingClickListener);
+ 			mOnboardingDialog.setA11yOkBtnListener(mA11yOkOnboardingClickListener);
 			mOnboardingDialog.show();
-		} else {
-//			if (mOnboardingDialog != null) {
-//				if (mOnboardingDialog.isShowing()) {
-//					mOnboardingDialog.dismiss();
-//				}
-//				mOnboardingDialog = null;
-//			}
-		}
+		} 
 	}
 
 	private View.OnClickListener mCancelOnboardingClickListener = new View.OnClickListener() {
@@ -333,4 +292,12 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		}
 	};
 
+	private View.OnClickListener mA11yOkOnboardingClickListener = new View.OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+			startActivity(intent);
+		}
+	};
 }

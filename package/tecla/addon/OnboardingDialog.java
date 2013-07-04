@@ -4,7 +4,10 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -21,10 +24,37 @@ public class OnboardingDialog extends Dialog {
 	private TextView mA11yWarnText;
 	private TextView mSuccessText;
 	private ViewFlipper mOnboardingFlipper;
-	
+
+	private Button mImeOkBtn;
+	private Button mImeCancelBtn;
+	private Button mA11yOkBtn;
+	private Button mA11yCancelBtn;
+	private Button mFinalOkBtn;
+
 	public OnboardingDialog(Context context) {
 		super(context);
 		mContext = context;
+		setContentView(R.layout.tecla_onboarding);
+		setCancelable(false);
+		mImeOkBtn = (Button) findViewById(R.id.ime_ok_btn);
+		mImeCancelBtn = (Button) findViewById(R.id.ime_cancel_btn);
+		mA11yOkBtn = (Button) findViewById(R.id.a11y_ok_btn);
+		mA11yCancelBtn = (Button) findViewById(R.id.a11y_cancel_btn);
+		mFinalOkBtn = (Button) findViewById(R.id.success_btn);
+		mImeOkBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				TeclaApp.getInstance().pickIme();
+			}
+		});
+		mFinalOkBtn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
 	}
 
 	@Override
@@ -47,6 +77,19 @@ public class OnboardingDialog extends Dialog {
 		mSuccessText.setText(mContext.getString(R.string.onboarding_success));
 		
 		mOnboardingFlipper = (ViewFlipper) findViewById(R.id.onboarding_flipper);
+		
+	}
+	
+	public void setCancelButtonClickListener(View.OnClickListener listener) {
+		if(mImeCancelBtn == null)
+			TeclaStatic.logE("=======", "33");
+		mImeCancelBtn.setOnClickListener(listener);
+		mA11yCancelBtn.setOnClickListener(listener);
+		
+	}
+	
+	public void setA11yOkBtnListener(View.OnClickListener listener) {
+		mA11yOkBtn.setOnClickListener(listener);
 	}
 	
 	/* (non-Javadoc)
