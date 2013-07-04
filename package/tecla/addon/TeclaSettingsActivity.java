@@ -277,27 +277,30 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 				mOnboardingDialog = null;
 			}
 			mOnboardingDialog = new OnboardingDialog(this);
-			mOnboardingDialog.setCancelButtonClickListener(mCancelOnboardingClickListener);
- 			mOnboardingDialog.setA11yOkBtnListener(mA11yOkOnboardingClickListener);
-			mOnboardingDialog.show();
+			mOnboardingDialog.setExternalClickListener(mOnboardingClickListener);
+ 			mOnboardingDialog.show();
 		} 
 	}
 
-	private View.OnClickListener mCancelOnboardingClickListener = new View.OnClickListener() {
+	private View.OnClickListener mOnboardingClickListener = new View.OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			mOnboardingDialog.dismiss();
-			sInstance.finish();
+			int id = v.getId();
+			switch(id) {
+			case R.id.ime_cancel_btn:
+			case R.id.a11y_cancel_btn:
+				mOnboardingDialog.dismiss();
+				sInstance.finish();
+				break;
+			case R.id.a11y_ok_btn:
+				Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+				startActivity(intent);
+				break;
+			default:
+				break;
+			}
 		}
 	};
 
-	private View.OnClickListener mA11yOkOnboardingClickListener = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-			startActivity(intent);
-		}
-	};
 }

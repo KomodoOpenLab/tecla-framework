@@ -80,18 +80,12 @@ public class OnboardingDialog extends Dialog {
 		
 	}
 	
-	public void setCancelButtonClickListener(View.OnClickListener listener) {
-		if(mImeCancelBtn == null)
-			TeclaStatic.logE("=======", "33");
+	public void setExternalClickListener(View.OnClickListener listener) {
 		mImeCancelBtn.setOnClickListener(listener);
 		mA11yCancelBtn.setOnClickListener(listener);
-		
-	}
-	
-	public void setA11yOkBtnListener(View.OnClickListener listener) {
 		mA11yOkBtn.setOnClickListener(listener);
 	}
-	
+		
 	/* (non-Javadoc)
 	 * @see android.app.Dialog#onWindowFocusChanged(boolean)
 	 */
