@@ -31,7 +31,24 @@ public class OnboardingDialog extends Dialog implements View.OnClickListener {
 	private Button mA11yCancelBtn;
 	private Button mFinalOkBtn;
 
-	public OnboardingDialog(Context context) {
+	private static OnboardingDialog sInstance;
+	public static OnboardingDialog createInstance(Context context, View.OnClickListener listener) {
+		
+		if (sInstance != null) {
+			if (sInstance.isShowing()) {
+				sInstance.dismiss();
+			}
+			sInstance = null;
+		}
+		sInstance = new OnboardingDialog(context);
+		sInstance.setExternalClickListener(listener);
+		return sInstance;
+	}
+	public static OnboardingDialog getInstance() {
+		return sInstance;
+	}
+	
+	private OnboardingDialog(Context context) {
 		super(context);
 		mContext = context;
 		setContentView(R.layout.tecla_onboarding);
@@ -49,6 +66,12 @@ public class OnboardingDialog extends Dialog implements View.OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		init();
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
 		init();
 	}
 

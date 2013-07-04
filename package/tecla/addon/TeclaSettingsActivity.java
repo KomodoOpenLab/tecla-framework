@@ -4,20 +4,16 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
-import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ViewFlipper;
 
 public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
 
@@ -263,21 +259,10 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		super.onDestroy();
 	}
 
-	/** Onboarding variables & methods **/
-	private OnboardingDialog mOnboardingDialog;
-
 	private void initOnboarding() {
 		if (!TeclaStatic.isDefaultIMESupported(getApplicationContext()) ||
 				!TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
-			if (mOnboardingDialog != null) {
-				if (mOnboardingDialog.isShowing()) {
-					mOnboardingDialog.dismiss();
-				}
-				mOnboardingDialog = null;
-			}
-			mOnboardingDialog = new OnboardingDialog(this);
-			mOnboardingDialog.setExternalClickListener(mOnboardingClickListener);
- 			mOnboardingDialog.show();
+			OnboardingDialog.createInstance(this, mOnboardingClickListener).show();
 		} 
 	}
 
@@ -289,8 +274,8 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			switch(id) {
 			case R.id.ime_cancel_btn:
 			case R.id.a11y_cancel_btn:
-				mOnboardingDialog.dismiss();
-				sInstance.finish();
+				OnboardingDialog.getInstance().dismiss();
+				finish();
 				break;
 			case R.id.a11y_ok_btn:
 				Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
