@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-public class OnboardingDialog extends Dialog {
+public class OnboardingDialog extends Dialog implements View.OnClickListener {
 	
 	public static final String CLASS_TAG = "OnboardingDialog";
 	
@@ -41,20 +41,8 @@ public class OnboardingDialog extends Dialog {
 		mA11yOkBtn = (Button) findViewById(R.id.a11y_ok_btn);
 		mA11yCancelBtn = (Button) findViewById(R.id.a11y_cancel_btn);
 		mFinalOkBtn = (Button) findViewById(R.id.success_btn);
-		mImeOkBtn.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				TeclaApp.getInstance().pickIme();
-			}
-		});
-		mFinalOkBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dismiss();
-			}
-		});
+		mImeOkBtn.setOnClickListener(this);
+		mFinalOkBtn.setOnClickListener(this);
 	}
 
 	@Override
@@ -113,4 +101,20 @@ public class OnboardingDialog extends Dialog {
 		}
 	}
 
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		switch(id) {
+		case R.id.ime_ok_btn:
+			TeclaApp.getInstance().pickIme();
+			break;
+		case R.id.success_btn:
+			dismiss();
+			break;
+		default:
+			break;
+		}
+			
+	}
+	
 }
