@@ -10,6 +10,7 @@ import ca.idrc.tecla.highlighter.TeclaHighlighter;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.BroadcastReceiver;
@@ -18,12 +19,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 public class TeclaApp extends Application {
 
@@ -45,6 +48,9 @@ public class TeclaApp extends Application {
 	private AudioManager audio_manager;
 	private ActivityManager activity_manager;
 	private InputMethodManager ime_manager;
+	public NotificationManager notification_manager;
+
+	private Handler handler;
 
 	private Boolean screen_on;
 
@@ -77,6 +83,9 @@ public class TeclaApp extends Application {
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		activity_manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		ime_manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		notification_manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+		handler = new Handler();
 
 		screen_on = isScreenOn();
 		
@@ -252,6 +261,26 @@ public class TeclaApp extends Application {
 		power_manager.userActivity(SystemClock.uptimeMillis(), true);
 	}
 
+	public void postDelayedFullReset(long delay) {
+		cancelFullReset();
+		handler.postDelayed(mFullResetRunnable, delay * 1000);
+	}
+	
+	public void cancelFullReset() {
+		handler.removeCallbacks(mFullResetRunnable);
+	}
+
+	private Runnable mFullResetRunnable = new Runnable () {
+
+		public void run() {
+			Intent home = new Intent(Intent.ACTION_MAIN);
+			home.addCategory(Intent.CATEGORY_HOME);
+			home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(home);
+		}
+
+	};
+
 	public void useSpeakerphone() {
 		audio_manager.setMode(AudioManager.MODE_IN_CALL);
 		audio_manager.setSpeakerphoneOn(true);
@@ -264,6 +293,14 @@ public class TeclaApp extends Application {
 	
 	public String byte2Hex(int bite) {
 		return String.format("0x%02x", bite);
+	}
+
+	public void showToast(int resid) {
+		Toast.makeText(this, resid, Toast.LENGTH_LONG).show();
+	}
+	
+	public void showToast(String msg) {
+		Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 	}
 
 //	private void logRunningServices() {
