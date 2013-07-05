@@ -76,7 +76,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 		mProgressDialog = new ProgressDialog(this);
 		
 		initOnboarding();
-		
+		TeclaApp.setSettingsActivityInstance(this);
 		if(mTeclaShieldManager == null)
 			mTeclaShieldManager = new TeclaShieldManager(this);
 
@@ -190,6 +190,12 @@ public class TeclaSettingsActivity extends PreferenceActivity
 		return false;
 	}
 
+	public void uncheckFullScreenMode() {
+		if(!TeclaApp.persistence.isFullscreenEnabled()) {
+			mFullscreenMode.setChecked(false);
+		}
+	}
+	
 	private void showDiscoveryDialog() {
 		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
 		mProgressDialog.setOnCancelListener(new OnCancelListener() {
@@ -234,6 +240,8 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	
 	@Override
 	protected void onDestroy() {
+
+		TeclaApp.setSettingsActivityInstance(null);
 		super.onDestroy();
 	}
 
