@@ -2,12 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="english_ime_settings" >
 
-    <CheckBoxPreference
-        android:key="fullscreen_mode"
-        android:persistent="true"
-        android:summary="@string/fullscreen_mode_summary"
-        android:title="@string/fullscreen_mode" />
-
     <PreferenceScreen
         android:key="scanning_settings"
         android:summary="@string/scanning_settings_summary"
@@ -199,12 +193,12 @@
             android:persistent="true"
             android:summary="@string/fullreset_timeout_summary"
             android:title="@string/fullreset_timeout" />
-
-        <CheckBoxPreference
-            android:key="fullscreen_switch"
-            android:persistent="true"
-            android:summary="@string/fullscreen_switch_summary"
-            android:title="@string/fullscreen_switch" />
+        
+    	<CheckBoxPreference
+        	android:key="fullscreen_mode"
+        	android:persistent="true"
+        	android:summary="@string/fullscreen_mode_summary"
+        	android:title="@string/fullscreen_mode" />
 
         <Preference
             android:key="autohide_timeout"
