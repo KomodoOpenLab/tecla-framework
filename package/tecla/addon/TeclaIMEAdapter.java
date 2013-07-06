@@ -15,7 +15,4 @@ public interface TeclaIMEAdapter {
 	public void selectScanHighlighted();
 	
 	public boolean isShowingKeyboard();
-	
-	public boolean setKeyboardView(KeyboardView kbv);
-	
 }

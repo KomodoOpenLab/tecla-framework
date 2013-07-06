@@ -50,13 +50,22 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 	};
 	
 	private static TeclaIMEAdapter sTeclaIMEAdapter;
-	protected static TeclaIMEAdapter getIMEAdapter() {
+	protected static TeclaIMEAdapter createIMEAdapter(KeyboardView kbv) 
+			throws NoKeyboardFoundException {
 		if(sTeclaIMEAdapter == null)
-			sTeclaIMEAdapter = new LatinIMEAdapter();
+			sTeclaIMEAdapter = new LatinIMEAdapter(kbv);
 		return sTeclaIMEAdapter;
 	}
+	protected static TeclaIMEAdapter getIMEAdapter() {
+		return sTeclaIMEAdapter;
+	}
+	protected static void destroyIMEAdapter() {
+		if(sTeclaIMEAdapter != null)
+			sTeclaIMEAdapter = null;
+	}
 	
-	private LatinIMEAdapter() {
+	private LatinIMEAdapter(KeyboardView kbv) 
+			throws NoKeyboardFoundException {
 
 		mRowCount = 0;
 		mCurrentRow = -1;
@@ -69,6 +78,8 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 		mKeys = null;
 		
 		mScanStateLock = new ReentrantLock();
+		
+		setKeyboardView(kbv);
 	}
 	
 	@Override
@@ -196,7 +207,12 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 		}
 		Keyboard keyboard = mKeyboardView.getKeyboard();
 		if(mKeyboard != keyboard) {
-			setKeyboardView(mKeyboardView);
+			try {
+				setKeyboardView(mKeyboardView);
+			} catch (NoKeyboardFoundException e) {
+				// it wil never get here.
+				e.printStackTrace();
+			}
 			mState = IMEState.ROW;
 		}
 		
@@ -310,19 +326,15 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 		return true;
 	}
 
-	@Override
-	public boolean setKeyboardView(KeyboardView kbv) {
+	private void setKeyboardView(KeyboardView kbv) throws NoKeyboardFoundException {
+		if(kbv == null) 
+			throw new NoKeyboardFoundException();
 		mKeyboardView = kbv;
-		if(kbv == null) {
-			mKeyboard = null;
-			mKeys = null;	
-			return false;
-		}
 		mKeyboard = kbv.getKeyboard();
-		if(mKeyboard == null || mKeyboard.mKeys == null) return false;
+		if(mKeyboard == null || mKeyboard.mKeys == null) 
+			throw new NoKeyboardFoundException();
 		mKeys = sortKeys(mKeyboard.mKeys);
 		reset();
-		return true;
 	}
 
 	private Key[] sortKeys(Key[] keys) {
@@ -587,4 +599,7 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 		highlightKeys(mKeyStartIndex, mKeyEndIndex, true);
 		invalidateKeys();		
 	}	
+	
+	public static class NoKeyboardFoundException extends Exception {
+	}
 }

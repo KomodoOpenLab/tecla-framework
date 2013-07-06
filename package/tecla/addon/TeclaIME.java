@@ -6,6 +6,7 @@ import ca.idrc.tecla.framework.TeclaStatic;
 import com.android.inputmethod.keyboard.KeyboardSwitcher;
 import android.content.Intent;
 import com.android.inputmethod.keyboard.KeyboardView;
+import com.android.tecla.addon.LatinIMEAdapter.NoKeyboardFoundException;
 
 import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
@@ -30,14 +31,14 @@ public class TeclaIME extends InputMethodService {
 		public void handleMessage(Message msg) {
 			if(msg.what == MSG_IMESCAN_SETUP) {
 				KeyboardView kbv = KeyboardSwitcher.getInstance().getKeyboardView();
-				boolean kb_ready = LatinIMEAdapter.getIMEAdapter().setKeyboardView(kbv);
-				if(!kb_ready) {
+				TeclaIMEAdapter ime_adapter = null;
+				try {
+					ime_adapter = LatinIMEAdapter.createIMEAdapter(kbv);
+					ime_adapter.selectScanHighlighted();
+				} catch (NoKeyboardFoundException e) {
 					++ msg.arg1;
-					if(msg.arg1 < 10) {
+					if(msg.arg1 < 10) 
 						mHandler.sendMessageDelayed(msg, 250);
-					}
-				} else {
-					LatinIMEAdapter.getIMEAdapter().selectScanHighlighted();
 				}
 			}
 //			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
@@ -86,7 +87,7 @@ public class TeclaIME extends InputMethodService {
 
 	@Override
 	public void onFinishInputView(boolean finishingInput) {
-		LatinIMEAdapter.getIMEAdapter().setKeyboardView(null);
+		LatinIMEAdapter.destroyIMEAdapter();
 		TeclaApp.persistence.setIMEShowing(false);
 		if(TeclaApp.persistence.shouldShowHUD()
 				&& !TeclaApp.overlay.isVisible()) {
