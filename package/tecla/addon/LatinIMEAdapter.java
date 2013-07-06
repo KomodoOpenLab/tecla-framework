@@ -49,7 +49,14 @@ public class LatinIMEAdapter implements TeclaIMEAdapter {
 		}
 	};
 	
-	public LatinIMEAdapter() {
+	private static TeclaIMEAdapter sTeclaIMEAdapter;
+	protected static TeclaIMEAdapter getIMEAdapter() {
+		if(sTeclaIMEAdapter == null)
+			sTeclaIMEAdapter = new LatinIMEAdapter();
+		return sTeclaIMEAdapter;
+	}
+	
+	private LatinIMEAdapter() {
 
 		mRowCount = 0;
 		mCurrentRow = -1;
