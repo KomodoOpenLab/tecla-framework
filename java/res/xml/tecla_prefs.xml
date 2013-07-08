@@ -2,36 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="english_ime_settings" >
 
-    <CheckBoxPreference
-        android:key="fullscreen_mode"
-        android:persistent="true"
-        android:summary="@string/fullscreen_mode_summary"
-        android:title="@string/fullscreen_mode" />
-
-    <PreferenceScreen
-        android:key="scanning_settings"
-        android:summary="@string/scanning_settings_summary"
-        android:title="@string/scanning_category" >
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="self_scanning"
-            android:persistent="true"
-            android:summary="@string/self_scanning_summary"
-            android:title="@string/self_scanning" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="inverse_scanning"
-            android:persistent="true"
-            android:summary="@string/inverse_scanning_summary"
-            android:title="@string/inverse_scanning" />
-
-        <Preference
-            android:key="scan_delay_int"
-            android:persistent="true"
-            android:summary="@string/scan_speed_summary"
-            android:title="@string/scan_speed" />
-    </PreferenceScreen>
-    
     <PreferenceCategory
         android:key="alternative_input_settings"
         android:title="@string/alternative_input_category" >
@@ -199,12 +169,12 @@
             android:persistent="true"
             android:summary="@string/fullreset_timeout_summary"
             android:title="@string/fullreset_timeout" />
-
-        <CheckBoxPreference
-            android:key="fullscreen_switch"
-            android:persistent="true"
-            android:summary="@string/fullscreen_switch_summary"
-            android:title="@string/fullscreen_switch" />
+        
+    	<CheckBoxPreference
+        	android:key="fullscreen_mode"
+        	android:persistent="true"
+        	android:summary="@string/fullscreen_mode_summary"
+        	android:title="@string/fullscreen_mode" />
 
         <Preference
             android:key="autohide_timeout"
@@ -212,32 +182,32 @@
             android:summary="@string/autohide_timeout_summary"
             android:title="@string/autohide_timeout" />
 
-        <PreferenceScreen
-            android:key="scanning_settings"
-            android:summary="@string/scanning_settings_summary"
-            android:title="@string/scanning_category" >
+         <PreferenceScreen
+        	android:key="scanning_settings"
+        	android:summary="@string/scanning_settings_summary"
+        	android:title="@string/scanning_category" >
+            
+        	<CheckBoxPreference
+            	android:defaultValue="false"
+            	android:key="self_scanning"
+            	android:persistent="true"
+            	android:summary="@string/self_scanning_summary"
+            	android:title="@string/self_scanning" />
+        
+        	<CheckBoxPreference
+            	android:defaultValue="false"
+            	android:key="inverse_scanning"
+            	android:persistent="true"
+            	android:summary="@string/inverse_scanning_summary"
+            	android:title="@string/inverse_scanning" />
 
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="self_scanning"
-                android:persistent="true"
-                android:summary="@string/self_scanning_summary"
-                android:title="@string/self_scanning" />
-
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="inverse_scanning"
-                android:persistent="true"
-                android:summary="@string/inverse_scanning_summary"
-                android:title="@string/inverse_scanning" />
-
-            <Preference
-                android:key="scan_delay_int"
-                android:persistent="true"
-                android:summary="@string/scan_speed_summary"
-                android:title="@string/scan_speed" />
-        </PreferenceScreen>
-
+        	<Preference
+            	android:key="scan_delay_int"
+            	android:persistent="true"
+            	android:summary="@string/scan_speed_summary"
+            	android:title="@string/scan_speed" />
+    	</PreferenceScreen>
+    	
         <PreferenceScreen
             android:key="morse_input_settings"
             android:summary="@string/morse_settings_summary"
