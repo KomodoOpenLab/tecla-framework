@@ -59,7 +59,7 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 	@Override
 	public boolean onPreferenceClick(Preference pref) {	
 		if(pref.equals(mScanSpeedPref)) {
-			((TeclaSettingsActivity2)getActivity()).showScanSpeedDialog();
+			((TeclaSettingsActivity)getActivity()).showScanSpeedDialog();
 			return true;
 		}
 		return false;
@@ -117,12 +117,12 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
-				if(!TeclaSettingsActivity2.getTeclaShieldConnect().discoverShield())
+				if(!TeclaSettingsActivity.getTeclaShieldConnect().discoverShield())
 					mPrefConnectToShield.setChecked(false);
 				else
-					((TeclaSettingsActivity2)getActivity()).showDiscoveryDialog();
+					((TeclaSettingsActivity)getActivity()).showDiscoveryDialog();
 			} else {
-				((TeclaSettingsActivity2)getActivity()).dismissDialog();
+				((TeclaSettingsActivity)getActivity()).dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
 					mPrefTempDisconnect.setChecked(false);
 					mPrefTempDisconnect.setEnabled(false);
@@ -130,7 +130,7 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 					mPrefInverseScanning.setChecked(false);
 //					mPrefPersistentKeyboard.setChecked(false);
 				}
-				TeclaSettingsActivity2.getTeclaShieldConnect().stopShieldService();
+				TeclaSettingsActivity.getTeclaShieldConnect().stopShieldService();
 			}
 			return true;
 		}
@@ -138,13 +138,13 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			TeclaStatic.logD(CLASS_TAG, "Temp shield disconnect preference changed!");
 			if (newValue.toString().equals("true")) {
 				mPrefConnectToShield.setEnabled(false);
-				TeclaSettingsActivity2.getTeclaShieldConnect().stopShieldService();
+				TeclaSettingsActivity.getTeclaShieldConnect().stopShieldService();
 				Handler mHandler = new Handler();
 				Runnable mReconnect = new Runnable() {
 					
 					public void run() {
 						TeclaStatic.logD(CLASS_TAG, "Re-enabling discovery");
-						TeclaSettingsActivity2.getTeclaShieldConnect().discoverShield();
+						TeclaSettingsActivity.getTeclaShieldConnect().discoverShield();
 						mPrefConnectToShield.setEnabled(true);
 					}
 				};

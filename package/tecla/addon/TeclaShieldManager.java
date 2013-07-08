@@ -51,7 +51,7 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 		return mBluetoothAdapter;
 	}
 	
-	public TeclaShieldManager(TeclaSettingsActivity2 activity) {
+	public TeclaShieldManager(TeclaSettingsActivity activity) {
 		mContext = activity;
 		mShieldListener = activity;
 		init();
