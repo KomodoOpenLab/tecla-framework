@@ -21,6 +21,7 @@ public class TeclaSettingsActivity extends Activity
 
 	private static TeclaSettingsActivity sInstance;
 	private TeclaShieldConnect mTeclaShieldManager;
+	private TeclaPreferenceFragment mPreferenceFragment;
 	
 	private ScanSpeedDialog mScanSpeedDialog;
 	private ProgressDialog mProgressDialog;
@@ -45,6 +46,9 @@ public class TeclaSettingsActivity extends Activity
 		if(mTeclaShieldManager == null)
 			mTeclaShieldManager = new TeclaShieldManager(this);
 		
+		mPreferenceFragment = (TeclaPreferenceFragment) getFragmentManager()
+				.findFragmentById(R.id.tecla_prefs_frag);
+		
 		sInstance = this;
 	}
 
@@ -66,9 +70,7 @@ public class TeclaSettingsActivity extends Activity
 				mTeclaShieldManager.cancelDiscovery();
 				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
 				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
-				TeclaPreferenceFragment frag = (TeclaPreferenceFragment) 
-						sInstance.getFragmentManager().findFragmentById(R.id.tecla_prefs_frag);
-				frag.onCancelDiscoveryDialogUpdatePrefs();
+				mPreferenceFragment.onCancelDiscoveryDialogUpdatePrefs();
 			}
 		});
 		mProgressDialog.show();
@@ -112,9 +114,7 @@ public class TeclaSettingsActivity extends Activity
 		super.onResume();
 		
 		initOnboarding();	
-		TeclaPreferenceFragment frag = (TeclaPreferenceFragment) 
-				sInstance.getFragmentManager().findFragmentById(R.id.tecla_prefs_frag);
-		frag.onResumeSettingsActivityUpdatePrefs();
+		mPreferenceFragment.onResumeSettingsActivityUpdatePrefs();
 	}
 	
 	@Override
@@ -145,9 +145,7 @@ public class TeclaSettingsActivity extends Activity
 		} else {
 			dismissDialog();
 			
-			TeclaPreferenceFragment frag = (TeclaPreferenceFragment) 
-					sInstance.getFragmentManager().findFragmentById(R.id.tecla_prefs_frag);
-			frag.onTeclaShieldDiscoveryFinishedUpdatePrefs();
+			mPreferenceFragment.onTeclaShieldDiscoveryFinishedUpdatePrefs();
 		}
 	}
 
@@ -155,18 +153,14 @@ public class TeclaSettingsActivity extends Activity
 	public void onTeclaShieldConnected() {
 		dismissDialog();
 		
-		TeclaPreferenceFragment frag = (TeclaPreferenceFragment) 
-				sInstance.getFragmentManager().findFragmentById(R.id.tecla_prefs_frag);
-		frag.onTeclaShieldConnectedUpdatePrefs();
+		mPreferenceFragment.onTeclaShieldConnectedUpdatePrefs();
 	}
 
 	@Override
 	public void onTeclaShieldDisconnected() {
 		dismissDialog();
 		
-		TeclaPreferenceFragment frag = (TeclaPreferenceFragment) 
-				sInstance.getFragmentManager().findFragmentById(R.id.tecla_prefs_frag);
-		frag.onTeclaShieldDisconnectedUpdatePrefs();
+		mPreferenceFragment.onTeclaShieldDisconnectedUpdatePrefs();
 	}
 
 	@Override
@@ -175,8 +169,6 @@ public class TeclaSettingsActivity extends Activity
 	}
 
 	public void uncheckFullScreenMode() {
-		TeclaPreferenceFragment frag = (TeclaPreferenceFragment) 
-			sInstance.getFragmentManager().findFragmentById(R.id.tecla_prefs_frag);
-		frag.uncheckFullScreenMode();
+		mPreferenceFragment.uncheckFullScreenMode();
 	}
 }
