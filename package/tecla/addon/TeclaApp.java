@@ -40,7 +40,7 @@ public class TeclaApp extends Application {
 	public static TeclaAccessibilityService a11yservice;
 	public static TeclaVisualOverlay overlay;
 	public static SingleSwitchTouchInterface fullscreenswitch;
-	public static TeclaSettingsActivity settingsactivity;
+	public static TeclaSettingsActivity2 settingsactivity;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -142,7 +142,7 @@ public class TeclaApp extends Application {
 		getInstance().processFrameworkOptions();
 	}
 
-	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
+	public static void setSettingsActivityInstance (TeclaSettingsActivity2 settingsactivity_instance) {
 		settingsactivity = settingsactivity_instance;
 	}
 
