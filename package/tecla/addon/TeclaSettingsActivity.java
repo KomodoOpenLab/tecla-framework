@@ -1,244 +1,110 @@
 package com.android.tecla.addon;
 
 import ca.idrc.tecla.R;
-import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
-import android.accessibilityservice.AccessibilityService;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
-import android.os.Message;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ViewFlipper;
 
-public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
+public class TeclaSettingsActivity extends Activity
+	implements TeclaShieldActionListener {
 
-	private final static String CLASS_TAG = "TeclaSettings";
+	private static final String CLASS_TAG = "TeclaSettingsActivity2";
 
-	private TeclaSettingsActivity sInstance;
-
-	private CheckBoxPreference mFullscreenMode;
-	private CheckBoxPreference mPrefSelfScanning;
-	private CheckBoxPreference mPrefInverseScanning;
-	Preference mScanSpeedPref;
-	private ScanSpeedDialog mScanSpeedDialog;
+	private static TeclaSettingsActivity sInstance;
+	private TeclaShieldConnect mTeclaShieldManager;
+	private TeclaPreferenceFragment mPreferenceFragment;
 	
-//	private CheckBoxPreference mPrefHUD;
-//	private CheckBoxPreference mPrefSingleSwitchOverlay;
-//	private CheckBoxPreference mPrefHUDSelfScanning;
+	private ScanSpeedDialog mScanSpeedDialog;
+	private ProgressDialog mProgressDialog;
+
+	public static TeclaShieldConnect getTeclaShieldConnect() {
+		return sInstance.mTeclaShieldManager;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		init();
-	}
-
-	private void init() {
-		sInstance = this;
+		setContentView(R.layout.tecla_settings);
 		
-		addPreferencesFromResource(R.xml.tecla_prefs);
-
-		mFullscreenMode = (CheckBoxPreference) findPreference(Persistence.PREF_FULLSCREEN_MODE);
-		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
-		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
-		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
-		
-		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
-		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
-		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
-		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
-		
-		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
+		mScanSpeedDialog = new ScanSpeedDialog(this);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
-//		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
-//		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
-//		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
-//		mPrefHUDSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_HUD_SELF_SCANNING);
-//		mPrefSingleSwitchOverlay.setEnabled(mPrefHUD.isChecked());
-//		mPrefHUDSelfScanning.setEnabled(mPrefHUD.isChecked());
-//		mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
-//		mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
-		
-		//getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		mProgressDialog = new ProgressDialog(this);
 
 		initOnboarding();
+		TeclaApp.setSettingsActivityInstance(this);
+
+		if(mTeclaShieldManager == null)
+			mTeclaShieldManager = new TeclaShieldManager(this);
+		
+		mPreferenceFragment = (TeclaPreferenceFragment) getFragmentManager()
+				.findFragmentById(R.id.tecla_prefs_frag);
+		
+		sInstance = this;
 	}
 
-	@Override
-	public boolean onPreferenceClick(Preference pref) {	
-		if(pref.equals(mScanSpeedPref)) {
-			mScanSpeedDialog.show();
-			return true;
-		}
-		return false;
+	private void initOnboarding() {
+		if (!TeclaStatic.isDefaultIMESupported(getApplicationContext()) ||
+				!TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+			OnboardingDialog.createInstance(this, mOnboardingClickListener).show();
+		} 
 	}
 
-	/* (non-Javadoc)
-	 * @see android.preference.Preference.OnPreferenceChangeListener#onPreferenceChange(android.preference.Preference, java.lang.Object)
+	public void showScanSpeedDialog() {
+		mScanSpeedDialog.show();
+	}
+
+	public void showDiscoveryDialog() {
+		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
+		mProgressDialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface arg0) {
+				mTeclaShieldManager.cancelDiscovery();
+				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
+				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
+				mPreferenceFragment.onCancelDiscoveryDialogUpdatePrefs();
+			}
+		});
+		mProgressDialog.show();
+	}
+
+	/*
+	 * Dismisses progress dialog without triggerint it's OnCancelListener
 	 */
-	@Override
-	public boolean onPreferenceChange(Preference pref, Object newValue) {
-		if(pref.equals(mFullscreenMode)) {
-			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
-			if (newValue.toString().equals("true")) {
-				TeclaApp.getInstance().turnFullscreenOn();
-				mPrefSelfScanning.setChecked(true);
-			} else {
-				TeclaApp.getInstance().turnFullscreenOff();
-				mPrefSelfScanning.setChecked(false);
-			}
-			return true;
+	public void dismissDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
 		}
-		if(pref.equals(mPrefSelfScanning)) {
-			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
-			if (newValue.toString().equals("true")) {
-				TeclaApp.persistence.setSelfScanningEnabled(true);
-				if(TeclaApp.persistence.isFullscreenEnabled() )
-					AutomaticScan.startAutoScan();
-			} else {
-				TeclaApp.persistence.setSelfScanningEnabled(false);
-				if(TeclaApp.persistence.isFullscreenEnabled() )
-					AutomaticScan.stopAutoScan();
-			}
-			return true;
-		}
-		if(pref.equals(mPrefInverseScanning)) {
-			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
-			if (newValue.toString().equals("true")) {
-				TeclaApp.persistence.setInverseScanningEnabled(true);
-				TeclaApp.setFullscreenSwitchLongClick(false);
-				if(TeclaApp.persistence.isFullscreenEnabled() 
-						&& TeclaApp.persistence.isSelfScanningEnabled()) {
-					AutomaticScan.stopAutoScan();
-				}
-			} else {
-				TeclaApp.persistence.setInverseScanningEnabled(false);
-				TeclaApp.setFullscreenSwitchLongClick(true);
-				if(TeclaApp.persistence.isFullscreenEnabled() 
-						&& TeclaApp.persistence.isSelfScanningEnabled()) {
-					AutomaticScan.startAutoScan();
-				}
-			}
-			return true;
-		}
-		return false;
 	}
+	
+	private View.OnClickListener mOnboardingClickListener = new View.OnClickListener() {
 
-	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
-//	@Override
-//	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-//			String key) {
-//		if (key.equals(Persistence.PREF_SELF_SCANNING)) {
-//			Persistence.getInstance().setSelfScanningEnabled(true);
-//			if (mPrefSelfScanning.isChecked()) {
-//				//TeclaApp.getInstance().startScanningTeclaIME();
-//			} else {
-//				Persistence.getInstance().setSelfScanningEnabled(false);
-//				//TeclaApp.getInstance().stopScanningTeclaIME();
-//				if (!mPrefInverseScanning.isChecked()) {
-//					/*mPrefFullScreenSwitch.setChecked(false);
-//					if (!mPrefConnectToShield.isChecked()) {
-//						mPrefTempDisconnect.setChecked(false);
-//						mPrefTempDisconnect.setEnabled(false);
-//					}*/
-//				}
-//			}
-//			
-//		} else if (key.equals(Persistence.PREF_INVERSE_SCANNING)) {
-//			Persistence.getInstance().setInverseScanningEnabled(true);
-//			if (mPrefInverseScanning.isChecked()) {
-//				mPrefSelfScanning.setChecked(false);
-//				//TeclaApp.persistence.setInverseScanningChanged();
-//				//TeclaApp.persistence.setFullResetTimeout(Persistence.MAX_FULL_RESET_TIMEOUT);
-//			} else {
-//				Persistence.getInstance().setInverseScanningEnabled(false);
-//				//TeclaApp.getInstance().stopScanningTeclaIME();
-//				if (!mPrefSelfScanning.isChecked()) {
-//					//TeclaApp.persistence.setFullResetTimeout(Persistence.MIN_FULL_RESET_TIMEOUT);
-//					/*mPrefFullScreenSwitch.setChecked(false);
-//					if (!mPrefConnectToShield.isChecked()) {
-//						mPrefTempDisconnect.setChecked(false);
-//						mPrefTempDisconnect.setEnabled(false);
-//					}*/
-//				}
-//			}
-//			
-//		}
-////		else if (key.equals(Persistence.PREF_HUD)) {
-////			if(!TeclaApp.getInstance().isTeclaA11yServiceRunning()
-////					|| !TeclaApp.persistence.isHUDRunning()) {
-////				mPrefHUD.setChecked(false);
-////				return;
-////			}
-////			TeclaApp.persistence.setHUDRunning(mPrefHUD.isChecked());
-////			if(mPrefHUD.isChecked()) {
-////				if(!TeclaApp.a11yservice.mTeclaHUDController.isVisible()) {
-////					TeclaApp.a11yservice.mTeclaHUDController.show();
-////				}
-////				mPrefSingleSwitchOverlay.setEnabled(true);
-////				mPrefHUDSelfScanning.setEnabled(true);
-////				TeclaApp.persistence.setSingleSwitchOverlayEnabled(true);
-////				TeclaApp.a11yservice.mTouchInterface.show();
-////				mPrefSingleSwitchOverlay.setChecked(true);
-////				TeclaApp.persistence.setHUDSelfScanningEnabled(mPrefHUDSelfScanning.isChecked());
-////				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.sleep(
-////						TeclaApp.persistence.getScanDelay());
-////				mPrefHUDSelfScanning.setChecked(true);				
-////			} else {
-////				if(TeclaApp.persistence.isHUDRunning()) {
-////					TeclaApp.persistence.setHUDRunning(false);
-////					TeclaApp.a11yservice.mTeclaHUDController.hide();
-////				}
-////				if(TeclaApp.persistence.isSingleSwitchOverlayEnabled()) {
-////					TeclaApp.persistence.setSingleSwitchOverlayEnabled(false);
-////					mPrefSingleSwitchOverlay.setChecked(false);
-////					TeclaApp.a11yservice.mTouchInterface.hide();
-////				}
-////				if(TeclaApp.persistence.isHUDSelfScanningEnabled()) {
-////					TeclaApp.persistence.setHUDSelfScanningEnabled(false);
-////					mPrefHUDSelfScanning.setChecked(false);
-////					TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.removeMessages(0);
-////				}
-////				mPrefSingleSwitchOverlay.setEnabled(false);
-////				mPrefHUDSelfScanning.setEnabled(false);
-////			}
-////			
-////		} else if (key.equals(Persistence.PREF_SINGLESWITCH_OVERLAY)) {
-////			if(!TeclaApp.getInstance().isTeclaA11yServiceRunning()
-////					|| !TeclaApp.persistence.isHUDRunning()
-////					|| !TeclaApp.a11yservice.mTeclaHUDController.isVisible()) {
-////				mPrefSingleSwitchOverlay.setChecked(false);
-////				return;
-////			}			
-////			TeclaApp.persistence.setSingleSwitchOverlayEnabled(mPrefSingleSwitchOverlay.isChecked());
-////			if(mPrefSingleSwitchOverlay.isChecked()) {
-////				TeclaApp.a11yservice.mTouchInterface.show();
-////			} else {
-////				TeclaApp.a11yservice.mTouchInterface.hide();
-////			}
-////			
-////		} else if (key.equals(Persistence.PREF_HUD_SELF_SCANNING)) {
-////			TeclaApp.persistence.setHUDSelfScanningEnabled(mPrefHUDSelfScanning.isChecked());
-////			if(mPrefHUDSelfScanning.isChecked()) {
-////				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.sleep(
-////						TeclaApp.persistence.getScanDelay());
-////			} else {
-////				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.removeMessages(0);				
-////			}
-////			
-////		}
-//
-//	}
+		@Override
+		public void onClick(View v) {
+			int id = v.getId();
+			switch(id) {
+			case R.id.ime_cancel_btn:
+			case R.id.a11y_cancel_btn:
+				OnboardingDialog.getInstance().dismiss();
+				finish();
+				break;
+			case R.id.a11y_ok_btn:
+				Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+				startActivity(intent);
+				break;
+			default:
+				break;
+			}
+		}
+	};
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onResume()
@@ -248,89 +114,61 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		super.onResume();
 		
 		initOnboarding();	
-		updatePreferences();
-	}
-	
-	private void updatePreferences() {
-		mFullscreenMode.setChecked(TeclaApp.persistence.isFullscreenEnabled());
-		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
-		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningEnabled());;
+		mPreferenceFragment.onResumeSettingsActivityUpdatePrefs();
 	}
 	
 	@Override
 	protected void onDestroy() {
-//		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
+		TeclaApp.setSettingsActivityInstance(null);
 		super.onDestroy();
 	}
 
-	/** Onboarding variables & methods **/
-	private OnboardingDialog mOnboardingDialog;
+	@Override
+	public void onTeclaShieldFound() {
+	}
 
-	private Button mImeOkBtn;
-	private Button mImeCancelBtn;
-	private Button mA11yOkBtn;
-	private Button mA11yCancelBtn;
-	private Button mFinalOkBtn;
+	@Override
+	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, String shieldName) {
+		if(shieldFound) {
+			// Shield found, try to connect
+			mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
+			mProgressDialog.setOnKeyListener(new OnKeyListener() {
 
-	private void initOnboarding() {
-		if (!TeclaStatic.isDefaultIMESupported(getApplicationContext()) ||
-				!TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
-			if (mOnboardingDialog != null) {
-				if (mOnboardingDialog.isShowing()) {
-					mOnboardingDialog.dismiss();
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+					return true; //Consume all keys once Shield is found (can't cancel with back key)
 				}
-				mOnboardingDialog = null;
-			}
-			mOnboardingDialog = new OnboardingDialog(this);
-			mOnboardingDialog.setContentView(R.layout.tecla_onboarding);
-			mOnboardingDialog.setCancelable(false);
-			mImeOkBtn = (Button) mOnboardingDialog.findViewById(R.id.ime_ok_btn);
-			mImeCancelBtn = (Button) mOnboardingDialog.findViewById(R.id.ime_cancel_btn);
-			mA11yOkBtn = (Button) mOnboardingDialog.findViewById(R.id.a11y_ok_btn);
-			mA11yCancelBtn = (Button) mOnboardingDialog.findViewById(R.id.a11y_cancel_btn);
-			mFinalOkBtn = (Button) mOnboardingDialog.findViewById(R.id.success_btn);
-			mImeCancelBtn.setOnClickListener(mCancelOnboardingClickListener);
-			mA11yCancelBtn.setOnClickListener(mCancelOnboardingClickListener);
-			mImeOkBtn.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					TeclaApp.getInstance().pickIme();
-				}
-			});
-			mA11yOkBtn.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-					startActivity(intent);
-				}
-			});
-			mFinalOkBtn.setOnClickListener(new View.OnClickListener() {
 				
-				@Override
-				public void onClick(View v) {
-					mOnboardingDialog.dismiss();
-				}
 			});
-			mOnboardingDialog.show();
+			mProgressDialog.setMessage(getString(R.string.connecting_tecla_shield) +
+					" " + shieldName);
 		} else {
-//			if (mOnboardingDialog != null) {
-//				if (mOnboardingDialog.isShowing()) {
-//					mOnboardingDialog.dismiss();
-//				}
-//				mOnboardingDialog = null;
-//			}
+			dismissDialog();
+			
+			mPreferenceFragment.onTeclaShieldDiscoveryFinishedUpdatePrefs();
 		}
 	}
 
-	private View.OnClickListener mCancelOnboardingClickListener = new View.OnClickListener() {
+	@Override
+	public void onTeclaShieldConnected() {
+		dismissDialog();
+		
+		mPreferenceFragment.onTeclaShieldConnectedUpdatePrefs();
+	}
 
-		@Override
-		public void onClick(View v) {
-			mOnboardingDialog.dismiss();
-			sInstance.finish();
-		}
-	};
+	@Override
+	public void onTeclaShieldDisconnected() {
+		dismissDialog();
+		
+		mPreferenceFragment.onTeclaShieldDisconnectedUpdatePrefs();
+	}
 
+	@Override
+	public void dismissProgressDialog() {
+		dismissDialog();
+	}
+
+	public void uncheckFullScreenMode() {
+		mPreferenceFragment.uncheckFullScreenMode();
+	}
 }

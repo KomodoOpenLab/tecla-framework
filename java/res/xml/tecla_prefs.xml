@@ -2,53 +2,283 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:key="english_ime_settings" >
 
-    <CheckBoxPreference
-        android:key="fullscreen_mode"
-        android:persistent="true"
-        android:summary="@string/fullscreen_mode_summary"
-        android:title="@string/fullscreen_mode" />
+    <PreferenceCategory
+        android:key="alternative_input_settings"
+        android:title="@string/alternative_input_category" >
 
-    <PreferenceScreen
-        android:key="scanning_settings"
-        android:summary="@string/scanning_settings_summary"
-        android:title="@string/scanning_category" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="self_scanning"
+            android:key="shield_connect"
             android:persistent="true"
-            android:summary="@string/self_scanning_summary"
-            android:title="@string/self_scanning" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="inverse_scanning"
-            android:persistent="true"
-            android:summary="@string/inverse_scanning_summary"
-            android:title="@string/inverse_scanning" />
+            android:summary="@string/shield_connect_summary"
+            android:title="@string/shield_connect" />
+
+        <PreferenceScreen
+            android:key="configure_input"
+            android:summary="@string/define_switch_action_summary"
+            android:title="@string/define_switch_action" >
+
+            <PreferenceScreen
+                android:key="switch_e1"
+                android:title="@string/switch_e1" >
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="4"
+                    android:entries="@array/switch_actions"
+                    android:entryValues="@array/switch_action_values"
+                    android:key="switch_e1_tecla"
+                    android:persistent="true"
+                    android:title="@string/switch_e1_tecla" />
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="0"
+                    android:entries="@array/morse_actions"
+                    android:entryValues="@array/morse_action_values"
+                    android:key="switch_e1_morse"
+                    android:persistent="true"
+                    android:title="@string/switch_e1_morse" />
+                
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="switch_e2"
+                android:title="@string/switch_e2" >
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="3"
+                    android:entries="@array/switch_actions"
+                    android:entryValues="@array/switch_action_values"
+                    android:key="switch_e2_tecla"
+                    android:persistent="true"
+                    android:title="@string/switch_e2_tecla" />
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="0"
+                    android:entries="@array/morse_actions"
+                    android:entryValues="@array/morse_action_values"
+                    android:key="switch_e2_morse"
+                    android:persistent="true"
+                    android:title="@string/switch_e2_morse" />
+                    
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="switch_j1"
+                android:title="@string/switch_j1" >
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="1"
+                    android:entries="@array/switch_actions"
+                    android:entryValues="@array/switch_action_values"
+                    android:key="switch_j1_tecla"
+                    android:persistent="true"
+                    android:title="@string/switch_j1_tecla" />
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="1"
+                    android:entries="@array/morse_actions"
+                    android:entryValues="@array/morse_action_values"
+                    android:key="switch_j1_morse"
+                    android:persistent="true"
+                    android:title="@string/switch_j1_morse" />
+                     
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="switch_j2"
+                android:title="@string/switch_j2" >
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="2"
+                    android:entries="@array/switch_actions"
+                    android:entryValues="@array/switch_action_values"
+                    android:key="switch_j2_tecla"
+                    android:persistent="true"
+                    android:title="@string/switch_j2_tecla" />
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="2"
+                    android:entries="@array/morse_actions"
+                    android:entryValues="@array/morse_action_values"
+                    android:key="switch_j2_morse"
+                    android:persistent="true"
+                    android:title="@string/switch_j2_morse" />
+                     
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="switch_j3"
+                android:title="@string/switch_j3" >
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="3"
+                    android:entries="@array/switch_actions"
+                    android:entryValues="@array/switch_action_values"
+                    android:key="switch_j3_tecla"
+                    android:persistent="true"
+                    android:title="@string/switch_j3_tecla" />
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="3"
+                    android:entries="@array/morse_actions"
+                    android:entryValues="@array/morse_action_values"
+                    android:key="switch_j3_morse"
+                    android:persistent="true"
+                    android:title="@string/switch_j3_morse" />
+                     
+            </PreferenceScreen>
+
+            <PreferenceScreen
+                android:key="switch_j4"
+                android:title="@string/switch_j4" >
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="4"
+                    android:entries="@array/switch_actions"
+                    android:entryValues="@array/switch_action_values"
+                    android:key="switch_j4_tecla"
+                    android:persistent="true"
+                    android:title="@string/switch_j4_tecla" />
+
+                <com.android.tecla.addon.ListPreference
+                    android:defaultValue="4"
+                    android:entries="@array/morse_actions"
+                    android:entryValues="@array/morse_action_values"
+                    android:key="switch_j4_morse"
+                    android:persistent="true"
+                    android:title="@string/switch_j4_morse" />
+                    
+            </PreferenceScreen>
+
+            <PreferenceCategory
+                android:key="reset_default_settings"
+                android:title="@string/user_data_category" >
+
+                <Preference
+                    android:key="switch_default"
+                    android:persistent="true"
+                    android:summary="@string/switch_default_summary"
+                    android:title="@string/switch_default" />
+            </PreferenceCategory>
+            
+        </PreferenceScreen>
+
 
         <Preference
-            android:key="scan_delay_int"
+            android:key="full_reset_timeout"
             android:persistent="true"
-            android:summary="@string/scan_speed_summary"
-            android:title="@string/scan_speed" />
-    </PreferenceScreen>
-    <!--
-    <PreferenceScreen
-        android:key="advanced_settings"
-        android:summary="@string/advanced_settings_summary"
-        android:title="@string/fullscreen_category" >
-        <CheckBoxPreference
-            android:key="hud_visibility"
-            android:summary="@string/hud_visibility_summary"
-            android:title="@string/hud_visibility" />
-        <CheckBoxPreference
-            android:key="single_switch_overlay"
-            android:summary="@string/single_switch_overlay_summary"
-            android:title="@string/single_switch_overlay" />
-        <CheckBoxPreference
-            android:key="hud_self_scanning"
-            android:summary="@string/hud_self_scanning_summary"
-            android:title="@string/hud_self_scanning" />
-    </PreferenceScreen>
-    -->
+            android:summary="@string/fullreset_timeout_summary"
+            android:title="@string/fullreset_timeout" />
+        
+    	<CheckBoxPreference
+        	android:key="fullscreen_mode"
+        	android:persistent="true"
+        	android:summary="@string/fullscreen_mode_summary"
+        	android:title="@string/fullscreen_mode" />
 
+        <Preference
+            android:key="autohide_timeout"
+            android:persistent="true"
+            android:summary="@string/autohide_timeout_summary"
+            android:title="@string/autohide_timeout" />
+
+         <PreferenceScreen
+        	android:key="scanning_settings"
+        	android:summary="@string/scanning_settings_summary"
+        	android:title="@string/scanning_category" >
+            
+        	<CheckBoxPreference
+            	android:defaultValue="false"
+            	android:key="self_scanning"
+            	android:persistent="true"
+            	android:summary="@string/self_scanning_summary"
+            	android:title="@string/self_scanning" />
+        
+        	<CheckBoxPreference
+            	android:defaultValue="false"
+            	android:key="inverse_scanning"
+            	android:persistent="true"
+            	android:summary="@string/inverse_scanning_summary"
+            	android:title="@string/inverse_scanning" />
+
+        	<Preference
+            	android:key="scan_delay_int"
+            	android:persistent="true"
+            	android:summary="@string/scan_speed_summary"
+            	android:title="@string/scan_speed" />
+    	</PreferenceScreen>
+    	
+        <PreferenceScreen
+            android:key="morse_input_settings"
+            android:summary="@string/morse_settings_summary"
+            android:title="@string/morse_input_settings" >
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="morse_mode"
+                android:persistent="true"
+                android:summary="@string/morse_mode_summary"
+                android:title="@string/morse_mode" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="morse_show_hud"
+                android:persistent="true"
+                android:summary="@string/morse_show_hud_summary"
+                android:title="@string/morse_show_hud" />
+
+            <com.android.tecla.addon.ListPreference
+                android:defaultValue="0"
+                android:entries="@array/morse_key_mode_array"
+                android:entryValues="@array/morse_key_mode_values"
+                android:key="morse_key_mode"
+                android:persistent="true"
+                android:title="@string/morse_key_mode" />
+ 
+            <Preference
+                android:key="morse_time_unit"
+                android:persistent="true"
+                android:title="@string/morse_time_unit_title" />
+
+            <Preference
+                android:key="morse_repeat_int"
+                android:persistent="true"
+                android:summary="@string/mrepeat_frequency_summary"
+                android:title="@string/mrepeat_frequency" />
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:key="advanced_input_settings"
+            android:title="@string/advanced_input_settings" >
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="speakerphone_switch"
+                android:persistent="true"
+                android:summary="@string/speakerphone_switch_summary"
+                android:title="@string/speakerphone_switch" />
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="voice_input"
+                android:persistent="true"
+                android:summary="@string/pref_voice_input_summary"
+                android:title="@string/pref_voice_input" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="shield_temp_disconnect"
+                android:persistent="true"
+                android:summary="@string/shield_temp_disconnect_summary"
+                android:title="@string/shield_temp_disconnect" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="persistent_keyboard"
+                android:persistent="true"
+                android:summary="@string/persistent_keyboard_summary"
+                android:title="@string/persistent_keyboard" />
+        </PreferenceScreen>
+        
+    </PreferenceCategory>
 </PreferenceScreen>
