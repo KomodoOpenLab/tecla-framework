@@ -5,10 +5,14 @@ import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -143,12 +147,17 @@ public class TeclaSettingsActivity extends PreferenceActivity
 			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
-				if(!mTeclaShieldManager.discoverShield())
-					mPrefConnectToShield.setChecked(false);
-				else{
-					showDiscoveryDialog();
-					TeclaApp.getInstance().turnFullscreenOn();
-					AutomaticScan.stopAutoScan();
+				if (!mTeclaShieldManager.getBluetoothAdapter().isEnabled()) {
+					registerReceiver(btReceiver, new IntentFilter(
+							BluetoothAdapter.ACTION_STATE_CHANGED));
+					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+				}else{				
+					if(!mTeclaShieldManager.discoverShield())
+						mPrefConnectToShield.setChecked(false);
+					else
+						showDiscoveryDialog();
+						TeclaApp.getInstance().turnFullscreenOn();
+						AutomaticScan.stopAutoScan();
 				}
 			} else {
 				dismissDialog();
@@ -365,5 +374,19 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	public void dismissProgressDialog() {
 		dismissDialog();
 	}
+
+	BroadcastReceiver btReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+			if (state == BluetoothAdapter.STATE_ON){
+				if(!mTeclaShieldManager.discoverShield())
+					mPrefConnectToShield.setChecked(false);
+				else
+					showDiscoveryDialog();
+			}
+		}
+	};
 
 }
