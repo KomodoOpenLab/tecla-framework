@@ -145,8 +145,11 @@ public class TeclaSettingsActivity extends PreferenceActivity
 				mConnectionCancelled = false;
 				if(!mTeclaShieldManager.discoverShield())
 					mPrefConnectToShield.setChecked(false);
-				else
+				else{
 					showDiscoveryDialog();
+					TeclaApp.getInstance().turnFullscreenOn();
+					AutomaticScan.stopAutoScan();
+				}
 			} else {
 				dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
