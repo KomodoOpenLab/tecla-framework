@@ -157,6 +157,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 					else
 						showDiscoveryDialog();
 						TeclaApp.getInstance().turnFullscreenOn();
+						AutomaticScan.findFirstNode();
 						AutomaticScan.stopAutoScan();
 				}
 			} else {
