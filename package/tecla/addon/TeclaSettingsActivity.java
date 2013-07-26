@@ -4,41 +4,54 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
-import android.accessibilityservice.AccessibilityService;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnKeyListener;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Message;
+import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ViewFlipper;
 
-public class TeclaSettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, /*OnSharedPreferenceChangeListener,*/ OnPreferenceChangeListener {
+public class TeclaSettingsActivity extends PreferenceActivity 
+	implements OnPreferenceClickListener
+	, OnPreferenceChangeListener
+	, TeclaShieldActionListener {
 
 	private final static String CLASS_TAG = "TeclaSettings";
 
-	private TeclaSettingsActivity sInstance;
+	private static TeclaSettingsActivity sInstance;
 
+	private TeclaShieldConnect mTeclaShieldManager;
+	private boolean mConnectionCancelled;
+	
 	private CheckBoxPreference mFullscreenMode;
 	private CheckBoxPreference mPrefSelfScanning;
 	private CheckBoxPreference mPrefInverseScanning;
+	private CheckBoxPreference mPrefConnectToShield;
+	private CheckBoxPreference mPrefTempDisconnect;
 	Preference mScanSpeedPref;
 	private ScanSpeedDialog mScanSpeedDialog;
+	private ProgressDialog mProgressDialog;
 	
-//	private CheckBoxPreference mPrefHUD;
-//	private CheckBoxPreference mPrefSingleSwitchOverlay;
-//	private CheckBoxPreference mPrefHUDSelfScanning;
-
+	public static TeclaShieldConnect getTeclaShieldConnect() {
+		return sInstance.mTeclaShieldManager;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		init();
 	}
 
@@ -51,27 +64,26 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
 		mPrefInverseScanning = (CheckBoxPreference) findPreference(Persistence.PREF_INVERSE_SCANNING);
 		mScanSpeedPref = findPreference(Persistence.PREF_SCAN_DELAY_INT);
+		mPrefConnectToShield = (CheckBoxPreference) findPreference(Persistence.PREF_CONNECT_TO_SHIELD);
+		mPrefTempDisconnect = (CheckBoxPreference) findPreference(Persistence.PREF_TEMP_SHIELD_DISCONNECT);
 		
 		mFullscreenMode.setOnPreferenceChangeListener(sInstance);
 		mPrefSelfScanning.setOnPreferenceChangeListener(sInstance);
 		mPrefInverseScanning.setOnPreferenceChangeListener(sInstance);
-		mScanSpeedPref.setOnPreferenceClickListener(sInstance);	
-		
+		mScanSpeedPref.setOnPreferenceClickListener(sInstance);
+		mPrefConnectToShield.setOnPreferenceChangeListener(sInstance);
+		mPrefTempDisconnect.setOnPreferenceChangeListener(sInstance);
+
 		mScanSpeedDialog = new ScanSpeedDialog(sInstance);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
 
-//		mPrefHUD = (CheckBoxPreference) findPreference(Persistence.PREF_HUD);
-//		mPrefHUD.setChecked(TeclaApp.persistence.isHUDRunning());
-//		mPrefSingleSwitchOverlay = (CheckBoxPreference) findPreference(Persistence.PREF_SINGLESWITCH_OVERLAY);
-//		mPrefHUDSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_HUD_SELF_SCANNING);
-//		mPrefSingleSwitchOverlay.setEnabled(mPrefHUD.isChecked());
-//		mPrefHUDSelfScanning.setEnabled(mPrefHUD.isChecked());
-//		mPrefSingleSwitchOverlay.setChecked(TeclaApp.persistence.isSingleSwitchOverlayEnabled());
-//		mPrefHUDSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
+		mProgressDialog = new ProgressDialog(this);
 		
-		//getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-
 		initOnboarding();
+		TeclaApp.setSettingsActivityInstance(this);
+		if(mTeclaShieldManager == null)
+			mTeclaShieldManager = new TeclaShieldManager(this);
+
 	}
 
 	@Override
@@ -131,115 +143,96 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 			}
 			return true;
 		}
+		if(pref.equals(mPrefConnectToShield)) {
+			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
+			if (newValue.toString().equals("true")) {
+				mConnectionCancelled = false;
+				if (!mTeclaShieldManager.getBluetoothAdapter().isEnabled()) {
+					registerReceiver(btReceiver, new IntentFilter(
+							BluetoothAdapter.ACTION_STATE_CHANGED));
+					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+				}else{				
+					if(!mTeclaShieldManager.discoverShield())
+						mPrefConnectToShield.setChecked(false);
+					else
+						showDiscoveryDialog();
+						TeclaApp.getInstance().turnFullscreenOn();
+						AutomaticScan.stopAutoScan();
+				}
+			} else {
+				dismissDialog();
+				if (!mFullscreenMode.isChecked()) {
+					mPrefTempDisconnect.setChecked(false);
+					mPrefTempDisconnect.setEnabled(false);
+					mPrefSelfScanning.setChecked(false);
+					mPrefInverseScanning.setChecked(false);
+//					mPrefPersistentKeyboard.setChecked(false);
+				}
+				mTeclaShieldManager.stopShieldService();
+			}
+			return true;
+		}
+		if(pref.equals(mPrefTempDisconnect)) {
+			TeclaStatic.logD(CLASS_TAG, "Temp shield disconnect preference changed!");
+			if (newValue.toString().equals("true")) {
+				mPrefConnectToShield.setEnabled(false);
+				mTeclaShieldManager.stopShieldService();
+				Handler mHandler = new Handler();
+				Runnable mReconnect = new Runnable() {
+					
+					public void run() {
+						TeclaStatic.logD(CLASS_TAG, "Re-enabling discovery");
+						mTeclaShieldManager.discoverShield();
+						mPrefConnectToShield.setEnabled(true);
+					}
+				};
+				
+				// See if the handler was posted
+				if(mHandler.postDelayed(mReconnect, 90000))	// 90 second delay
+				{
+					TeclaStatic.logD(CLASS_TAG, "Posted Runnable");
+				}
+				else
+				{
+					TeclaStatic.logD(CLASS_TAG, "Could not post Runnable");
+				}
+			}
+			return true;
+		}
 		return false;
 	}
 
-	/** FIXME: DO NOT USE onSharedPreferenceChanged FOR PROCESSING PREFERENCES!!! THIS METHOD IS NOT APPROPRIATE!!! USE onPreferenceChange INSTEAD!!!**/
-//	@Override
-//	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-//			String key) {
-//		if (key.equals(Persistence.PREF_SELF_SCANNING)) {
-//			Persistence.getInstance().setSelfScanningEnabled(true);
-//			if (mPrefSelfScanning.isChecked()) {
-//				//TeclaApp.getInstance().startScanningTeclaIME();
-//			} else {
-//				Persistence.getInstance().setSelfScanningEnabled(false);
-//				//TeclaApp.getInstance().stopScanningTeclaIME();
-//				if (!mPrefInverseScanning.isChecked()) {
-//					/*mPrefFullScreenSwitch.setChecked(false);
-//					if (!mPrefConnectToShield.isChecked()) {
-//						mPrefTempDisconnect.setChecked(false);
-//						mPrefTempDisconnect.setEnabled(false);
-//					}*/
-//				}
-//			}
-//			
-//		} else if (key.equals(Persistence.PREF_INVERSE_SCANNING)) {
-//			Persistence.getInstance().setInverseScanningEnabled(true);
-//			if (mPrefInverseScanning.isChecked()) {
-//				mPrefSelfScanning.setChecked(false);
-//				//TeclaApp.persistence.setInverseScanningChanged();
-//				//TeclaApp.persistence.setFullResetTimeout(Persistence.MAX_FULL_RESET_TIMEOUT);
-//			} else {
-//				Persistence.getInstance().setInverseScanningEnabled(false);
-//				//TeclaApp.getInstance().stopScanningTeclaIME();
-//				if (!mPrefSelfScanning.isChecked()) {
-//					//TeclaApp.persistence.setFullResetTimeout(Persistence.MIN_FULL_RESET_TIMEOUT);
-//					/*mPrefFullScreenSwitch.setChecked(false);
-//					if (!mPrefConnectToShield.isChecked()) {
-//						mPrefTempDisconnect.setChecked(false);
-//						mPrefTempDisconnect.setEnabled(false);
-//					}*/
-//				}
-//			}
-//			
-//		}
-////		else if (key.equals(Persistence.PREF_HUD)) {
-////			if(!TeclaApp.getInstance().isTeclaA11yServiceRunning()
-////					|| !TeclaApp.persistence.isHUDRunning()) {
-////				mPrefHUD.setChecked(false);
-////				return;
-////			}
-////			TeclaApp.persistence.setHUDRunning(mPrefHUD.isChecked());
-////			if(mPrefHUD.isChecked()) {
-////				if(!TeclaApp.a11yservice.mTeclaHUDController.isVisible()) {
-////					TeclaApp.a11yservice.mTeclaHUDController.show();
-////				}
-////				mPrefSingleSwitchOverlay.setEnabled(true);
-////				mPrefHUDSelfScanning.setEnabled(true);
-////				TeclaApp.persistence.setSingleSwitchOverlayEnabled(true);
-////				TeclaApp.a11yservice.mTouchInterface.show();
-////				mPrefSingleSwitchOverlay.setChecked(true);
-////				TeclaApp.persistence.setHUDSelfScanningEnabled(mPrefHUDSelfScanning.isChecked());
-////				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.sleep(
-////						TeclaApp.persistence.getScanDelay());
-////				mPrefHUDSelfScanning.setChecked(true);				
-////			} else {
-////				if(TeclaApp.persistence.isHUDRunning()) {
-////					TeclaApp.persistence.setHUDRunning(false);
-////					TeclaApp.a11yservice.mTeclaHUDController.hide();
-////				}
-////				if(TeclaApp.persistence.isSingleSwitchOverlayEnabled()) {
-////					TeclaApp.persistence.setSingleSwitchOverlayEnabled(false);
-////					mPrefSingleSwitchOverlay.setChecked(false);
-////					TeclaApp.a11yservice.mTouchInterface.hide();
-////				}
-////				if(TeclaApp.persistence.isHUDSelfScanningEnabled()) {
-////					TeclaApp.persistence.setHUDSelfScanningEnabled(false);
-////					mPrefHUDSelfScanning.setChecked(false);
-////					TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.removeMessages(0);
-////				}
-////				mPrefSingleSwitchOverlay.setEnabled(false);
-////				mPrefHUDSelfScanning.setEnabled(false);
-////			}
-////			
-////		} else if (key.equals(Persistence.PREF_SINGLESWITCH_OVERLAY)) {
-////			if(!TeclaApp.getInstance().isTeclaA11yServiceRunning()
-////					|| !TeclaApp.persistence.isHUDRunning()
-////					|| !TeclaApp.a11yservice.mTeclaHUDController.isVisible()) {
-////				mPrefSingleSwitchOverlay.setChecked(false);
-////				return;
-////			}			
-////			TeclaApp.persistence.setSingleSwitchOverlayEnabled(mPrefSingleSwitchOverlay.isChecked());
-////			if(mPrefSingleSwitchOverlay.isChecked()) {
-////				TeclaApp.a11yservice.mTouchInterface.show();
-////			} else {
-////				TeclaApp.a11yservice.mTouchInterface.hide();
-////			}
-////			
-////		} else if (key.equals(Persistence.PREF_HUD_SELF_SCANNING)) {
-////			TeclaApp.persistence.setHUDSelfScanningEnabled(mPrefHUDSelfScanning.isChecked());
-////			if(mPrefHUDSelfScanning.isChecked()) {
-////				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.sleep(
-////						TeclaApp.persistence.getScanDelay());
-////			} else {
-////				TeclaApp.a11yservice.mTeclaHUDController.mAutoScanHandler.removeMessages(0);				
-////			}
-////			
-////		}
-//
-//	}
+	public void uncheckFullScreenMode() {
+		if(!TeclaApp.persistence.isFullscreenEnabled()) {
+			mFullscreenMode.setChecked(false);
+		}
+	}
+	
+	private void showDiscoveryDialog() {
+		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
+		mProgressDialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface arg0) {
+				mTeclaShieldManager.cancelDiscovery();
+				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
+				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
+				mConnectionCancelled = true;
+				mPrefConnectToShield.setChecked(false);
+				mPrefTempDisconnect.setChecked(false);
+				mPrefTempDisconnect.setEnabled(false);
+			}
+		});
+		mProgressDialog.show();
+	}
 
+	/*
+	 * Dismisses progress dialog without triggerint it's OnCancelListener
+	 */
+	private void dismissDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onResume()
 	 */
@@ -259,7 +252,8 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 	
 	@Override
 	protected void onDestroy() {
-//		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
+		TeclaApp.setSettingsActivityInstance(null);
 		super.onDestroy();
 	}
 
@@ -330,6 +324,68 @@ public class TeclaSettingsActivity extends PreferenceActivity implements OnPrefe
 		public void onClick(View v) {
 			mOnboardingDialog.dismiss();
 			sInstance.finish();
+		}
+	};
+
+	@Override
+	public void onTeclaShieldFound() {
+	}
+
+	@Override
+	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, String shieldName) {
+		if(shieldFound) {
+			// Shield found, try to connect
+			mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
+			mProgressDialog.setOnKeyListener(new OnKeyListener() {
+
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+					return true; //Consume all keys once Shield is found (can't cancel with back key)
+				}
+				
+			});
+			mProgressDialog.setMessage(getString(R.string.connecting_tecla_shield) +
+					" " + shieldName);
+		} else {
+			dismissDialog();
+			mPrefConnectToShield.setChecked(false);
+			mPrefTempDisconnect.setChecked(false);
+			mPrefTempDisconnect.setEnabled(false);
+			if (!mConnectionCancelled) 
+				TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
+		}
+	}
+
+	@Override
+	public void onTeclaShieldConnected() {
+		dismissDialog();
+		mPrefTempDisconnect.setEnabled(true);
+//		mPrefMorse.setEnabled(true);
+//		mPrefPersistentKeyboard.setChecked(true);
+	}
+
+	@Override
+	public void onTeclaShieldDisconnected() {
+		dismissDialog();
+		mPrefTempDisconnect.setChecked(false);
+		mPrefTempDisconnect.setEnabled(false);
+	}
+
+	@Override
+	public void dismissProgressDialog() {
+		dismissDialog();
+	}
+
+	BroadcastReceiver btReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+			if (state == BluetoothAdapter.STATE_ON){
+				if(!mTeclaShieldManager.discoverShield())
+					mPrefConnectToShield.setChecked(false);
+				else
+					showDiscoveryDialog();
+			}
 		}
 	};
 
