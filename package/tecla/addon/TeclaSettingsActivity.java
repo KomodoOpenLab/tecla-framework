@@ -386,6 +386,9 @@ public class TeclaSettingsActivity extends PreferenceActivity
 					mPrefConnectToShield.setChecked(false);
 				else
 					showDiscoveryDialog();
+					TeclaApp.getInstance().turnFullscreenOn();
+					AutomaticScan.findFirstNode();
+					AutomaticScan.stopAutoScan();
 			}
 		}
 	};
