@@ -154,10 +154,10 @@ public class TeclaSettingsActivity extends PreferenceActivity
 				}else{				
 					if(!mTeclaShieldManager.discoverShield())
 						mPrefConnectToShield.setChecked(false);
-					else
+					else{
 						showDiscoveryDialog();
-						TeclaApp.getInstance().turnFullscreenOn();
-						AutomaticScan.stopAutoScan();
+						TeclaApp.getInstance().turnHUDon();
+					}
 				}
 			} else {
 				dismissDialog();
@@ -169,6 +169,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 //					mPrefPersistentKeyboard.setChecked(false);
 				}
 				mTeclaShieldManager.stopShieldService();
+				TeclaApp.getInstance().turnHUDoff();
 			}
 			return true;
 		}
@@ -383,8 +384,15 @@ public class TeclaSettingsActivity extends PreferenceActivity
 			if (state == BluetoothAdapter.STATE_ON){
 				if(!mTeclaShieldManager.discoverShield())
 					mPrefConnectToShield.setChecked(false);
-				else
-					showDiscoveryDialog();
+				else{
+					if(!mTeclaShieldManager.discoverShield())
+						mPrefConnectToShield.setChecked(false);
+					else{
+						showDiscoveryDialog();
+						TeclaApp.getInstance().turnHUDon();
+					}
+				}
+					
 			}
 		}
 	};
