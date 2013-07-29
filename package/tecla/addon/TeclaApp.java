@@ -165,10 +165,9 @@ public class TeclaApp extends Application {
 
 	public void turnHUDon() {
 		//TODO: Self scanning preference needs to be reimplemented first
-		/* 
+		 
 		if(persistence.isSelfScanningEnabled())
 			AutomaticScan.startAutoScan();
-		*/
 		TeclaApp.persistence.setShieldConnected(true);
 		if (a11yservice != null) {
 			TeclaApp.overlay.show();
@@ -181,7 +180,7 @@ public class TeclaApp extends Application {
 		TeclaApp.persistence.setShieldConnected(false);
 		TeclaApp.a11yservice.hideFullscreenSwitch();
 		//TeclaApp.persistence.setSelfScanningEnabled(false);
-		AutomaticScan.stopAutoScan();				
+		//AutomaticScan.stopAutoScan();				
 		TeclaApp.overlay.hide();
 		
 		/*
