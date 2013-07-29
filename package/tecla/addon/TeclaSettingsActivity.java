@@ -20,6 +20,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -115,11 +116,13 @@ public class TeclaSettingsActivity extends PreferenceActivity
 			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setSelfScanningEnabled(true);
-				if(TeclaApp.persistence.isFullscreenEnabled() )
+				Log.i("SHIELD IS CONNECTED:",""+TeclaApp.persistence.isShieldConnected());
+				if(TeclaApp.persistence.isFullscreenEnabled() || TeclaApp.persistence.isShieldConnected())
 					AutomaticScan.startAutoScan();
 			} else {
 				TeclaApp.persistence.setSelfScanningEnabled(false);
-				if(TeclaApp.persistence.isFullscreenEnabled() )
+				Log.i("SHIELD IS CONNECTED:",""+TeclaApp.persistence.isShieldConnected());
+				if(TeclaApp.persistence.isFullscreenEnabled() || TeclaApp.persistence.isShieldConnected() )
 					AutomaticScan.stopAutoScan();
 			}
 			return true;

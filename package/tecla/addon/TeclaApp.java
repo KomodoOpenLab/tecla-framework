@@ -169,17 +169,21 @@ public class TeclaApp extends Application {
 		if(persistence.isSelfScanningEnabled())
 			AutomaticScan.startAutoScan();
 		*/
+		TeclaApp.persistence.setShieldConnected(true);
 		if (a11yservice != null) {
 			TeclaApp.overlay.show();
 			a11yservice.sendGlobalHomeAction();
 		}
+		
 	}
 
 	public void turnHUDoff() {
+		TeclaApp.persistence.setShieldConnected(false);
 		TeclaApp.a11yservice.hideFullscreenSwitch();
 		//TeclaApp.persistence.setSelfScanningEnabled(false);
 		AutomaticScan.stopAutoScan();				
 		TeclaApp.overlay.hide();
+		
 		/*
 		if(TeclaApp.settingsactivity != null) {
 			TeclaApp.settingsactivity.uncheckFullScreenMode();

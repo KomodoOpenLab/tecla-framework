@@ -22,7 +22,8 @@ public class Persistence {
 	public static final String PREF_SHIELD_ADDRESS = "shield_address";
 	public static final String PREF_MORSE_MODE = "morse_mode";
 	public static final String PREF_FULL_RESET_TIMEOUT = "full_reset_timeout";
-
+	public static final String PREF_SHIELD_CONNECTED = "shield_connected";
+	
 	public static final int DEFAULT_FULL_RESET_TIMEOUT = 3;
 
 
@@ -212,6 +213,15 @@ public class Persistence {
 
 	public boolean isMorseModeEnabled() {
 		return shared_prefs.getBoolean(PREF_MORSE_MODE, false);
+	}
+	
+	public boolean isShieldConnected() {
+		return shared_prefs.getBoolean(PREF_SHIELD_CONNECTED, false);
+	}
+		
+	public void setShieldConnected(boolean enabled) {
+		prefs_editor.putBoolean(PREF_SHIELD_CONNECTED, enabled);
+		prefs_editor.commit();
 	}
 	
 	//	public boolean isHUDRunning() {
