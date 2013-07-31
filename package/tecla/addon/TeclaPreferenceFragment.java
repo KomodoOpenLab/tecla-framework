@@ -3,6 +3,8 @@ package com.android.tecla.addon;
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -117,10 +119,16 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
-				if(!TeclaSettingsActivity.getTeclaShieldConnect().discoverShield())
-					mPrefConnectToShield.setChecked(false);
-				else
-					((TeclaSettingsActivity)getActivity()).showDiscoveryDialog();
+				
+				if (!TeclaSettingsActivity.getTeclaShieldConnect().getBluetoothAdapter().isEnabled()) {
+					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+				}else{	
+				
+					if(!TeclaSettingsActivity.getTeclaShieldConnect().discoverShield())
+						mPrefConnectToShield.setChecked(false);
+					else
+						((TeclaSettingsActivity)getActivity()).showDiscoveryDialog();
+				}
 			} else {
 				((TeclaSettingsActivity)getActivity()).dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
@@ -193,6 +201,7 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 
 	public void onTeclaShieldConnectedUpdatePrefs() {
 		mPrefTempDisconnect.setEnabled(true);
+		mPrefConnectToShield.setChecked(true);
 //		mPrefMorse.setEnabled(true);
 //		mPrefPersistentKeyboard.setChecked(true);
 	}

@@ -179,12 +179,8 @@ public class TeclaSettingsActivity extends Activity
 
 	@Override
 	public void onBluetoothActivation() {
-		/*
-		if(!mTeclaShieldManager.discoverShield())
-			//mPrefConnectToShield.setChecked(false);
-		else
-		*/
-			showDiscoveryDialog();
+		mTeclaShieldManager.discoverShield();
+		showDiscoveryDialog();
 	}
 
 	public void uncheckFullScreenMode() {
