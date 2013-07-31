@@ -36,6 +36,10 @@ public class AutomaticScan {
 		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay());		
 	}
 	
+	public static void findFirstNode(){
+		tick();
+	}
+	
 	public static void startAutoScan() {
 		if(sIsScsanning) return;
 		sIsScsanning = true;

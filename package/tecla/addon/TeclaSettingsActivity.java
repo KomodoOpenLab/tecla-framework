@@ -148,8 +148,6 @@ public class TeclaSettingsActivity extends PreferenceActivity
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
 				if (!mTeclaShieldManager.getBluetoothAdapter().isEnabled()) {
-					registerReceiver(btReceiver, new IntentFilter(
-							BluetoothAdapter.ACTION_STATE_CHANGED));
 					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
 				}else{				
 					if(!mTeclaShieldManager.discoverShield())
@@ -376,25 +374,13 @@ public class TeclaSettingsActivity extends PreferenceActivity
 		dismissDialog();
 	}
 
-	BroadcastReceiver btReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
-			if (state == BluetoothAdapter.STATE_ON){
-				if(!mTeclaShieldManager.discoverShield())
-					mPrefConnectToShield.setChecked(false);
-				else{
-					if(!mTeclaShieldManager.discoverShield())
-						mPrefConnectToShield.setChecked(false);
-					else{
-						showDiscoveryDialog();
-						TeclaApp.getInstance().turnHUDon();
-					}
-				}
-					
-			}
-		}
-	};
+
+	@Override
+	public void onBluetoothActivation() {
+		if(!mTeclaShieldManager.discoverShield())
+			mPrefConnectToShield.setChecked(false);
+		else
+			showDiscoveryDialog();
+	}
 
 }
