@@ -389,8 +389,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		} else if(isSwitchPressed) { // on switch released
 			isSwitchPressed = false;
 			if(TeclaApp.persistence.isInverseScanningEnabled()) {
-				if(LatinIMEAdapter.getIMEAdapter().isShowingKeyboard()) 
-					LatinIMEAdapter.getIMEAdapter().selectScanHighlighted();
+				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
 				else TeclaHUDOverlay.selectScanHighlighted();
 				AutomaticScan.stopAutoScan();
 			} else {
@@ -399,18 +398,15 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				switch(Integer.parseInt(action_tecla)) {
 
 				case SwitchEvent.ACTION_NEXT:
-					if(LatinIMEAdapter.getIMEAdapter().isShowingKeyboard()) 
-						LatinIMEAdapter.getIMEAdapter().scanNext();
+					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
 					else mVisualOverlay.scanNext();
 					break;
 				case SwitchEvent.ACTION_PREV:
-					if(LatinIMEAdapter.getIMEAdapter().isShowingKeyboard()) 
-						LatinIMEAdapter.getIMEAdapter().scanPrevious();
+					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
 					else mVisualOverlay.scanPrevious();
 					break;
 				case SwitchEvent.ACTION_SELECT:
-					if(LatinIMEAdapter.getIMEAdapter().isShowingKeyboard()) 
-						LatinIMEAdapter.getIMEAdapter().selectScanHighlighted();
+					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
 					else TeclaHUDOverlay.selectScanHighlighted();				
 					break;
 				case SwitchEvent.ACTION_CANCEL:

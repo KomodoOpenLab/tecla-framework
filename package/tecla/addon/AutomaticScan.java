@@ -29,7 +29,7 @@ public class AutomaticScan {
 				&& !TeclaApp.overlay.isPreview()) {
 			TeclaApp.overlay.scanNextHUDButton();
 		} else if(TeclaApp.getInstance().isSupportedIMERunning()) {
-			LatinIMEAdapter.getIMEAdapter().scanNext();			
+			IMEAdapter.scanNext();			
 		}
 		Message msg = new Message();
 		msg.what = TICK;
