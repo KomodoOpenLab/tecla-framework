@@ -163,6 +163,30 @@ public class TeclaApp extends Application {
 		}		
 	}
 	
+	public void turnHUDon() {
+		//TODO: Self scanning preference needs to be reimplemented first
+		/* 
+		if(persistence.isSelfScanningEnabled())
+			AutomaticScan.startAutoScan();
+		*/
+		if (a11yservice != null) {
+			TeclaApp.overlay.show();
+			a11yservice.sendGlobalHomeAction();
+		}
+	}
+
+	public void turnHUDoff() {
+		TeclaApp.a11yservice.hideFullscreenSwitch();
+		//TeclaApp.persistence.setSelfScanningEnabled(false);
+		AutomaticScan.stopAutoScan();				
+		TeclaApp.overlay.hide();
+		/*
+		if(TeclaApp.settingsactivity != null) {
+			TeclaApp.settingsactivity.uncheckFullScreenMode();
+		}
+		*/
+	}
+	
 	public void turnFullscreenOn() {
 		persistence.setSelfScanningEnabled(true);
 		if(!persistence.isInverseScanningEnabled())
