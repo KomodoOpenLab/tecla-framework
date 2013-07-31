@@ -8,7 +8,6 @@ public interface TeclaShieldActionListener {
 	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, String shieldName);
 	public void onTeclaShieldConnected();
 	public void onTeclaShieldDisconnected();
-	public void onBluetoothActivation();
 	
 	public void dismissProgressDialog();
 }

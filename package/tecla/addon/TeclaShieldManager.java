@@ -65,6 +65,7 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 		mContext.registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 		mContext.registerReceiver(mReceiver, new IntentFilter(TeclaShieldService.ACTION_SHIELD_CONNECTED));
 		mContext.registerReceiver(mReceiver, new IntentFilter(TeclaShieldService.ACTION_SHIELD_DISCONNECTED));
+
 	}
 	
 	public boolean discoverShield() {
@@ -167,9 +168,6 @@ public class TeclaShieldManager implements TeclaShieldConnect {
 			if (intent.getAction().equals(TeclaShieldService.ACTION_SHIELD_DISCONNECTED)) {
 				TeclaStatic.logD(CLASS_TAG, "SEP broadcast stopped");
 				mShieldListener.onTeclaShieldDisconnected();
-			}
-			if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON){
-				mShieldListener.onBluetoothActivation();
 			}
 		}
 	};
