@@ -5,10 +5,14 @@ import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
 import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -143,10 +147,14 @@ public class TeclaSettingsActivity extends PreferenceActivity
 			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
-				if(!mTeclaShieldManager.discoverShield())
-					mPrefConnectToShield.setChecked(false);
-				else
-					showDiscoveryDialog();
+				if (!mTeclaShieldManager.getBluetoothAdapter().isEnabled()) {
+					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+				}else{				
+					if(!mTeclaShieldManager.discoverShield())
+						mPrefConnectToShield.setChecked(false);
+					else
+						showDiscoveryDialog();
+				}
 			} else {
 				dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
@@ -361,6 +369,14 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	@Override
 	public void dismissProgressDialog() {
 		dismissDialog();
+	}
+
+	@Override
+	public void onBluetoothActivation() {
+		if(!mTeclaShieldManager.discoverShield())
+			mPrefConnectToShield.setChecked(false);
+		else
+			showDiscoveryDialog();
 	}
 
 }
