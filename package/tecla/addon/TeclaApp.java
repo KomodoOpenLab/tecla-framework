@@ -164,11 +164,11 @@ public class TeclaApp extends Application {
 	}
 	
 	public void turnHUDon() {
-		//TODO: Self scanning preference needs to be reimplemented first
-		/* 
+
 		if(persistence.isSelfScanningEnabled())
 			AutomaticScan.startAutoScan();
-		*/
+		else
+			AutomaticScan.stopAutoScan();
 		if (a11yservice != null) {
 			TeclaApp.overlay.show();
 			a11yservice.sendGlobalHomeAction();
