@@ -355,6 +355,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	public void onTeclaShieldConnected() {
 		dismissDialog();
 		mPrefTempDisconnect.setEnabled(true);
+		TeclaApp.getInstance().turnHUDon();
 //		mPrefMorse.setEnabled(true);
 //		mPrefPersistentKeyboard.setChecked(true);
 	}
@@ -362,6 +363,7 @@ public class TeclaSettingsActivity extends PreferenceActivity
 	@Override
 	public void onTeclaShieldDisconnected() {
 		dismissDialog();
+		TeclaApp.getInstance().turnHUDoff();
 		mPrefTempDisconnect.setChecked(false);
 		mPrefTempDisconnect.setEnabled(false);
 	}
