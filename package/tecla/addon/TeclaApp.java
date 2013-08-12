@@ -173,7 +173,6 @@ public class TeclaApp extends Application {
 			TeclaApp.overlay.show();
 			a11yservice.sendGlobalHomeAction();
 		}
-		AutomaticScan.findFirstNode();
 	}
 
 	public void turnHUDoff() {
@@ -197,7 +196,6 @@ public class TeclaApp extends Application {
 			a11yservice.showFullscreenSwitch();
 			a11yservice.sendGlobalHomeAction();
 		}
-		AutomaticScan.findFirstNode();
 		TeclaApp.persistence.setFullscreenEnabled(true);
 	}
 	
