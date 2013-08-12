@@ -173,7 +173,6 @@ public class TeclaApp extends Application {
 			TeclaApp.overlay.show();
 			a11yservice.sendGlobalHomeAction();
 		}
-		AutomaticScan.findFirstNode();
 	}
 
 	public void turnHUDoff() {
