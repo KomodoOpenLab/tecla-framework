@@ -72,12 +72,10 @@ public class TeclaIME extends InputMethodService {
 	public void onStartInputView(EditorInfo info, boolean restarting) {
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
 				&& TeclaApp.overlay.isVisible()) {
-			if(TeclaApp.persistence.isSelfScanningEnabled()) {
-				Message msg = new Message();
-				msg.what = MSG_IMESCAN_SETUP;
-				msg.arg1 = 0;
-				mHandler.sendMessageDelayed(msg, 250);				
-			}
+			Message msg = new Message();
+			msg.what = MSG_IMESCAN_SETUP;
+			msg.arg1 = 0;
+			mHandler.sendMessageDelayed(msg, 250);				
 			TeclaApp.overlay.hide();
 		}
 		super.onStartInputView(info, restarting);
