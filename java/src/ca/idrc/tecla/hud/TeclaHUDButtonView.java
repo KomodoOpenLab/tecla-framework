@@ -104,8 +104,8 @@ public class TeclaHUDButtonView extends ImageButton {
 	private void updatePadding () {
 		int w = getWidth();
 		int h = getHeight();
-		int outpad = Math.round(h * 0.28f);
-		int inpad = Math.round(w * 0.37f);
+		int outpad = Math.round(h * 0.30f);
+		int inpad = Math.round(w * 0.30f);
 		switch(mPosition) {
 		case POSITION_LEFT:
 		case POSITION_RIGHT:
@@ -154,8 +154,8 @@ public class TeclaHUDButtonView extends ImageButton {
 				pie = (float) Math.toDegrees(Math.atan(pad / (right - pad)));
 				mPath.moveTo(left, bottom - pad);
 		    	mPath.arcTo(new RectF(mStrokeWidth, mStrokeWidth, (2 * mWidth), (2 * mHeight)), 180 + pie, 90 - (2 * pie)); //RectF(left, top, right, bottom)
-//		    	mPath.lineTo(right, side_width);
-		    	mPath.arcTo(new RectF(side_width - outer_stroke_width, side_width - outer_stroke_width, right + side_width, bottom + side_width), 270, - 90);
+		    	mPath.lineTo(right, side_width);
+		    	mPath.lineTo(side_width - outer_stroke_width, bottom);
 		    	mPath.lineTo(left, bottom - pad);
 		    	float background_rotation = 0.0f;
 				switch(mPosition) {
