@@ -149,6 +149,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						//searchAndUpdateNodes();
 					}
 				} else {
+					mSelectedNode=sInstance.getRootInActiveWindow();
 					TeclaStatic.logD(CLASS_TAG, "Node is null!");
 				}
 			}

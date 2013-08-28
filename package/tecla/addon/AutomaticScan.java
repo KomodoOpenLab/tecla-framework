@@ -64,11 +64,5 @@ public class AutomaticScan {
 		Message msg = new Message();
 		msg.what = TICK;
 		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay()*3/2);
-	}
-	
-	public static void findFirstNode(){
-		tick();
-	}
-	
-	
+	}	
 }

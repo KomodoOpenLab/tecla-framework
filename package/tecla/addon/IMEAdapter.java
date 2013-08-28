@@ -123,6 +123,9 @@ public class IMEAdapter {
 	public static void selectScanHighlighted() {
 		IMEStates.click();
 	}
+	public static void cancelScanHighlighted() {
+		// stub for later issue
+	}
 
 	public static void scanNext() {
 		try {
@@ -171,6 +174,7 @@ public class IMEAdapter {
 		case(IMEStates.SCAN_ROW):		IMEAdapter.highlightPreviousRow();
 										break;
 		case(IMEStates.SCAN_COLUMN):	IMEAdapter.highlightPreviousKey();
+										break;
 		case(IMEStates.SCAN_CLICK):		IMEStates.sState = IMEStates.SCAN_ROW;
 										IMEStates.reset();
 										IMEAdapter.highlightPreviousRow();	
@@ -359,7 +363,7 @@ public class IMEAdapter {
 		private static final int SCAN_COLUMN = 0xa2;
 		private static final int SCAN_CLICK = 0xa3;
 		private static final int SCAN_WORDPREDICTION = 0xa4;
-		private static int sState = SCAN_STOPPED;
+		private static int sState = SCAN_COLUMN;
 		
 		private static Lock sScanStateLock = new ReentrantLock();
 		
@@ -388,7 +392,8 @@ public class IMEAdapter {
 			}
 			switch(sState) {
 			case(SCAN_STOPPED):		sState = SCAN_ROW;
-									AutomaticScan.startAutoScan();
+									if(TeclaApp.getInstance().persistence.isSelfScanningEnabled()){
+									AutomaticScan.startAutoScan();}
 									break;
 			case(SCAN_ROW):			if(sCurrentRow == sRowCount) {
 										sState = SCAN_WORDPREDICTION;
@@ -403,6 +408,7 @@ public class IMEAdapter {
 										highlightKeys(sKeyStartIndex, sKeyEndIndex, false);
 									}
 									AutomaticScan.resetTimer();
+									scanNext();
 									break;
 			case(SCAN_COLUMN):		if(IMEStates.sCurrentColumn == -1) {
 										sState = SCAN_ROW;
@@ -485,13 +491,35 @@ public class IMEAdapter {
 			}
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
 				TeclaApp.overlay.showPreviewHUD();
-			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
+			} else {
+				TeclaApp.overlay.hidePreviewHUD();
+				highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
+				}
 		}
 		
 		private static void scanPreviousRow() {
-			if(sCurrentRow == -1) sCurrentRow = sRowCount;
-			else --sCurrentRow;
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
+				WordPredictionAdapter.highlightNext();
+			} else if(IMEStates.sCurrentRow == -1) {
+				TeclaApp.overlay.showPreviewHUD();
+			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
+			--sCurrentRow;
+			if (sCurrentRow==-2){
+				if(WordPredictionAdapter.sSuggestionsViewGroup.isShown())sCurrentRow = sRowCount;
+				else sCurrentRow = sRowCount-1;}
 			updateRowKeyIndices();
+			if(IMEStates.sCurrentRow == IMEStates.sRowCount) {
+				if(!WordPredictionAdapter.sSuggestionsViewGroup.isShown()) 
+					--sCurrentRow;
+				else
+					WordPredictionAdapter.highlightNext();
+			}
+			if(IMEStates.sCurrentRow == -1) {
+				TeclaApp.overlay.showPreviewHUD();
+			} else {
+				TeclaApp.overlay.hidePreviewHUD();
+				highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
+				}
 		}
 		
 		private static void updateRowKeyIndices() {
