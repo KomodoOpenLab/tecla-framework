@@ -159,6 +159,7 @@ public class TeclaSettingsActivity extends Activity
 	public void onTeclaShieldConnected() {
 		dismissDialog();
 		TeclaApp.getInstance().turnHUDon();
+		IMEAdapter.setKeyboardView(null);
 //		mPrefMorse.setEnabled(true);
 //		mPrefPersistentKeyboard.setChecked(true);
 		mPreferenceFragment.onTeclaShieldConnectedUpdatePrefs();
