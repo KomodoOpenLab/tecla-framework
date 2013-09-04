@@ -80,11 +80,6 @@ public class TeclaIME extends InputMethodService {
 			TeclaApp.overlay.hide();
 		}
 		
-		if(!TeclaApp.shouldIMEshow()){
-			TeclaApp.setShouldIMEShow(true);
-			pressBackKey();
-		}
-		
 		super.onStartInputView(info, restarting);
 		TeclaApp.persistence.setIMEShowing(true);
 	}
