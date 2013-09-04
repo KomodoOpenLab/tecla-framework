@@ -33,7 +33,6 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		addPreferencesFromResource(R.xml.tecla_prefs);
 		init();
 	}
 

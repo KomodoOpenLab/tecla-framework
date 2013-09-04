@@ -54,7 +54,8 @@ public class TeclaApp extends Application {
 	private Handler handler;
 
 	private Boolean screen_on;
-
+	private static boolean showIME;
+	
 	public static TeclaApp getInstance() {
 		return sInstance;
 	}
@@ -335,6 +336,13 @@ public class TeclaApp extends Application {
 	
 	public void showToast(String msg) {
 		Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+	}
+	
+	public static boolean shouldIMEshow(){
+		return showIME;
+	}
+	public static void setShouldIMEShow(boolean enabled){
+		showIME = enabled;
 	}
 
 //	private void logRunningServices() {

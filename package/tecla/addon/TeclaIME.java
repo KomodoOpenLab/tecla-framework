@@ -9,6 +9,7 @@ import com.android.inputmethod.keyboard.KeyboardView;
 
 import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.os.Message;
 import android.view.inputmethod.EditorInfo;
@@ -37,7 +38,7 @@ public class TeclaIME extends InputMethodService {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
 				} else {
-					IMEAdapter.selectScanHighlighted();
+					IMEAdapter.initialScanHighlighted();
 				}
 			}
 //			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
@@ -72,14 +73,18 @@ public class TeclaIME extends InputMethodService {
 	public void onStartInputView(EditorInfo info, boolean restarting) {
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
 				&& TeclaApp.overlay.isVisible()) {
-			if(TeclaApp.persistence.isSelfScanningEnabled()) {
-				Message msg = new Message();
-				msg.what = MSG_IMESCAN_SETUP;
-				msg.arg1 = 0;
-				mHandler.sendMessageDelayed(msg, 250);				
-			}
+			Message msg = new Message();
+			msg.what = MSG_IMESCAN_SETUP;
+			msg.arg1 = 0;
+			mHandler.sendMessageDelayed(msg, 250);				
 			TeclaApp.overlay.hide();
 		}
+		
+		if(!TeclaApp.shouldIMEshow()){
+			TeclaApp.setShouldIMEShow(true);
+			pressBackKey();
+		}
+		
 		super.onStartInputView(info, restarting);
 		TeclaApp.persistence.setIMEShowing(true);
 	}
@@ -88,10 +93,12 @@ public class TeclaIME extends InputMethodService {
 	public void onFinishInputView(boolean finishingInput) {
 		IMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
-		if(TeclaApp.persistence.shouldShowHUD()
-				&& !TeclaApp.overlay.isVisible()) {
+		//if(TeclaApp.persistence.shouldShowHUD()
+				//&& !TeclaApp.overlay.isVisible()) {
+			TeclaApp.overlay.showPreviewHUD();
 			TeclaApp.overlay.show();
-		}
+//		}
+			
 		super.onFinishInputView(finishingInput);
 	}
 	
@@ -142,6 +149,7 @@ public class TeclaIME extends InputMethodService {
 	
 	public void pressBackKey() {
 		keyDownUp(KeyEvent.KEYCODE_BACK);
+		IMEAdapter.setKeyboardView(null);
 	}
 
 	public void sendKey(int keycode) {
