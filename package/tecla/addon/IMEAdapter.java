@@ -123,6 +123,10 @@ public class IMEAdapter {
 	public static void selectScanHighlighted() {
 		IMEStates.click();
 	}
+	
+	public static void initialScanHighlighted() {
+		IMEStates.scanNextRow();
+	}
 	public static void cancelScanHighlighted() {
 		// stub for later issue
 	}
@@ -363,19 +367,19 @@ public class IMEAdapter {
 		private static final int SCAN_COLUMN = 0xa2;
 		private static final int SCAN_CLICK = 0xa3;
 		private static final int SCAN_WORDPREDICTION = 0xa4;
-		private static int sState = SCAN_COLUMN;
+		private static int sState = SCAN_CLICK;
 		
 		private static Lock sScanStateLock = new ReentrantLock();
 		
 		private static int sRowCount = 0;
 		private static int sCurrentRow = -1;
 		private static int sCurrentColumn = -1; 
-		private static int sKeyStartIndex = -1;
-		private static int sKeyEndIndex = -1;
+		private static int sKeyStartIndex = 0;
+		private static int sKeyEndIndex = 0;
 		
 		private static void reset() {
 			if(sKeyboard == null) return;
-			sRowCount = getRowCount();
+			sRowCount = getRowCount(); 
 			sCurrentRow = -1;
 			sCurrentColumn = -1;
 			sKeyStartIndex = getRowStart(0);
@@ -398,11 +402,13 @@ public class IMEAdapter {
 			case(SCAN_ROW):			if(sCurrentRow == sRowCount) {
 										sState = SCAN_WORDPREDICTION;
 										WordPredictionAdapter.selectHighlighted();
-									} else if(sCurrentRow == sRowCount + 1) {
+									} else if(sCurrentRow == sRowCount + 1||sCurrentRow == -1) {
 										//TeclaApp.ime.requestHideSelf(0);
+										IMEStates.reset();
 										TeclaApp.ime.hideWindow();
 										TeclaApp.overlay.hidePreviewHUD();
 										TeclaApp.overlay.show();
+										TeclaApp.persistence.setIMEShowing(false);
 									} else {									
 										sState = SCAN_COLUMN;
 										highlightKeys(sKeyStartIndex, sKeyEndIndex, false);

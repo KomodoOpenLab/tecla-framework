@@ -83,6 +83,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
 			sInstance.getRootView().setBackgroundResource(R.drawable.screen_switch_background_normal);
 			TeclaApp.getInstance().turnFullscreenOff();
+			TeclaApp.getInstance().turnHUDoff();
 			return true;
 		}
 	};
