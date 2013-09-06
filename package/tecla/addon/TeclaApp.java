@@ -24,6 +24,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -241,6 +242,7 @@ public class TeclaApp extends Application {
 			if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 				screen_on = true;
 				//TODO: If event from Tecla, unlock screen!
+				wakeUnlockScreen();
 				TeclaStatic.logD(CLASS_TAG, "Screen on");
 			}
 		}

@@ -22,6 +22,7 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -52,6 +53,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private SingleSwitchTouchInterface mFullscreenSwitch;
 
 	protected static ReentrantLock mActionLock;
+	
+	private final static String MAP_VIEW = "android.view.View";
+	// For later use for custom actions 
+	//private final static String WEB_VIEW = "Web View";
 
 	@Override
 	protected void onServiceConnected() {
@@ -336,7 +341,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 	public static void clickActiveNode() {
 		if(sInstance.mActiveNodes.size() == 0) return;
-		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0); 
+		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0);
+		
+		// Use to find out view type for custom actions
+		//Log.i("NODE TO STRING"," " + sInstance.mSelectedNode.toString());
+		
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 		if(sInstance.mVisualOverlay.isVisible()) 
 			TeclaApp.overlay.clearHighlight();
@@ -369,7 +378,6 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
-
 			if (action.equals(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED)) {
 				handleSwitchEvent(intent.getExtras());
 			}
@@ -469,12 +477,18 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			}
 			AccessibilityNodeInfo node;
 			mActionLock.lock();
-			node = findNeighbourNode(current_node, direction);		
+			node = findNeighbourNode(current_node, direction);
+			
 			if(node != null) {
+				if (sInstance.mSelectedNode.toString().contains(MAP_VIEW)){
+					navigateWithDPad(direction);
+				}else{
 				TeclaHighlighter.highlightNode(node);
 				if(node.isFocusable()) 
 					node.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 				sInstance.mSelectedNode = node;
+				}
+				
 			} else {
 				navigateWithDPad(direction);
 			}
