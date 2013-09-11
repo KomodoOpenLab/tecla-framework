@@ -88,11 +88,11 @@ public class TeclaIME extends InputMethodService {
 	public void onFinishInputView(boolean finishingInput) {
 		IMEAdapter.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
-		//if(TeclaApp.persistence.shouldShowHUD()
+		if(TeclaApp.persistence.shouldShowHUD()){
 				//&& !TeclaApp.overlay.isVisible()) {
 			TeclaApp.overlay.showPreviewHUD();
 			TeclaApp.overlay.show();
-//		}
+		}
 			
 		super.onFinishInputView(finishingInput);
 	}
