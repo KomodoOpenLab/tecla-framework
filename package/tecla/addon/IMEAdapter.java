@@ -124,9 +124,6 @@ public class IMEAdapter {
 		IMEStates.click();
 	}
 	
-	public static void initialScanHighlighted() {
-		IMEStates.scanNextRow();
-	}
 	public static void cancelScanHighlighted() {
 		// stub for later issue
 	}
