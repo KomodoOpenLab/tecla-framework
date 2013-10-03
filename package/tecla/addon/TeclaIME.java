@@ -38,7 +38,7 @@ public class TeclaIME extends InputMethodService {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
 				} else {
-					IMEAdapter.initialScanHighlighted();
+					IMEAdapter.selectHighlighted();
 				}
 			}
 //			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
