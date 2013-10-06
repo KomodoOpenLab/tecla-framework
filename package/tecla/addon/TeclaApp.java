@@ -3,6 +3,7 @@ package com.android.tecla.addon;
 
 import com.android.inputmethod.latin.LatinIME;
 
+import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.TeclaHighlighter;
@@ -10,9 +11,11 @@ import ca.idrc.tecla.highlighter.TeclaHighlighter;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.KeyguardManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,6 +36,8 @@ public class TeclaApp extends Application {
 
 	public static final String CLASS_TAG = "TeclaApp";
 	
+	private static final String SHIELD_SERVICE_CLASS = "com.android.tecla.addon.TeclaShieldService";
+
 	public static final int WAKE_LOCK_TIMEOUT = 5000;
 
 	private static TeclaApp sInstance;
@@ -41,7 +46,9 @@ public class TeclaApp extends Application {
 	public static TeclaAccessibilityService a11yservice;
 	public static TeclaVisualOverlay overlay;
 	public static SingleSwitchTouchInterface fullscreenswitch;
-	public static TeclaSettingsActivity settingsactivity;
+	public static TeclaShieldManager shield_manager;
+	public static BluetoothAdapter bluetooth_adapter;
+	//public static TeclaSettingsActivity settingsactivity; //FIXME: why do we need an "always on" instance of an activity with a finite life cycle?
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -50,7 +57,7 @@ public class TeclaApp extends Application {
 	private AudioManager audio_manager;
 	private ActivityManager activity_manager;
 	private InputMethodManager ime_manager;
-	public NotificationManager notification_manager;
+	private static NotificationManager notification_manager;
 
 	private Handler handler;
 
@@ -77,6 +84,8 @@ public class TeclaApp extends Application {
 
 		sInstance = this;
 		persistence = new Persistence(this);
+		shield_manager = new TeclaShieldManager(this);
+		bluetooth_adapter = BluetoothAdapter.getDefaultAdapter();
 
 		power_manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wake_lock = power_manager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK |
@@ -108,6 +117,17 @@ public class TeclaApp extends Application {
 		ime_manager.showInputMethodPicker();
 	}
 	
+	public boolean isShieldServiceRunning(Context context) {
+	    ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	    	Log.d("Tecla SDK", service.service.getClassName().toString());
+	    	if (SHIELD_SERVICE_CLASS.equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
 	public boolean isTeclaA11yServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaStatic.A11Y_SERVICE.equals(service.service.getClassName())) {
@@ -144,9 +164,9 @@ public class TeclaApp extends Application {
 		getInstance().processFrameworkOptions();
 	}
 
-	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
-		settingsactivity = settingsactivity_instance;
-	}
+//	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
+//		settingsactivity = settingsactivity_instance;
+//	}
 
 	public static void setFullscreenSwitch (SingleSwitchTouchInterface fullscreenswitch_instance) {
 		fullscreenswitch = fullscreenswitch_instance;
@@ -207,9 +227,9 @@ public class TeclaApp extends Application {
 		AutomaticScan.stopAutoScan();				
 		TeclaApp.overlay.hide();
 		TeclaApp.persistence.setFullscreenEnabled(false);
-		if(TeclaApp.settingsactivity != null) {
-			TeclaApp.settingsactivity.uncheckFullScreenMode();
-		}
+//		if(TeclaApp.settingsactivity != null) {
+//			TeclaApp.settingsactivity.uncheckFullScreenMode();
+//		}
 	}
 	
 	public void answerCall() {
@@ -347,6 +367,14 @@ public class TeclaApp extends Application {
 		showIME = enabled;
 	}
 
+	public static void notify(int res, Notification notification) {
+		notification_manager.notify(res, notification);
+	}
+	
+	public static void cancelNotification(int res) {
+		notification_manager.cancel(res);
+	}
+	
 //	private void logRunningServices() {
 //		for (RunningServiceInfo service_info : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 //			TeclaStatic.logD(CLASS_TAG, service_info.service.getClassName());

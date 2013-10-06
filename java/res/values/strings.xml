@@ -52,7 +52,7 @@
     
     <!-- Onboarding strings -->
     <string name="onboarding_ime_warning">Your current input method is not compatible with Tecla Next. In order to use any Tecla Next features, you must first select a compatible input method. Do you want to do this now?</string>
-    <string name="onboarding_a11y_warning">The Tecla Next accessibility service is not enabled. In order to use any Tecla Next features, you must first enable the Tecla Next accessibility service. Do you want to do this now?</string>
+    <string name="onboarding_a11y_warning">The Tecla Next accessibility service is not running. In order to use Tecla Next, you must first enable its accessibility service. Do you want to do this now?</string>
     <string name="onboarding_success">You have successfully set up Tecla Next!</string>
     
     <!-- Tecla: IME Preferences Strings -->

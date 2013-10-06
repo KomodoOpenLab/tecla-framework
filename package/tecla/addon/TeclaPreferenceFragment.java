@@ -1,5 +1,8 @@
 package com.android.tecla.addon;
 
+import com.android.tecla.addon.callbacks.OnShieldConnected;
+import com.android.tecla.addon.callbacks.OnShieldConnectedListener;
+
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
@@ -115,20 +118,30 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			return true;
 		}
 		if(pref.equals(mPrefConnectToShield)) {
-			TeclaStatic.logD(CLASS_TAG, "Connect to shield preference changed!");
 			if (newValue.toString().equals("true")) {
-				mConnectionCancelled = false;
+				TeclaStatic.logD(CLASS_TAG, "User requested Shield connection!");
+				//mConnectionCancelled = false;
 				
-				if (!TeclaSettingsActivity.getTeclaShieldConnect().getBluetoothAdapter().isEnabled()) {
-					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
-				}else{	
+				TeclaApp.shield_manager.connect(new TeclaShieldManager.OnConnectionAttemptListener() {
+					
+					@Override
+					public void onConnetionAttemptFinished(String result) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 				
-					if(!TeclaSettingsActivity.getTeclaShieldConnect().discoverShield())
-						mPrefConnectToShield.setChecked(false);
-					else
-						((TeclaSettingsActivity)getActivity()).showDiscoveryDialog();
-				}
+//				if (!TeclaApp.shieldmanager.getBluetoothAdapter().isEnabled()) {
+//					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+//				}else{	
+//				
+//					if(!TeclaApp.shieldmanager.discoverShield())
+//						mPrefConnectToShield.setChecked(false);
+//					else
+//						((TeclaSettingsActivity)getActivity()).showDiscoveryDialog();
+//				}
 			} else {
+				TeclaStatic.logD(CLASS_TAG, "User wants to cancel Shield connection!");
 				((TeclaSettingsActivity)getActivity()).dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
 					mPrefTempDisconnect.setChecked(false);
@@ -137,7 +150,7 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 					mPrefInverseScanning.setChecked(false);
 //					mPrefPersistentKeyboard.setChecked(false);
 				}
-				TeclaSettingsActivity.getTeclaShieldConnect().stopShieldService();
+				TeclaApp.shieldmanager.stopShieldService();
 			}
 			return true;
 		}
@@ -145,13 +158,13 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			TeclaStatic.logD(CLASS_TAG, "Temp shield disconnect preference changed!");
 			if (newValue.toString().equals("true")) {
 				mPrefConnectToShield.setEnabled(false);
-				TeclaSettingsActivity.getTeclaShieldConnect().stopShieldService();
+				TeclaApp.shieldmanager.stopShieldService();
 				Handler mHandler = new Handler();
 				Runnable mReconnect = new Runnable() {
 					
 					public void run() {
 						TeclaStatic.logD(CLASS_TAG, "Re-enabling discovery");
-						TeclaSettingsActivity.getTeclaShieldConnect().discoverShield();
+						TeclaApp.shieldmanager.discoverShield();
 						mPrefConnectToShield.setEnabled(true);
 					}
 				};

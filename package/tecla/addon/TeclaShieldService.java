@@ -3,33 +3,37 @@ package com.android.tecla.addon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+//import java.lang.reflect.InvocationTargetException;
+//import java.lang.reflect.Method;
 import java.util.UUID;
-
-import com.android.tecla.addon.SwitchEventProvider.LocalBinder;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.TeclaStatic;
 
 import android.app.Notification;
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.Build;
+import android.content.DialogInterface.OnCancelListener;
+import android.os.Binder;
+//import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
 public class TeclaShieldService extends Service implements Runnable {
-	
+
 	//Constants
 	/**
 	 * Tags used for logging in this class
@@ -76,6 +80,12 @@ public class TeclaShieldService extends Service implements Runnable {
 	private OutputStream mOutStream;
 	private InputStream mInStream;
 
+	private boolean mShieldFound;
+	private String mShieldAddress, mShieldName;
+	private ProgressDialog mProgressDialog;
+	private Boolean mBTEnableRequested, mBTDiscoveryRequested;
+	private TeclaShieldManager.OnConnectionAttemptListener mConnectionAttemptListener;
+
 	// VARIABLES FOR SWITCH PROCESSING
 	// TODO: This variable should be used when new Shield versions are available
 	private int mPrevSwitchStates, mSwitchStates;
@@ -91,13 +101,26 @@ public class TeclaShieldService extends Service implements Runnable {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		initSEP();
+		init();
 	}
 
-	public void initSEP() {
-		TeclaStatic.logD(CLASS_TAG, "Creating SEP...");
+	private void init() {
+		//Tecla Access Intents & Intent Filters
+		registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
+		registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+		registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+		mBTEnableRequested = false;
+		mBTDiscoveryRequested = false;
+		
+		//mProgressDialog = new ProgressDialog(this);
+		//bindtoSwitchEventProvider();		
 
-		// Bind to TeclaService
+	}
+
+	private void bindtoSwitchEventProvider() {
+		TeclaStatic.logD(CLASS_TAG, "Attempting to bind to SwitchEventProvider...");
+
+		// Bind to SwitchEventProvider
 		Intent intent = new Intent(this, SwitchEventProvider.class);
 		bindService(intent, mSEPConnection, Context.BIND_AUTO_CREATE);
 
@@ -116,7 +139,7 @@ public class TeclaShieldService extends Service implements Runnable {
 			unbindService(mSEPConnection);
 		}
 		stopMainThread();
-		TeclaStatic.logI(CLASS_TAG, "Stopping Shield Service");
+		TeclaStatic.logI(CLASS_TAG, "Stopped TeclaShieldService");
 	}
 
 	@Override
@@ -128,44 +151,63 @@ public class TeclaShieldService extends Service implements Runnable {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		String shieldAddress = null;
-		boolean success = false;
+//		String shieldAddress = null;
+//		boolean success = false;
+//
+//		if (!mServiceStarted) {
+//			if (intent.hasExtra(TeclaShieldManager.EXTRA_SHIELD_ADDRESS)) {
+//				shieldAddress = intent.getExtras().getString(TeclaShieldManager.EXTRA_SHIELD_ADDRESS);
+//			}
+//
+//			if (!BluetoothAdapter.checkBluetoothAddress(shieldAddress)) {
+//				// MAC is invalid, try saved address
+//				shieldAddress = TeclaApp.persistence.getShieldAddress();
+//			}
+//			if (shieldAddress != null) {
+//				// MAC is valid
+//				success = true;
+//				// Save shield info
+//				TeclaApp.persistence.setShieldAddress(shieldAddress);
+//				startMainThread();
+//			} else {
+//				// MAC is invalid, unset connect to shield preference
+//				TeclaApp.persistence.setConnectToShield(false);
+//				TeclaStatic.logE(CLASS_TAG, "Could not connect to shield");
+//			}
+//
+//			if (success) {
+//				TeclaStatic.logD(CLASS_TAG, "Successfully started service");
+//				mServiceStarted = true;
+//			} else {
+//				TeclaStatic.logE(CLASS_TAG, "Failed to start service");
+//			}
+//		} else {
+//			TeclaStatic.logW(CLASS_TAG, "SEP already started, ignored start command.");
+//			success = true;
+//		}
 
-		if (!mServiceStarted) {
-			if (intent.hasExtra(TeclaShieldManager.EXTRA_SHIELD_ADDRESS)) {
-				shieldAddress = intent.getExtras().getString(TeclaShieldManager.EXTRA_SHIELD_ADDRESS);
-			}
-
-			if (!BluetoothAdapter.checkBluetoothAddress(shieldAddress)) {
-				// MAC is invalid, try saved address
-				shieldAddress = TeclaApp.persistence.getShieldAddress();
-			}
-			if (shieldAddress != null) {
-				// MAC is valid
-				success = true;
-				// Save shield info
-				TeclaApp.persistence.setShieldAddress(shieldAddress);
-				startMainThread();
+//		return success? Service.START_STICKY:Service.START_NOT_STICKY;
+		return Service.START_NOT_STICKY;
+	}
+	
+	public void connect(TeclaShieldManager.OnConnectionAttemptListener listener) {
+		mConnectionAttemptListener = listener;
+		if (TeclaApp.bluetooth_adapter != null) {
+			mShieldAddress = TeclaApp.persistence.getShieldAddress();
+			if (mShieldAddress != null) {
+				if (BluetoothAdapter.checkBluetoothAddress(mShieldAddress)) {
+					// MAC is valid, proceed...
+					startMainThread();
+				}
 			} else {
-				// MAC is invalid, unset connect to shield preference
-				TeclaApp.persistence.setConnectToShield(false);
-				TeclaStatic.logE(CLASS_TAG, "Could not connect to shield");
-			}
-
-			if (success) {
-				TeclaStatic.logD(CLASS_TAG, "Successfully started service");
-				mServiceStarted = true;
-			} else {
-				TeclaStatic.logE(CLASS_TAG, "Failed to start service");
+				discoverShield();
 			}
 		} else {
-			TeclaStatic.logW(CLASS_TAG, "SEP already started, ignored start command.");
-			success = true;
+			listener.onConnetionFailed(TeclaShieldManager.ERROR_BT_NOT_SUPPORTED);
+			mConnectionAttemptListener = null;
 		}
-
-		return success? Service.START_STICKY:Service.START_NOT_STICKY;
 	}
-
+	
 	private void startMainThread() {
 		stopMainThread();
 		mKeepReconnecting = true;
@@ -230,6 +272,7 @@ public class TeclaShieldService extends Service implements Runnable {
 					pingShield(500);
 
 					broadcastShieldConnected();
+					mConnectionAttemptListener.onConnetionEstablished();
 					mIsBroadcasting = true;
 					while(mIsBroadcasting) {
 						try {
@@ -331,17 +374,12 @@ public class TeclaShieldService extends Service implements Runnable {
 
 		Boolean success = false;
 
-		BluetoothAdapter bluetooth_adapter = null;
-		TeclaShieldConnect shield_connect = TeclaSettingsActivity.getTeclaShieldConnect();
-		if(shield_connect != null)
-			bluetooth_adapter = shield_connect.getBluetoothAdapter();
-		
-		if (bluetooth_adapter != null 
-				&& bluetooth_adapter.isEnabled()) {
+		if (TeclaApp.bluetooth_adapter != null 
+				&& TeclaApp.bluetooth_adapter.isEnabled()) {
 			TeclaStatic.logD(CLASS_TAG, "Attempting to open socket to " + shieldAddress + "...");
 
 			BluetoothDevice teclaShield;
-			teclaShield = bluetooth_adapter.getRemoteDevice(shieldAddress);
+			teclaShield = TeclaApp.bluetooth_adapter.getRemoteDevice(shieldAddress);
 
 			if (!success) {
 				killSocket();
@@ -356,21 +394,21 @@ public class TeclaShieldService extends Service implements Runnable {
 				success = connectSocket();
 			}
 
-			if (!success) {
-				if (    Build.MODEL.equals("ReflectionCompatibleModel") &&
-						Build.MANUFACTURER.equals("ReflectionCompatibleManufacturer")) {
-					/*
-					 * WARNING! Although fast, the reflection method for reconnecting a lost Bluetooth connection
-					 * can fail silently and sometimes lock the App and the Bluetooth chip. This method should be
-					 * deprecated. Devices know NOT to work with reflection are:
-					 *   LG Phoenix (LG-P505R)
-					 *   Samsung Galaxy (SGH-T989D)
-					 */
-					success = createSocketWithReflection(teclaShield);
-				} else {
-					TeclaStatic.logV(CLASS_TAG, "Will not attempt to open bluetooth serial socket with reflection");
-				}
-			}
+//			if (!success) {
+//				if (    Build.MODEL.equals("ReflectionCompatibleModel") &&
+//						Build.MANUFACTURER.equals("ReflectionCompatibleManufacturer")) {
+//					/*
+//					 * WARNING! Although fast, the reflection method for reconnecting a lost Bluetooth connection
+//					 * can fail silently and sometimes lock the App and the Bluetooth chip. This method should be
+//					 * deprecated. Devices know NOT to work with reflection are:
+//					 *   LG Phoenix (LG-P505R)
+//					 *   Samsung Galaxy (SGH-T989D)
+//					 */
+//					success = createSocketWithReflection(teclaShield);
+//				} else {
+//					TeclaStatic.logV(CLASS_TAG, "Will not attempt to open bluetooth serial socket with reflection");
+//				}
+//			}
 			if (!success) {
 				killSocket(); //Still no success, kill socket
 				Log.i(CLASS_TAG, "Could not open socket");
@@ -381,43 +419,38 @@ public class TeclaShieldService extends Service implements Runnable {
 		return success;
 	}
 
-	private boolean createSocketWithReflection(BluetoothDevice teclaShield) {
-		// Try using reflection
-		TeclaStatic.logW(CLASS_TAG, "Creating bluetooth serial socket using reflection...");
-		killSocket();
-		Method m = null;
-		try {
-			m = teclaShield.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
-			mBluetoothSocket = (BluetoothSocket) m.invoke(teclaShield, 1);
-		} catch (SecurityException e) {
-			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return connectSocket();
-	}
+//	private boolean createSocketWithReflection(BluetoothDevice teclaShield) {
+//		// Try using reflection
+//		TeclaStatic.logW(CLASS_TAG, "Creating bluetooth serial socket using reflection...");
+//		killSocket();
+//		Method m = null;
+//		try {
+//			m = teclaShield.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
+//			mBluetoothSocket = (BluetoothSocket) m.invoke(teclaShield, 1);
+//		} catch (SecurityException e) {
+//			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
+//			e.printStackTrace();
+//		} catch (NoSuchMethodException e) {
+//			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e) {
+//			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			TeclaStatic.logE(CLASS_TAG, "openSocket with reflection: " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return connectSocket();
+//	}
 
 	private boolean connectSocket() {
 		try {
 			// See http://developer.android.com/reference/android/bluetooth/BluetoothSocket.html#connect%28%29
 			// for why the cancelDiscovery() call is necessary
-			BluetoothAdapter bluetooth_adapter = null;
-			TeclaShieldConnect shield_connect = TeclaSettingsActivity.getTeclaShieldConnect();
-			if(shield_connect != null)
-				bluetooth_adapter = shield_connect.getBluetoothAdapter();
-			
-			bluetooth_adapter.cancelDiscovery();
+			TeclaApp.bluetooth_adapter.cancelDiscovery();
 			mBluetoothSocket.connect();
 			TeclaStatic.logD(CLASS_TAG, "Connected to " + mBluetoothSocket.getRemoteDevice().getAddress());
 			return true;
@@ -487,7 +520,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 		// Send the notification.
 		// We use a layout id because it is a unique number.  We use it later to cancel.
-		TeclaApp.getInstance().notification_manager.notify(R.string.shield_connected, notification);
+		TeclaApp.notify(R.string.shield_connected, notification);
 	}
 
 	private void broadcastShieldConnected() {
@@ -502,33 +535,142 @@ public class TeclaShieldService extends Service implements Runnable {
 
 	private void cancelNotification() {
 		// Cancel the persistent notification.
-		TeclaApp.getInstance().notification_manager.cancel(R.string.shield_connected);
+		TeclaApp.cancelNotification(R.string.shield_connected);
 	}
-	
+
 	SwitchEventProvider switch_event_provider;
 	boolean mBound = false;
 
 	/** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mSEPConnection = new ServiceConnection() {
+	private ServiceConnection mSEPConnection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            LocalBinder binder = (LocalBinder) service;
-            switch_event_provider = binder.getService();
-            mBound = true;
+			// We've bound to LocalService, cast the IBinder and get LocalService instance
+			SwitchEventProvider.LocalBinder binder = (SwitchEventProvider.LocalBinder) service;
+			switch_event_provider = binder.getService();
+			mBound = true;
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-			
-		}
-    };
+			mBound = false;
 
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		}
+	};
+
+	private void discoverShield() {
+		if(TeclaApp.bluetooth_adapter != null) {
+			if (TeclaApp.bluetooth_adapter.isEnabled()) {
+				cancelDiscovery();
+				mShieldFound = false;
+				mBTDiscoveryRequested = true;
+				TeclaApp.bluetooth_adapter.startDiscovery();
+			} else {
+				mBTEnableRequested = true;
+				startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+			}
+		} else {
+			if (mConnectionAttemptListener != null) {
+				mConnectionAttemptListener.onConnetionFailed(TeclaShieldManager.ERROR_BT_NOT_SUPPORTED);
+			}
+		}
 	}
+
+	private void cancelDiscovery() {
+		if (TeclaApp.bluetooth_adapter != null && 
+				TeclaApp.bluetooth_adapter.isDiscovering()) {
+			TeclaApp.bluetooth_adapter.cancelDiscovery();
+		}
+	}
+
+	// All intents will be processed here
+	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND)
+					&& mBTDiscoveryRequested) {
+				BluetoothDevice dev = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
+				if ((dev.getName() != null) && (
+						dev.getName().startsWith(TeclaShieldService.SHIELD_PREFIX_2) ||
+						dev.getName().startsWith(TeclaShieldService.SHIELD_PREFIX_3) )) {
+					TeclaStatic.logD(CLASS_TAG, "Found a Tecla Access Shield candidate");
+					mShieldFound = true;
+					mShieldAddress = dev.getAddress();
+					mShieldName = dev.getName();
+					cancelDiscovery();
+				}
+			}
+
+			if (intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
+				if (mBTDiscoveryRequested) {
+					mBTDiscoveryRequested = false;
+					if(mShieldFound) {
+						mConnectionAttemptListener.onShieldFound(mShieldName);
+						TeclaApp.persistence.setShieldAddress(mShieldAddress);
+						connect(mConnectionAttemptListener);
+					} else {
+						mConnectionAttemptListener.onConnetionFailed(TeclaShieldManager.ERROR_SHIELD_NOT_FOUND);
+					}
+				}
+			}
+
+			if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON){
+				// Bluetooth just turned on!!
+				if (mBTEnableRequested) {
+					mBTEnableRequested = false;
+					discoverShield();
+				}
+			}
+		}
+	};
+
+	/*
+	 * Dismisses progress dialog without triggerint it's OnCancelListener
+	 */
+	public void dismissDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
+		}
+	}
+	
+	public void dismissProgressDialog() {
+		dismissDialog();
+	}
+
+	public void showDiscoveryDialog() {
+		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
+		mProgressDialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface arg0) {
+				//TeclaApp.shieldmanager.cancelDiscovery();
+				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
+				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
+				//mPreferenceFragment.onCancelDiscoveryDialogUpdatePrefs();
+			}
+		});
+		mProgressDialog.show();
+	}
+
+	/** BINDING METHODS AND VARIABLES **/
+	// Binder given to clients
+    private final IBinder mBinder = new LocalBinder();
+    
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+    
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+    	TeclaShieldService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return TeclaShieldService.this;
+        }
+    }
+    	
 }

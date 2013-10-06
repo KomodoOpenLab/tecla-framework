@@ -609,7 +609,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			LocalBinder binder = (LocalBinder) service;
 			switch_event_provider = binder.getService();
 			mBound = true;
-			TeclaStatic.logD(CLASS_TAG, "IME bound to SEP");
+			TeclaStatic.logD(CLASS_TAG, "Ally service bound to SEP");
 		}
 
 		@Override
