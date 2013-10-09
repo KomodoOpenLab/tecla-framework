@@ -67,10 +67,10 @@ public class TeclaShieldManager {
 		}
 	}
 
-	public boolean disconnect() {
-//		Intent shieldIntent = new Intent(SHIELD_SERVICE);
-//		return mContext.stopService(shieldIntent);
-		return false;
+	public void disconnect() {
+		if (mBound == true) {
+			mTeclaShieldService.stopShieldService();
+		}
 	}
 
 	private void bindToTeclaShieldService() {

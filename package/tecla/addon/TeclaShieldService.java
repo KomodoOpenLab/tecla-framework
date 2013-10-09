@@ -12,7 +12,7 @@ import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.TeclaStatic;
 
 import android.app.Notification;
-import android.app.ProgressDialog;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -73,6 +73,7 @@ public class TeclaShieldService extends Service implements Runnable {
 	private static final int SHY_RECONNECT_ATTEMPTS = 20; // * SHIELD_RECONNECT_DELAY = SHY_RECONNECT_DELAY
 	private static final int BOLD_RECONNECT_ATTEMPTS = 2; //
 
+	private NotificationManager notification_manager;
 	private int mShyCounter, mBoldCounter;
 	private boolean mIsBold;
 
@@ -82,7 +83,6 @@ public class TeclaShieldService extends Service implements Runnable {
 
 	private boolean mShieldFound;
 	private String mShieldAddress, mShieldName;
-	private ProgressDialog mProgressDialog;
 	private Boolean mBTEnableRequested, mBTDiscoveryRequested;
 	private TeclaShieldManager.OnConnectionAttemptListener mConnectionAttemptListener;
 
@@ -106,13 +106,13 @@ public class TeclaShieldService extends Service implements Runnable {
 
 	private void init() {
 		//Tecla Access Intents & Intent Filters
+		notification_manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
 		registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 		registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 		mBTEnableRequested = false;
 		mBTDiscoveryRequested = false;
 		
-		//mProgressDialog = new ProgressDialog(this);
 		//bindtoSwitchEventProvider();		
 
 	}
@@ -135,10 +135,12 @@ public class TeclaShieldService extends Service implements Runnable {
 	}
 
 	public void stopShieldService() {
+		//TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
 		if (mBound) {
 			unbindService(mSEPConnection);
 		}
 		stopMainThread();
+		TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
 		TeclaStatic.logI(CLASS_TAG, "Stopped TeclaShieldService");
 	}
 
@@ -520,7 +522,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 		// Send the notification.
 		// We use a layout id because it is a unique number.  We use it later to cancel.
-		TeclaApp.notify(R.string.shield_connected, notification);
+		notification_manager.notify(R.string.shield_connected, notification);
 	}
 
 	private void broadcastShieldConnected() {
@@ -535,7 +537,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 	private void cancelNotification() {
 		// Cancel the persistent notification.
-		TeclaApp.cancelNotification(R.string.shield_connected);
+		notification_manager.cancel(R.string.shield_connected);
 	}
 
 	SwitchEventProvider switch_event_provider;
@@ -613,6 +615,7 @@ public class TeclaShieldService extends Service implements Runnable {
 						connect(mConnectionAttemptListener);
 					} else {
 						mConnectionAttemptListener.onConnetionFailed(TeclaShieldManager.ERROR_SHIELD_NOT_FOUND);
+						TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
 					}
 				}
 			}
@@ -626,32 +629,6 @@ public class TeclaShieldService extends Service implements Runnable {
 			}
 		}
 	};
-
-	/*
-	 * Dismisses progress dialog without triggerint it's OnCancelListener
-	 */
-	public void dismissDialog() {
-		if (mProgressDialog != null && mProgressDialog.isShowing()) {
-			mProgressDialog.dismiss();
-		}
-	}
-	
-	public void dismissProgressDialog() {
-		dismissDialog();
-	}
-
-	public void showDiscoveryDialog() {
-		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
-		mProgressDialog.setOnCancelListener(new OnCancelListener() {
-			public void onCancel(DialogInterface arg0) {
-				//TeclaApp.shieldmanager.cancelDiscovery();
-				TeclaStatic.logD(CLASS_TAG, "Tecla Shield discovery cancelled");
-				TeclaApp.getInstance().showToast(R.string.shield_connection_cancelled);
-				//mPreferenceFragment.onCancelDiscoveryDialogUpdatePrefs();
-			}
-		});
-		mProgressDialog.show();
-	}
 
 	/** BINDING METHODS AND VARIABLES **/
 	// Binder given to clients

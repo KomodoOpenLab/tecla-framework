@@ -46,8 +46,8 @@ public class TeclaApp extends Application {
 	public static TeclaAccessibilityService a11yservice;
 	public static TeclaVisualOverlay overlay;
 	public static SingleSwitchTouchInterface fullscreenswitch;
-	public static TeclaShieldManager shield_manager;
 	public static BluetoothAdapter bluetooth_adapter;
+	private static TeclaShieldManager shield_manager;
 	//public static TeclaSettingsActivity settingsactivity; //FIXME: why do we need an "always on" instance of an activity with a finite life cycle?
 
 	private PowerManager power_manager;
@@ -57,7 +57,6 @@ public class TeclaApp extends Application {
 	private AudioManager audio_manager;
 	private ActivityManager activity_manager;
 	private InputMethodManager ime_manager;
-	private static NotificationManager notification_manager;
 
 	private Handler handler;
 
@@ -95,7 +94,6 @@ public class TeclaApp extends Application {
 		audio_manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		activity_manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		ime_manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		notification_manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
 		handler = new Handler();
 
@@ -115,6 +113,10 @@ public class TeclaApp extends Application {
 	
 	public void pickIme() {
 		ime_manager.showInputMethodPicker();
+	}
+	
+	public static TeclaShieldManager getShieldManager() {
+		return shield_manager;
 	}
 	
 	public boolean isShieldServiceRunning(Context context) {
@@ -367,14 +369,7 @@ public class TeclaApp extends Application {
 		showIME = enabled;
 	}
 
-	public static void notify(int res, Notification notification) {
-		notification_manager.notify(res, notification);
-	}
-	
-	public static void cancelNotification(int res) {
-		notification_manager.cancel(res);
-	}
-	
+
 //	private void logRunningServices() {
 //		for (RunningServiceInfo service_info : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 //			TeclaStatic.logD(CLASS_TAG, service_info.service.getClassName());
