@@ -49,7 +49,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
 
-	private TeclaVisualOverlay mVisualOverlay;
+	private static TeclaOverlay mTeclaOverlay;
 	private SingleSwitchTouchInterface mFullscreenSwitch;
 
 	protected static ReentrantLock mActionLock;
@@ -57,32 +57,36 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private final static String MAP_VIEW = "android.view.View";
 	// For later use for custom actions 
 	//private final static String WEB_VIEW = "Web View";
+	
+	@Override
+	public void onCreate() {
+		TeclaStatic.logD(CLASS_TAG, "Service created");
+
+		init();
+	}
 
 	@Override
 	protected void onServiceConnected() {
 		super.onServiceConnected();
 
-		TeclaStatic.logD(CLASS_TAG, "Service " + TeclaAccessibilityService.class.getName() + " connected");
-
-		init();
+		TeclaStatic.logD(CLASS_TAG, "Service connected");
 
 	}
 
 	private void init() {
+		sInstance = this;
 		register_receiver_called = false;
 
-		mOriginalNode = null;
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
 
-		if(mVisualOverlay == null) {
-			mVisualOverlay = new TeclaVisualOverlay(this);
-			TeclaApp.setVisualOverlay(mVisualOverlay);
+		if(mTeclaOverlay == null) {
+			mTeclaOverlay = new TeclaOverlay(this);
 		}
 		
 		if (mFullscreenSwitch == null) {
-			mFullscreenSwitch = new SingleSwitchTouchInterface(this);	
-			TeclaApp.setFullscreenSwitch(mFullscreenSwitch);		
+			mFullscreenSwitch = new SingleSwitchTouchInterface(this);
+			//TeclaApp.setFullscreenSwitch(mFullscreenSwitch);		
 		}
 
 		// Bind to SwitchEventProvider
@@ -91,10 +95,24 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		registerReceiver(mReceiver, new IntentFilter(SwitchEvent.ACTION_SWITCH_EVENT_RECEIVED));
 		register_receiver_called = true;
+		
 		SEPManager.start(this);
 
-		sInstance = this;
+		mTeclaOverlay.showAll();
+		mFullscreenSwitch.show();
+		mTeclaOverlay.hideAll();
+		mFullscreenSwitch.hide();
+		
 		TeclaApp.setA11yserviceInstance(this);
+	}
+	
+	public static TeclaOverlay getOverlay() {
+		return mTeclaOverlay;
+	}
+	
+	public void setFullscreenSwitchLongClick(boolean enabled) {
+		if(mFullscreenSwitch != null)
+			mFullscreenSwitch.setLongClick(enabled);
 	}
 	
 	public void hideFullscreenSwitch() {
@@ -116,7 +134,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
-			if (mVisualOverlay.isVisible()) {
+			if (mTeclaOverlay.isVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
 
@@ -347,8 +365,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		//Log.i("NODE TO STRING"," " + sInstance.mSelectedNode.toString());
 		
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-		if(sInstance.mVisualOverlay.isVisible()) 
-			TeclaApp.overlay.clearHighlight();
+		if(sInstance.mTeclaOverlay.isVisible()) 
+			sInstance.mTeclaOverlay.clearHighlight();
 	}
 
 	//	public static void selectActiveNode(int index) {
@@ -393,14 +411,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			isSwitchPressed = true;
 			actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
 			if(TeclaApp.persistence.isInverseScanningEnabled()) {
-				AutomaticScan.startAutoScan();
+				AutoScanManager.start();
 			}
 		} else if(isSwitchPressed) { // on switch released
 			isSwitchPressed = false;
 			if(TeclaApp.persistence.isInverseScanningEnabled()) {
 				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-				else TeclaHUDOverlay.selectScanHighlighted();
-				AutomaticScan.stopAutoScan();
+				else TeclaHUD.selectScanHighlighted();
+				AutoScanManager.stop();
 			} else {
 				String action_tecla = actions[0];
 				int max_node_index = mActiveNodes.size() - 1;
@@ -408,15 +426,15 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 				case SwitchEvent.ACTION_NEXT:
 					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
-					else mVisualOverlay.scanNext();
+					else mTeclaOverlay.scanNext();
 					break;
 				case SwitchEvent.ACTION_PREV:
 					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
-					else mVisualOverlay.scanPrevious();
+					else mTeclaOverlay.scanPrevious();
 					break;
 				case SwitchEvent.ACTION_SELECT:
 					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-					else TeclaHUDOverlay.selectScanHighlighted();				
+					else TeclaHUD.selectScanHighlighted();				
 					break;
 				case SwitchEvent.ACTION_CANCEL:
 					//TODO: Programmatic back key?
@@ -424,7 +442,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					break;
 				}
 				if(TeclaApp.persistence.isSelfScanningEnabled())
-					AutomaticScan.setExtendedTimer();
+					AutoScanManager.setExtendedTimer();
 			}
 			
 		}
@@ -448,8 +466,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
 		if (mBound) unbindService(mConnection);
 		SEPManager.stop(getApplicationContext());
-		if (mVisualOverlay != null) {
-			mVisualOverlay.hide();
+		if (mTeclaOverlay != null) {
+			mTeclaOverlay.hideAll();
 		}
 		
 		if (mFullscreenSwitch != null) {

@@ -3,7 +3,7 @@ package com.android.tecla.addon;
 import android.os.Handler;
 import android.os.Message;
 
-public class AutomaticScan {
+public class AutoScanManager {
 	private static final String tag = "AutomaticScan";
 	
 	private static final int TICK = 0x33;
@@ -25,9 +25,9 @@ public class AutomaticScan {
 	
 	private static void tick() {
 		sHandler.removeMessages(TICK);
-		if(TeclaApp.overlay.isVisible()
-				&& !TeclaApp.overlay.isPreview()) {
-			TeclaApp.overlay.scanNextHUDButton();
+		if(TeclaApp.a11yservice.getOverlay().isVisible()
+				&& !TeclaApp.a11yservice.getOverlay().isPreview()) {
+			TeclaApp.a11yservice.getOverlay().scanNextHUDButton();
 		} else if(TeclaApp.getInstance().isSupportedIMERunning()) {
 			IMEAdapter.scanNext();			
 		}
@@ -36,7 +36,7 @@ public class AutomaticScan {
 		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay());		
 	}
 	
-	public static void startAutoScan() {
+	public static void start() {
 		if(sIsScsanning) return;
 		sIsScsanning = true;
 		Message msg = new Message();
@@ -44,7 +44,7 @@ public class AutomaticScan {
 		sHandler.sendMessageDelayed(msg, TeclaApp.persistence.getScanDelay());
 	}
 	
-	public static void stopAutoScan() {
+	public static void stop() {
 		if(!sIsScsanning) return;
 		sHandler.removeMessages(TICK);
 		sIsScsanning = false;

@@ -23,12 +23,12 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.android.tecla.addon.TeclaApp;
 
-public class TeclaHUDOverlay extends SimpleOverlay {
+public class TeclaHUD extends SimpleOverlay {
 
 	/**
 	 * Tag used for logging in the whole framework
 	 */
-	public static final String CLASS_TAG = "TeclaHUDOverlay";
+	public static final String CLASS_TAG = "TeclaHUD";
 
 	private final static byte HUD_BTN_TOP = 0;
 	private final static byte HUD_BTN_TOPRIGHT = 1;
@@ -50,7 +50,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	private float scan_alpha_max;
 
 	private final WindowManager mWindowManager;
-	private static TeclaHUDOverlay sInstance;
+	private static TeclaHUD sInstance;
 
 	private ArrayList<TeclaHUDButtonView> mHUDPad;
 	private ArrayList<AnimatorSet> mHUDAnimators;
@@ -58,7 +58,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 
 	private byte mPage;
 	
-	public TeclaHUDOverlay(Context context) {
+	public TeclaHUD(Context context) {
 		super(context);
 
 		mContext = context;
@@ -155,7 +155,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 	};
 
 	public static void selectScanHighlighted() {
-		TeclaHUDOverlay.sInstance.scanTrigger();
+		TeclaHUD.sInstance.scanTrigger();
 	}
 
 	protected void scanTrigger() {
@@ -235,7 +235,7 @@ public class TeclaHUDOverlay extends SimpleOverlay {
 		}
 		
 		if(TeclaApp.persistence.isSelfScanningEnabled())
-			AutomaticScan.resetTimer();
+			AutoScanManager.resetTimer();
 	}
 
 	private void turnPage() {

@@ -4,28 +4,51 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.view.accessibility.AccessibilityNodeInfo;
+import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
-public class TeclaVisualOverlay {
+public class TeclaOverlay {
+
+	/**
+	 * Tag used for logging in the whole framework
+	 */
+	public static final String CLASS_TAG = "TeclaOverlay";
 
 	private Context mContext;
 	private TeclaHighlighter mHighlighter;
-	private TeclaHUDOverlay mHUD;
+	private TeclaHUD mHUD;
 	
-	public TeclaVisualOverlay(Context context) {
+	public TeclaOverlay(Context context) {
 		mContext = context;
 		mHighlighter = new TeclaHighlighter(context);
-		mHUD = new TeclaHUDOverlay(context);
+		mHUD = new TeclaHUD(context);
+		TeclaStatic.logD(CLASS_TAG, "Overlay created");
 	}
 	
-	public void show() {
-		mHighlighter.show();
+	public void showAll() {
+		showHighlighter();
+		showHUD();
+	}
+	
+	public void hideAll() {
+		hideHUD();
+		hideHighlighter();
+	}
+	
+	public void showHUD() {
 		mHUD.show();
 	}
 	
-	public void hide() {
-		mHighlighter.hide();
+	private void showHighlighter() {
+		mHighlighter.show();
+	}
+	
+	public void hideHUD() {
 		mHUD.hide();
+	}
+	
+	private void hideHighlighter() {
+		mHighlighter.hide();
 	}
 	
 	public boolean isVisible() {
@@ -42,12 +65,12 @@ public class TeclaVisualOverlay {
 
 	public void showPreviewHUD() {
 		mHUD.setPreviewHUD(true);
-		show();
+		showAll();
 	}
 
 	public void hidePreviewHUD() {
 		mHUD.setPreviewHUD(false);
-		hide();
+		hideAll();
 	}
 
 	public void highlightNode(AccessibilityNodeInfo selectedNode) {

@@ -33,15 +33,19 @@ public class TeclaShieldManager {
 	private Context mContext;
 
 	public TeclaShieldManager(Context context) {
-		mContext = context;
-		//init(app.getApplicationContext());
+		init(context);
+//		init();
 	}
 
-//	private void init(Context context) {
+//	private void init() {
+	private void init(Context context) {
+		mContext = context;
+		bindToTeclaShieldService();
+
 //		//mShieldListener = activity;
 //		//mContext.registerReceiver(mReceiver, new IntentFilter(TeclaShieldService.ACTION_SHIELD_CONNECTED));
 //		//mContext.registerReceiver(mReceiver, new IntentFilter(TeclaShieldService.ACTION_SHIELD_DISCONNECTED));
-//	}
+	}
 //	
 //	/*
 //	 * Stops the SEP if it is running
@@ -59,9 +63,8 @@ public class TeclaShieldManager {
 	 * with the last known Tecla Shield
 	 */
 	public void connect(OnConnectionAttemptListener listener) {
-		bindToTeclaShieldService();
 		if (mBound == true) {
-			mTeclaShieldService.connect(listener);
+			mTeclaShieldService.discover(listener);
 		} else {
 			listener.onConnetionFailed(ERROR_SERVICE_NOT_BOUND);
 		}

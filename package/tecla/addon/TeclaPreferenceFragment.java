@@ -64,6 +64,7 @@ implements OnPreferenceClickListener
 		mPrefConnectToShield.setOnPreferenceChangeListener(sInstance);
 		mPrefTempDisconnect.setOnPreferenceChangeListener(sInstance);
 
+		mProgressDialog = new ProgressDialog((TeclaSettingsActivity)getActivity());
 		mOnConnectionAttemptListener = new OnConnectionAttemptListener() {
 
 			@Override
@@ -85,20 +86,22 @@ implements OnPreferenceClickListener
 
 			@Override
 			public void onConnetionFailed(int error) {
-				dismissDialog();
 				switch(error) {
 				case TeclaShieldManager.ERROR_BT_NOT_SUPPORTED:
 				case TeclaShieldManager.ERROR_SERVICE_NOT_BOUND:
 				case TeclaShieldManager.ERROR_SHIELD_NOT_FOUND:
 					TeclaStatic.logE(CLASS_TAG, getString(R.string.couldnt_connect_shield));
 				}
+				dismissProgressDialog();
+				mPrefConnectToShield.setChecked(false);
 			}
 
 			@Override
 			public void onConnetionEstablished() {
+				dismissProgressDialog();
+				showTeclaOverlay();
 			}
 		};
-		mProgressDialog = new ProgressDialog((TeclaSettingsActivity)getActivity());
 
 	}
 
@@ -132,11 +135,11 @@ implements OnPreferenceClickListener
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setSelfScanningEnabled(true);
 				//if(TeclaApp.persistence.isFullscreenEnabled())
-				AutomaticScan.startAutoScan();
+				AutoScanManager.start();
 			} else {
 				TeclaApp.persistence.setSelfScanningEnabled(false);
 				//if(TeclaApp.persistence.isFullscreenEnabled() )
-				AutomaticScan.stopAutoScan();
+				AutoScanManager.stop();
 			}
 			return true;
 		}
@@ -144,17 +147,17 @@ implements OnPreferenceClickListener
 			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setInverseScanningEnabled(true);
-				TeclaApp.setFullscreenSwitchLongClick(false);
+				TeclaApp.a11yservice.setFullscreenSwitchLongClick(false);
 				if(TeclaApp.persistence.isFullscreenEnabled() 
 						&& TeclaApp.persistence.isSelfScanningEnabled()) {
-					AutomaticScan.stopAutoScan();
+					AutoScanManager.stop();
 				}
 			} else {
 				TeclaApp.persistence.setInverseScanningEnabled(false);
-				TeclaApp.setFullscreenSwitchLongClick(true);
+				TeclaApp.a11yservice.setFullscreenSwitchLongClick(true);
 				if(TeclaApp.persistence.isFullscreenEnabled() 
 						&& TeclaApp.persistence.isSelfScanningEnabled()) {
-					AutomaticScan.startAutoScan();
+					AutoScanManager.start();
 				}
 			}
 			return true;
@@ -179,7 +182,7 @@ implements OnPreferenceClickListener
 			} else {
 				TeclaStatic.logD(CLASS_TAG, "User wants to cancel Shield connection!");
 				TeclaApp.getShieldManager().disconnect();
-				dismissDialog();
+				dismissProgressDialog();
 				if (!mFullscreenMode.isChecked()) {
 					mPrefTempDisconnect.setChecked(false);
 					mPrefTempDisconnect.setEnabled(false);
@@ -221,56 +224,28 @@ implements OnPreferenceClickListener
 		return false;
 	}
 
-	public void uncheckFullScreenMode() {
-		if(!TeclaApp.persistence.isFullscreenEnabled()) {
-			mFullscreenMode.setChecked(false);
-		}
-	}
+	//	private void onTeclaShieldDiscoveryFinishedUpdatePrefs() {
+	//		mPrefConnectToShield.setChecked(false);
+	//		mPrefTempDisconnect.setChecked(false);
+	//		mPrefTempDisconnect.setEnabled(false);
+	///*		if (!mConnectionCancelled) 
+	//			TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
+	//*/	}
 
-	public void onResumeSettingsActivityUpdatePrefs() {
-		mFullscreenMode.setChecked(TeclaApp.persistence.isFullscreenEnabled());
-		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
-		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningEnabled());;
-	}
-
-	private void onCancelDiscoveryDialogUpdatePrefs() {
-		mConnectionCancelled = true;
-		mPrefConnectToShield.setChecked(false);
-		mPrefTempDisconnect.setChecked(false);
-		mPrefTempDisconnect.setEnabled(false);
-	}
-
-	private void onTeclaShieldDiscoveryFinishedUpdatePrefs() {
-		mPrefConnectToShield.setChecked(false);
-		mPrefTempDisconnect.setChecked(false);
-		mPrefTempDisconnect.setEnabled(false);
-/*		if (!mConnectionCancelled) 
-			TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
-*/	}
-
-	private void onTeclaShieldConnectedUpdatePrefs() {
-		mPrefTempDisconnect.setEnabled(true);
-		mPrefConnectToShield.setChecked(true);
-		//		mPrefMorse.setEnabled(true);
-		//		mPrefPersistentKeyboard.setChecked(true);
-	}
-
-	private void onTeclaShieldDisconnectedUpdatePrefs() {
-		mPrefTempDisconnect.setChecked(false);
-		mPrefTempDisconnect.setEnabled(false);
-	}
-
-	/*
-	 * Dismisses progress dialog without triggerint it's OnCancelListener
-	 */
-	private void dismissDialog() {
-		if (mProgressDialog != null && mProgressDialog.isShowing()) {
-			mProgressDialog.dismiss();
-		}
-	}
-
-	private void dismissProgressDialog() {
-		dismissDialog();
+	//	private void onTeclaShieldConnectedUpdatePrefs() {
+	//		mPrefTempDisconnect.setEnabled(true);
+	//		mPrefConnectToShield.setChecked(true);
+	//		//		mPrefMorse.setEnabled(true);
+	//		//		mPrefPersistentKeyboard.setChecked(true);
+	//	}
+	//
+	//	private void onTeclaShieldDisconnectedUpdatePrefs() {
+	//		mPrefTempDisconnect.setChecked(false);
+	//		mPrefTempDisconnect.setEnabled(false);
+	//	}
+	//
+	private void showTeclaOverlay() {
+		TeclaApp.a11yservice.getOverlay().showAll();
 	}
 
 	private void showDiscoveryDialog() {
@@ -282,6 +257,34 @@ implements OnPreferenceClickListener
 			}
 		});
 		mProgressDialog.show();
+	}
+
+	/*
+	 * Dismisses progress dialog without triggerint it's OnCancelListener
+	 */
+	private void dismissProgressDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
+		}
+	}
+
+	private void onCancelDiscoveryDialogUpdatePrefs() {
+		mConnectionCancelled = true;
+		mPrefConnectToShield.setChecked(false);
+		mPrefTempDisconnect.setChecked(false);
+		mPrefTempDisconnect.setEnabled(false);
+	}
+
+	public void onResumeSettingsActivityUpdatePrefs() {
+		mFullscreenMode.setChecked(TeclaApp.persistence.isFullscreenEnabled());
+		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
+		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningEnabled());;
+	}
+
+	public void uncheckFullScreenMode() {
+		if(!TeclaApp.persistence.isFullscreenEnabled()) {
+			mFullscreenMode.setChecked(false);
+		}
 	}
 
 }
