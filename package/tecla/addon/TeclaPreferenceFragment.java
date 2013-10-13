@@ -119,17 +119,17 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			if (newValue.toString().equals("true")) {
 				mConnectionCancelled = false;
 				
-				if (!TeclaSettingsActivity.getTeclaShieldConnect().getBluetoothAdapter().isEnabled()) {
+				if (!TeclaApp.getTeclaShieldConnect().getBluetoothAdapter().isEnabled()) {
 					startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
 				}else{	
 				
-					if(!TeclaSettingsActivity.getTeclaShieldConnect().discoverShield())
+					if(!TeclaApp.getTeclaShieldConnect().discoverShield())
 						mPrefConnectToShield.setChecked(false);
 					else
-						((TeclaSettingsActivity)getActivity()).showDiscoveryDialog();
+						TeclaSettingsActivity.getInstance().showDiscoveryDialog();
 				}
 			} else {
-				((TeclaSettingsActivity)getActivity()).dismissDialog();
+				TeclaSettingsActivity.getInstance().dismissDialog();
 				if (!mFullscreenMode.isChecked()) {
 					mPrefTempDisconnect.setChecked(false);
 					mPrefTempDisconnect.setEnabled(false);
@@ -137,7 +137,7 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 					mPrefInverseScanning.setChecked(false);
 //					mPrefPersistentKeyboard.setChecked(false);
 				}
-				TeclaSettingsActivity.getTeclaShieldConnect().stopShieldService();
+				TeclaApp.getTeclaShieldConnect().stopShieldService();
 			}
 			return true;
 		}
@@ -145,13 +145,13 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			TeclaStatic.logD(CLASS_TAG, "Temp shield disconnect preference changed!");
 			if (newValue.toString().equals("true")) {
 				mPrefConnectToShield.setEnabled(false);
-				TeclaSettingsActivity.getTeclaShieldConnect().stopShieldService();
+				TeclaApp.getTeclaShieldConnect().stopShieldService();
 				Handler mHandler = new Handler();
 				Runnable mReconnect = new Runnable() {
 					
 					public void run() {
 						TeclaStatic.logD(CLASS_TAG, "Re-enabling discovery");
-						TeclaSettingsActivity.getTeclaShieldConnect().discoverShield();
+						TeclaApp.getTeclaShieldConnect().discoverShield();
 						mPrefConnectToShield.setEnabled(true);
 					}
 				};

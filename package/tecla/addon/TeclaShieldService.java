@@ -332,7 +332,7 @@ public class TeclaShieldService extends Service implements Runnable {
 		Boolean success = false;
 
 		BluetoothAdapter bluetooth_adapter = null;
-		TeclaShieldConnect shield_connect = TeclaSettingsActivity.getTeclaShieldConnect();
+		TeclaShieldConnect shield_connect = TeclaApp.getTeclaShieldConnect();
 		if(shield_connect != null)
 			bluetooth_adapter = shield_connect.getBluetoothAdapter();
 		
@@ -413,7 +413,7 @@ public class TeclaShieldService extends Service implements Runnable {
 			// See http://developer.android.com/reference/android/bluetooth/BluetoothSocket.html#connect%28%29
 			// for why the cancelDiscovery() call is necessary
 			BluetoothAdapter bluetooth_adapter = null;
-			TeclaShieldConnect shield_connect = TeclaSettingsActivity.getTeclaShieldConnect();
+			TeclaShieldConnect shield_connect = TeclaApp.getTeclaShieldConnect();
 			if(shield_connect != null)
 				bluetooth_adapter = shield_connect.getBluetoothAdapter();
 			
