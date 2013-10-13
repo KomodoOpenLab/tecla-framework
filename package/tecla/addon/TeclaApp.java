@@ -39,7 +39,6 @@ public class TeclaApp extends Application {
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
-	public static SingleSwitchTouchInterface fullscreenswitch;
 	public static TeclaSettingsActivity settingsactivity;
 
 	private PowerManager power_manager;
@@ -141,15 +140,6 @@ public class TeclaApp extends Application {
 
 	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
 		settingsactivity = settingsactivity_instance;
-	}
-
-	public static void setFullscreenSwitch (SingleSwitchTouchInterface fullscreenswitch_instance) {
-		fullscreenswitch = fullscreenswitch_instance;
-	}
-	
-	public static void setFullscreenSwitchLongClick(boolean enabled) {
-		if(fullscreenswitch != null)
-			fullscreenswitch.setLongClick(enabled);
 	}
 	
 	private void processFrameworkOptions() {

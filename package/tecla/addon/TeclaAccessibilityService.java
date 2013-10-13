@@ -50,7 +50,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private int mNodeIndex;
 
 	private static TeclaVisualOverlay mVisualOverlay;
-	private SingleSwitchTouchInterface mFullscreenSwitch;
+	private static SingleSwitchTouchInterface mFullscreenSwitch;
 
 	protected static ReentrantLock mActionLock;
 	
@@ -78,12 +78,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		if(mVisualOverlay == null) {
 			mVisualOverlay = new TeclaVisualOverlay(this);
-			//TeclaApp.setVisualOverlay(mVisualOverlay);
 		}
 		
 		if (mFullscreenSwitch == null) {
-			mFullscreenSwitch = new SingleSwitchTouchInterface(this);	
-			TeclaApp.setFullscreenSwitch(mFullscreenSwitch);		
+			mFullscreenSwitch = new SingleSwitchTouchInterface(this);			
 		}
 
 		// Bind to SwitchEventProvider
@@ -103,6 +101,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			mVisualOverlay = new TeclaVisualOverlay(sInstance);
 			return mVisualOverlay;
 		}else return mVisualOverlay;
+	}
+	
+	public static SingleSwitchTouchInterface getFullscreenSwitch (){
+		if (mFullscreenSwitch == null) {
+			mFullscreenSwitch = new SingleSwitchTouchInterface(sInstance);	
+			return mFullscreenSwitch;		
+		}else return mFullscreenSwitch;
 	}
 	
 	public void hideFullscreenSwitch() {
@@ -626,4 +631,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		}
 	};
+	
+	public static void setFullscreenSwitchLongClick(boolean enabled) {
+		if(mFullscreenSwitch != null)
+			mFullscreenSwitch.setLongClick(enabled);
+	}
+
 }
