@@ -39,7 +39,6 @@ public class TeclaApp extends Application {
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
-	public static TeclaSettingsActivity settingsactivity;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -137,10 +136,6 @@ public class TeclaApp extends Application {
 		a11yservice = a11yservice_instance;
 		getInstance().processFrameworkOptions();
 	}
-
-	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
-		settingsactivity = settingsactivity_instance;
-	}
 	
 	private void processFrameworkOptions() {
 		if (isTeclaFrameworkReady()) {
@@ -192,9 +187,6 @@ public class TeclaApp extends Application {
 		AutomaticScan.stopAutoScan();				
 		TeclaAccessibilityService.getTeclaOverlay().hide();
 		TeclaApp.persistence.setFullscreenEnabled(false);
-		if(TeclaApp.settingsactivity != null) {
-			TeclaApp.settingsactivity.uncheckFullScreenMode();
-		}
 	}
 	
 	public void answerCall() {
