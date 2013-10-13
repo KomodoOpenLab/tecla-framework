@@ -45,7 +45,6 @@ public class TeclaSettingsActivity extends Activity
 		mProgressDialog = new ProgressDialog(this);
 
 		initOnboarding();
-		TeclaApp.setSettingsActivityInstance(this);
 
 		if(mTeclaShieldManager == null)
 			mTeclaShieldManager = new TeclaShieldManager(this);
@@ -125,8 +124,6 @@ public class TeclaSettingsActivity extends Activity
 	
 	@Override
 	protected void onDestroy() {
-
-		TeclaApp.setSettingsActivityInstance(null);
 		super.onDestroy();
 	}
 
