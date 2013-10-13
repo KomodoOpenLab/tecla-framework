@@ -72,12 +72,12 @@ public class TeclaIME extends InputMethodService {
 	@Override
 	public void onStartInputView(EditorInfo info, boolean restarting) {
 		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
-				&& TeclaApp.overlay.isVisible()) {
+				&& TeclaAccessibilityService.getTeclaOverlay().isVisible()) {
 			Message msg = new Message();
 			msg.what = MSG_IMESCAN_SETUP;
 			msg.arg1 = 0;
 			mHandler.sendMessageDelayed(msg, 250);				
-			TeclaApp.overlay.hide();
+			TeclaAccessibilityService.getTeclaOverlay().hide();
 		}
 		
 		super.onStartInputView(info, restarting);
@@ -90,8 +90,8 @@ public class TeclaIME extends InputMethodService {
 		TeclaApp.persistence.setIMEShowing(false);
 		if(TeclaApp.persistence.shouldShowHUD()){
 				//&& !TeclaApp.overlay.isVisible()) {
-			TeclaApp.overlay.showPreviewHUD();
-			TeclaApp.overlay.show();
+			TeclaAccessibilityService.getTeclaOverlay().showPreviewHUD();
+			TeclaAccessibilityService.getTeclaOverlay().show();
 		}
 			
 		super.onFinishInputView(finishingInput);

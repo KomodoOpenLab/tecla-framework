@@ -39,7 +39,6 @@ public class TeclaApp extends Application {
 	public static Persistence persistence;
 	public static TeclaIME ime;
 	public static TeclaAccessibilityService a11yservice;
-	public static TeclaVisualOverlay overlay;
 	public static SingleSwitchTouchInterface fullscreenswitch;
 	public static TeclaSettingsActivity settingsactivity;
 
@@ -134,10 +133,6 @@ public class TeclaApp extends Application {
 		ime = ime_instance;
 		getInstance().processFrameworkOptions();
 	}
-
-	public static void setVisualOverlay (TeclaVisualOverlay overlay_instance) {
-		overlay = overlay_instance;
-	}
 	
 	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
 		a11yservice = a11yservice_instance;
@@ -172,7 +167,7 @@ public class TeclaApp extends Application {
 		else
 			AutomaticScan.stopAutoScan();
 		if (a11yservice != null) {
-			TeclaApp.overlay.show();
+			TeclaAccessibilityService.getTeclaOverlay().show();
 			a11yservice.sendGlobalHomeAction();
 		}
 	}
@@ -181,7 +176,7 @@ public class TeclaApp extends Application {
 		TeclaApp.a11yservice.hideFullscreenSwitch();
 		//TeclaApp.persistence.setSelfScanningEnabled(false);
 		AutomaticScan.stopAutoScan();				
-		TeclaApp.overlay.hide();
+		TeclaAccessibilityService.getTeclaOverlay().hide();
 		/*
 		if(TeclaApp.settingsactivity != null) {
 			TeclaApp.settingsactivity.uncheckFullScreenMode();
@@ -194,7 +189,7 @@ public class TeclaApp extends Application {
 		if(!persistence.isInverseScanningEnabled())
 			AutomaticScan.startAutoScan();
 		if (a11yservice != null) {
-			TeclaApp.overlay.show();
+			TeclaAccessibilityService.getTeclaOverlay().show();
 			a11yservice.showFullscreenSwitch();
 			a11yservice.sendGlobalHomeAction();
 		}
@@ -205,7 +200,7 @@ public class TeclaApp extends Application {
 		TeclaApp.a11yservice.hideFullscreenSwitch();
 		TeclaApp.persistence.setSelfScanningEnabled(false);
 		AutomaticScan.stopAutoScan();				
-		TeclaApp.overlay.hide();
+		TeclaAccessibilityService.getTeclaOverlay().hide();
 		TeclaApp.persistence.setFullscreenEnabled(false);
 		if(TeclaApp.settingsactivity != null) {
 			TeclaApp.settingsactivity.uncheckFullScreenMode();

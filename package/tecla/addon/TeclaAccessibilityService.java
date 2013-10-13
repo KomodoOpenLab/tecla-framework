@@ -49,12 +49,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
 
-	private TeclaVisualOverlay mVisualOverlay;
+	private static TeclaVisualOverlay mVisualOverlay;
 	private SingleSwitchTouchInterface mFullscreenSwitch;
 
 	protected static ReentrantLock mActionLock;
 	
 	private final static String MAP_VIEW = "android.view.View";
+	
 	// For later use for custom actions 
 	//private final static String WEB_VIEW = "Web View";
 
@@ -77,7 +78,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		if(mVisualOverlay == null) {
 			mVisualOverlay = new TeclaVisualOverlay(this);
-			TeclaApp.setVisualOverlay(mVisualOverlay);
+			//TeclaApp.setVisualOverlay(mVisualOverlay);
 		}
 		
 		if (mFullscreenSwitch == null) {
@@ -95,6 +96,13 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 		sInstance = this;
 		TeclaApp.setA11yserviceInstance(this);
+	}
+	
+	public static TeclaVisualOverlay getTeclaOverlay (){
+		if(mVisualOverlay == null) {
+			mVisualOverlay = new TeclaVisualOverlay(sInstance);
+			return mVisualOverlay;
+		}else return mVisualOverlay;
 	}
 	
 	public void hideFullscreenSwitch() {
@@ -348,7 +356,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 		if(sInstance.mVisualOverlay.isVisible()) 
-			TeclaApp.overlay.clearHighlight();
+			getTeclaOverlay().clearHighlight();
 	}
 
 	//	public static void selectActiveNode(int index) {

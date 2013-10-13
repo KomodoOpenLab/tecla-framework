@@ -403,8 +403,8 @@ public class IMEAdapter {
 										//TeclaApp.ime.requestHideSelf(0);
 										IMEStates.reset();
 										TeclaApp.ime.hideWindow();
-										TeclaApp.overlay.hidePreviewHUD();
-										TeclaApp.overlay.show();
+										TeclaAccessibilityService.getTeclaOverlay().hidePreviewHUD();
+										TeclaAccessibilityService.getTeclaOverlay().show();
 										TeclaApp.persistence.setIMEShowing(false);
 									} else {									
 										sState = SCAN_COLUMN;
@@ -481,7 +481,7 @@ public class IMEAdapter {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
 				WordPredictionAdapter.highlightNext();
 			} else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaApp.overlay.hidePreviewHUD();
+				TeclaAccessibilityService.getTeclaOverlay().hidePreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
 			sCurrentRow %= sRowCount + 2;
@@ -493,9 +493,9 @@ public class IMEAdapter {
 					WordPredictionAdapter.highlightNext();
 			}
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaApp.overlay.showPreviewHUD();
+				TeclaAccessibilityService.getTeclaOverlay().showPreviewHUD();
 			} else {
-				TeclaApp.overlay.hidePreviewHUD();
+				TeclaAccessibilityService.getTeclaOverlay().hidePreviewHUD();
 				highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 				}
 		}
@@ -504,7 +504,7 @@ public class IMEAdapter {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
 				WordPredictionAdapter.highlightNext();
 			} else if(IMEStates.sCurrentRow == -1) {
-				TeclaApp.overlay.showPreviewHUD();
+				TeclaAccessibilityService.getTeclaOverlay().showPreviewHUD();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			--sCurrentRow;
 			if (sCurrentRow==-2){
@@ -518,9 +518,9 @@ public class IMEAdapter {
 					WordPredictionAdapter.highlightNext();
 			}
 			if(IMEStates.sCurrentRow == -1) {
-				TeclaApp.overlay.showPreviewHUD();
+				TeclaAccessibilityService.getTeclaOverlay().showPreviewHUD();
 			} else {
-				TeclaApp.overlay.hidePreviewHUD();
+				TeclaAccessibilityService.getTeclaOverlay().hidePreviewHUD();
 				highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 				}
 		}
