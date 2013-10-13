@@ -99,14 +99,14 @@ public class TeclaPreferenceFragment extends PreferenceFragment
 			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setInverseScanningEnabled(true);
-				TeclaApp.setFullscreenSwitchLongClick(false);
+				TeclaAccessibilityService.setFullscreenSwitchLongClick(false);
 				if(TeclaApp.persistence.isFullscreenEnabled() 
 						&& TeclaApp.persistence.isSelfScanningEnabled()) {
 					AutomaticScan.stopAutoScan();
 				}
 			} else {
 				TeclaApp.persistence.setInverseScanningEnabled(false);
-				TeclaApp.setFullscreenSwitchLongClick(true);
+				TeclaAccessibilityService.setFullscreenSwitchLongClick(true);
 				if(TeclaApp.persistence.isFullscreenEnabled() 
 						&& TeclaApp.persistence.isSelfScanningEnabled()) {
 					AutomaticScan.startAutoScan();
