@@ -60,8 +60,6 @@ public class TeclaApp extends Application implements TeclaShieldActionListener {
 
 	TeclaShieldConnect mTeclaShieldManager;
 
-	//private TeclaPreferenceFragment mPreferenceFragment;
-	
 	private Handler handler;
 
 	private Boolean screen_on;
