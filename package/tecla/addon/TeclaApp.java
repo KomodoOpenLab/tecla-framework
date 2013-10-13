@@ -3,21 +3,27 @@ package com.android.tecla.addon;
 
 import com.android.inputmethod.latin.LatinIME;
 
+import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Fragment;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnKeyListener;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -29,7 +35,7 @@ import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-public class TeclaApp extends Application {
+public class TeclaApp extends Application implements TeclaShieldActionListener {
 
 	public static final String CLASS_TAG = "TeclaApp";
 	
@@ -52,6 +58,10 @@ public class TeclaApp extends Application {
 	private InputMethodManager ime_manager;
 	public NotificationManager notification_manager;
 
+	TeclaShieldConnect mTeclaShieldManager;
+
+	//private TeclaPreferenceFragment mPreferenceFragment;
+	
 	private Handler handler;
 
 	private Boolean screen_on;
@@ -101,6 +111,9 @@ public class TeclaApp extends Application {
 		//Intents & Intent Filters
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+		
+		if(mTeclaShieldManager == null)
+			mTeclaShieldManager = new TeclaShieldManager(this);
 		
 	}
 	
@@ -347,6 +360,65 @@ public class TeclaApp extends Application {
 		showIME = enabled;
 	}
 
+	@Override
+	public void onTeclaShieldFound() {
+	}
+
+
+	@Override
+	public void onTeclaShieldDiscoveryFinished(boolean shieldFound, String shieldName) {
+		if(shieldFound) {
+			// Shield found, try to connect
+			TeclaSettingsActivity.getInstance().mProgressDialog.setOnCancelListener(null); //Don't do anything if dialog cancelled
+			TeclaSettingsActivity.getInstance().mProgressDialog.setOnKeyListener(new OnKeyListener() {
+
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+					return true; //Consume all keys once Shield is found (can't cancel with back key)
+				}
+				
+			});
+			TeclaSettingsActivity.getInstance().mProgressDialog.setMessage(getString(R.string.connecting_tecla_shield) +
+					" " + shieldName);
+		} else {
+			TeclaSettingsActivity.getInstance().dismissDialog();
+			
+			TeclaSettingsActivity.getFragment().onTeclaShieldDiscoveryFinishedUpdatePrefs();
+		}
+	}
+
+	@Override
+	public void onTeclaShieldConnected() {
+		TeclaSettingsActivity.getInstance().dismissDialog();
+		TeclaApp.getInstance().turnHUDon();
+		IMEAdapter.setKeyboardView(null);
+//		mPrefMorse.setEnabled(true);
+//		mPrefPersistentKeyboard.setChecked(true);
+		TeclaSettingsActivity.getFragment().onTeclaShieldConnectedUpdatePrefs();
+	}
+
+	@Override
+	public void onTeclaShieldDisconnected() {
+		TeclaSettingsActivity.getInstance().dismissDialog();
+		TeclaApp.getInstance().turnHUDoff();		
+		TeclaSettingsActivity.getFragment().onTeclaShieldDisconnectedUpdatePrefs();
+
+	}
+
+	@Override
+	public void dismissProgressDialog() {
+		TeclaSettingsActivity.getInstance().dismissDialog();
+	}
+
+	@Override
+	public void onBluetoothActivation() {
+		mTeclaShieldManager.discoverShield();
+		TeclaSettingsActivity.getInstance().showDiscoveryDialog();
+	}
+	
+	
+	public static TeclaShieldConnect getTeclaShieldConnect() {
+		return sInstance.mTeclaShieldManager;
+	}
 //	private void logRunningServices() {
 //		for (RunningServiceInfo service_info : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 //			TeclaStatic.logD(CLASS_TAG, service_info.service.getClassName());
