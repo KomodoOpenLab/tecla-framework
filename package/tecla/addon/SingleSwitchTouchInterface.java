@@ -85,6 +85,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 			TeclaApp.getInstance().turnFullscreenOff();
 			TeclaApp.a11yservice.getOverlay().hideHUD(); //FIXME: Why is the touch interface referring to the overlay?
 			TeclaApp.ime.hideWindow();
+            sInstance.getRootView().invalidate();
 			return true;
 		}
 	};
