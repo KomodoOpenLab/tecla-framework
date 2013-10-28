@@ -10,15 +10,15 @@ import ca.idrc.tecla.framework.SimpleOverlay;
 import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idi.tecla.sdk.*;
 
-public class SingleSwitchTouchInterface extends SimpleOverlay {
+public class OverlaySwitch extends SimpleOverlay {
 
 	/**
 	 * Tag used for logging in the whole framework
 	 */
 	public static final String CLASS_TAG = "SingleSwitchTouchInterface";
-	private static SingleSwitchTouchInterface sInstance;
+	private static OverlaySwitch sInstance;
 
-	public SingleSwitchTouchInterface(Context context) {
+	public OverlaySwitch(Context context) {
 		super(context);
 
 		final WindowManager.LayoutParams params = getParams();
@@ -29,7 +29,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		rView.setBackgroundResource(R.drawable.screen_switch_background_normal);
 		rView.setOnTouchListener(mOverlayTouchListener);
 		
-		if(!TeclaApp.persistence.isInverseScanningEnabled()) 
+		if(!TeclaApp.persistence.isInverseScanningSelected()) 
 			setLongClick(true);
 		
 	}
@@ -81,11 +81,7 @@ public class SingleSwitchTouchInterface extends SimpleOverlay {
 		@Override
 		public boolean onLongClick(View v) {
 			TeclaStatic.logV(CLASS_TAG, "Long clicked.  ");
-			sInstance.getRootView().setBackgroundResource(R.drawable.screen_switch_background_normal);
-			TeclaApp.getInstance().turnFullscreenOff();
-			TeclaApp.a11yservice.getOverlay().hideHUD(); //FIXME: Why is the touch interface referring to the overlay?
-			TeclaApp.ime.hideWindow();
-            sInstance.getRootView().invalidate();
+			TeclaApp.a11yservice.disableScreenSwitch();
 			return true;
 		}
 	};

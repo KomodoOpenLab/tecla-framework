@@ -150,7 +150,7 @@ public class SwitchEventProvider extends Service {
 					case TelephonyManager.CALL_STATE_OFFHOOK:
 						//if enabled in prefs, activate speaker phone  whenever the phone is off the hook
 						TeclaStatic.logD(CLASS_TAG, "Phone off the hook");
-						if(TeclaApp.persistence.isSpeakerphoneEnabled()){
+						if(TeclaApp.persistence.isSpeakerphoneSelected()){
 								/* Turn the speaker on after a short delay,
 								 *  so that Jellybean's auto-turnoff-speaker is completed 
 								 *  by PhoneUtils.java .

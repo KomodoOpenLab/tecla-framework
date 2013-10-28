@@ -1,20 +1,22 @@
-package ca.idrc.tecla.highlighter;
+package com.android.tecla.addon;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.SimpleOverlay;
+import ca.idrc.tecla.framework.TeclaStatic;
+import ca.idrc.tecla.highlighter.HighlightBoundsView;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-public class TeclaHighlighter extends SimpleOverlay {
+public class OverlayHighlighter extends SimpleOverlay {
 
-    private static TeclaHighlighter sInstance;
+	public static final String CLASS_TAG = "TeclaApp";
 
     private final HighlightBoundsView mInnerBounds;
     private final HighlightBoundsView mOuterBounds;
     
-	public TeclaHighlighter(Context context) {
+	public OverlayHighlighter(Context context) {
 		super(context);
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
@@ -37,12 +39,13 @@ public class TeclaHighlighter extends SimpleOverlay {
 
 	@Override
 	protected void onShow() {
-		sInstance = this;
+		TeclaStatic.logD(CLASS_TAG, "Showing Highlighter");
+		//sInstance = this;
 	}
 
 	@Override
 	protected void onHide() {
-        sInstance = null;
+		TeclaStatic.logD(CLASS_TAG, "Hiding Highlighter");
         mOuterBounds.clear();
         mInnerBounds.clear();
 	}
@@ -64,19 +67,16 @@ public class TeclaHighlighter extends SimpleOverlay {
         mInnerBounds.postInvalidate();
     }
 
-    public static void highlightNode(AccessibilityNodeInfo node) {
-        if (sInstance == null) {
-            return;
-        }
+    public void highlightNode(AccessibilityNodeInfo node) {
 
-        sInstance.clearHighlight();
+    	clearHighlight();
         if(node != null) {
-            sInstance.mOuterBounds.setStrokeWidth(20);
-            sInstance.mOuterBounds.add(node);
-            sInstance.mOuterBounds.postInvalidate();        	
-            sInstance.mInnerBounds.setStrokeWidth(6);
-            sInstance.mInnerBounds.add(node);
-            sInstance.mInnerBounds.postInvalidate();
+            mOuterBounds.setStrokeWidth(20);
+            mOuterBounds.add(node);
+            mOuterBounds.postInvalidate();        	
+            mInnerBounds.setStrokeWidth(6);
+            mInnerBounds.add(node);
+            mInnerBounds.postInvalidate();
         	
         }
     }

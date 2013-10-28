@@ -23,21 +23,21 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.android.tecla.addon.TeclaApp;
 
-public class TeclaHUD extends SimpleOverlay {
+public class OverlayHUD extends SimpleOverlay {
 
 	/**
 	 * Tag used for logging in the whole framework
 	 */
 	public static final String CLASS_TAG = "TeclaHUD";
 
-	private final static byte HUD_BTN_TOP = 0;
-	private final static byte HUD_BTN_TOPRIGHT = 1;
-	private final static byte HUD_BTN_RIGHT = 2;
-	private final static byte HUD_BTN_BOTTOMRIGHT = 3;
-	private final static byte HUD_BTN_BOTTOM = 4;
-	private final static byte HUD_BTN_BOTTOMLEFT = 5;
-	private final static byte HUD_BTN_LEFT = 6;
-	private final static byte HUD_BTN_TOPLEFT = 7;
+	public final static byte HUD_BTN_TOP = 0;
+	public final static byte HUD_BTN_TOPRIGHT = 1;
+	public final static byte HUD_BTN_RIGHT = 2;
+	public final static byte HUD_BTN_BOTTOMRIGHT = 3;
+	public final static byte HUD_BTN_BOTTOM = 4;
+	public final static byte HUD_BTN_BOTTOMLEFT = 5;
+	public final static byte HUD_BTN_LEFT = 6;
+	public final static byte HUD_BTN_TOPLEFT = 7;
 
 	private View mRootView;
 	private int mWidth;
@@ -50,15 +50,15 @@ public class TeclaHUD extends SimpleOverlay {
 	private float scan_alpha_max;
 
 	private final WindowManager mWindowManager;
-	private static TeclaHUD sInstance;
+	//private static TeclaHUD sInstance;
 
 	private ArrayList<TeclaHUDButtonView> mHUDPad;
 	private ArrayList<AnimatorSet> mHUDAnimators;
-	private byte mScanIndex;
+	private int mScanIndex;
 
-	private byte mPage;
+	private int mPage;
 	
-	public TeclaHUD(Context context) {
+	public OverlayHUD(Context context) {
 		super(context);
 
 		mContext = context;
@@ -125,13 +125,13 @@ public class TeclaHUD extends SimpleOverlay {
 	
 	@Override
 	protected void onShow() {
-		sInstance = this;
+		//sInstance = this;
 		mRootView = getRootView();
 		mRootView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
 			
 			@Override
 			public void onSystemUiVisibilityChange(int visibility) {
-				sInstance.updateHUDLayout();
+				updateHUDLayout();
 			}
 		});
 		mContext.registerReceiver(mConfigChangeReceiver, 
@@ -142,7 +142,7 @@ public class TeclaHUD extends SimpleOverlay {
 	@Override
 	protected void onHide() {
 		mContext.unregisterReceiver(mConfigChangeReceiver);
-		sInstance = null;
+		//sInstance = null;
 	}
 
 	protected BroadcastReceiver mConfigChangeReceiver = new BroadcastReceiver() {
@@ -154,91 +154,19 @@ public class TeclaHUD extends SimpleOverlay {
 		}		
 	};
 
-	public static void selectScanHighlighted() {
-		TeclaHUD.sInstance.scanTrigger();
+//	protected void scanTrigger() {
+//
+//	}
+	
+	public int getIndex() {
+		return mScanIndex;
 	}
 
-	protected void scanTrigger() {
-
-		AccessibilityNodeInfo node = TeclaApp.a11yservice.mSelectedNode;
-		AccessibilityNodeInfo parent = null;
-		if(node != null) parent = node.getParent();
-		int actions = 0;
-		if(parent != null) actions = node.getParent().getActions();
-		
-		if(mPage == 0) {
-			switch (mScanIndex){
-			case HUD_BTN_TOP:
-				if(TeclaAccessibilityService.isFirstScrollNode(node) 
-						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
-						== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
-					parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
-				} else
-					TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_UP);
-				break;
-			case HUD_BTN_BOTTOM:
-				if(TeclaAccessibilityService.isLastScrollNode(node)
-						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
-						== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
-					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-				} else 
-					TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
-				break;
-			case HUD_BTN_LEFT:
-				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
-				break;
-			case HUD_BTN_RIGHT:
-				TeclaAccessibilityService.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
-				break;
-			case HUD_BTN_TOPRIGHT:
-				TeclaAccessibilityService.clickActiveNode();
-				break;
-			case HUD_BTN_BOTTOMLEFT:
-				TeclaApp.a11yservice.sendGlobalBackAction();
-				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
-					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
-					TeclaApp.ime.pressBackKey();
-				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
-				break;
-			case HUD_BTN_TOPLEFT:
-				TeclaApp.a11yservice.sendGlobalNotificationAction();
-				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
-					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
-					TeclaApp.ime.pressHomeKey();
-				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
-				break;
-			case HUD_BTN_BOTTOMRIGHT:
-				turnPage();
-				break;
-			}
-		} else if(mPage == 1) {
-			switch (mScanIndex){
-			case HUD_BTN_TOP:
-				break;
-			case HUD_BTN_BOTTOM:
-				break;
-			case HUD_BTN_LEFT:
-				break;
-			case HUD_BTN_RIGHT:
-				break;
-			case HUD_BTN_TOPRIGHT:
-				break;
-			case HUD_BTN_BOTTOMLEFT:
-				break;
-			case HUD_BTN_TOPLEFT:
-				TeclaApp.a11yservice.sendGlobalHomeAction();
-				break;
-			case HUD_BTN_BOTTOMRIGHT:
-				turnPage();
-				break;
-			}
-		}
-		
-		if(TeclaApp.persistence.isSelfScanningEnabled())
-			AutoScanManager.resetTimer();
+	public int getPage() {
+		return mPage;
 	}
 
-	private void turnPage() {
+	public void turnPage() {
 		++mPage;
 		mPage%=2;
 		updateLayout();

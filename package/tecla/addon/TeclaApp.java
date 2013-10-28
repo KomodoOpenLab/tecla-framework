@@ -6,7 +6,6 @@ import com.android.inputmethod.latin.LatinIME;
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
 import ca.idrc.tecla.framework.TeclaStatic;
-import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.app.ActivityManager;
 import android.app.Application;
@@ -148,7 +147,7 @@ public class TeclaApp extends Application {
 
 	public static void setIMEInstance (TeclaIME ime_instance) {
 		ime = ime_instance;
-		getInstance().processFrameworkOptions();
+		getInstance().engageFramework();
 	}
 
 //	public static void setVisualOverlay (TeclaOverlay overlay_instance) {
@@ -157,7 +156,7 @@ public class TeclaApp extends Application {
 	
 	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
 		a11yservice = a11yservice_instance;
-		getInstance().processFrameworkOptions();
+		getInstance().engageFramework();
 	}
 
 //	public static void setSettingsActivityInstance (TeclaSettingsActivity settingsactivity_instance) {
@@ -168,10 +167,10 @@ public class TeclaApp extends Application {
 //		fullscreenswitch = fullscreenswitch_instance;
 //	}
 	
-	private void processFrameworkOptions() {
+	private void engageFramework() {
 		if (isTeclaFrameworkReady()) {
-			if (persistence.isFullscreenEnabled()) {
-				turnFullscreenOn();
+			if (persistence.isScreenSwitchSelected()) {
+				TeclaApp.a11yservice.enableScreenSwitch();
 			}
 		}		
 	}
@@ -200,29 +199,6 @@ public class TeclaApp extends Application {
 //		*/
 //	}
 //	
-	public void turnFullscreenOn() {
-		persistence.setSelfScanningEnabled(true);
-		if(!persistence.isInverseScanningEnabled())
-			AutoScanManager.start();
-		if (a11yservice != null) {
-			//TeclaApp.overlay.showAll();
-			a11yservice.showFullscreenSwitch();
-			a11yservice.sendGlobalHomeAction();
-		}
-		TeclaApp.persistence.setFullscreenEnabled(true);
-	}
-	
-	public void turnFullscreenOff() {
-		TeclaApp.a11yservice.hideFullscreenSwitch();
-		TeclaApp.persistence.setSelfScanningEnabled(false);
-		AutoScanManager.stop();				
-		//TeclaApp.overlay.hideAll();
-		TeclaApp.persistence.setFullscreenEnabled(false);
-//		if(TeclaApp.settingsactivity != null) {
-//			TeclaApp.settingsactivity.uncheckFullScreenMode();
-//		}
-	}
-	
 	public void answerCall() {
 		// Simulate a press of the headset button to pick up the call
 		Intent buttonDown = new Intent(Intent.ACTION_MEDIA_BUTTON);             
