@@ -119,11 +119,11 @@ public class Persistence {
 //		return is_hud_cancelled;
 //	}
 
-	public boolean isFullscreenEnabled() {
+	public boolean isScreenSwitchSelected() {
 		return shared_prefs.getBoolean(PREF_FULLSCREEN_MODE, false);
 	}
 
-	public void setFullscreenEnabled(boolean value) {
+	public void setScreenSwitchSelected(boolean value) {
 		prefs_editor.putBoolean(PREF_FULLSCREEN_MODE, value);
 		prefs_editor.commit();
 	}
@@ -142,7 +142,7 @@ public class Persistence {
 	//		prefs_editor.commit();
 	//	}
 	//
-	public boolean isSpeakerphoneEnabled() {
+	public boolean isSpeakerphoneSelected() {
 		return shared_prefs.getBoolean(PREF_SPEAKERPHONE_SWITCH, false);
 	}
 
@@ -169,21 +169,21 @@ public class Persistence {
 		return mSwitchMap;
 	}
 
-	public boolean isSelfScanningEnabled() {
+	public boolean isSelfScanningSelected() {
 		return shared_prefs.getBoolean(PREF_SELF_SCANNING, false);
 	}
 
-	public void setSelfScanningEnabled(boolean enabled) {
-		prefs_editor.putBoolean(PREF_SELF_SCANNING, enabled);
+	public void setSelfScanningSelected(boolean selected) {
+		prefs_editor.putBoolean(PREF_SELF_SCANNING, selected);
 		prefs_editor.commit();
 	}
 
-	public boolean isInverseScanningEnabled() {
+	public boolean isInverseScanningSelected() {
 		return shared_prefs.getBoolean(PREF_INVERSE_SCANNING, false);
 	}
 
-	public void setInverseScanningEnabled(boolean enabled) {
-		prefs_editor.putBoolean(PREF_INVERSE_SCANNING, enabled);
+	public void setInverseScanningSelected(boolean selected) {
+		prefs_editor.putBoolean(PREF_INVERSE_SCANNING, selected);
 		prefs_editor.commit();
 	}
 
@@ -210,7 +210,7 @@ public class Persistence {
 		return shared_prefs.getInt(PREF_FULL_RESET_TIMEOUT,DEFAULT_FULL_RESET_TIMEOUT);
 	}
 
-	public boolean isMorseModeEnabled() {
+	public boolean isMorseModeSelected() {
 		return shared_prefs.getBoolean(PREF_MORSE_MODE, false);
 	}
 	
@@ -218,26 +218,26 @@ public class Persistence {
 	//		return shared_prefs.getBoolean(PREF_HUD, false);
 	//	}
 	//
-	//	public void setHUDRunning(boolean enabled) {
-	//		prefs_editor.putBoolean(PREF_HUD, enabled);
+	//	public void setHUDRunning(boolean selected) {
+	//		prefs_editor.putBoolean(PREF_HUD, selected);
 	//		prefs_editor.commit();
 	//	}
 	//
-	//	public boolean isSingleSwitchOverlayEnabled() {
+	//	public boolean isSingleSwitchOverlaySelected() {
 	//		return shared_prefs.getBoolean(PREF_SINGLESWITCH_OVERLAY, false);
 	//	}
 	//
-	//	public void setSingleSwitchOverlayEnabled(boolean enabled) {
-	//		prefs_editor.putBoolean(PREF_SINGLESWITCH_OVERLAY, enabled);
+	//	public void setSingleSwitchOverlaySelected(boolean selected) {
+	//		prefs_editor.putBoolean(PREF_SINGLESWITCH_OVERLAY, selected);
 	//		prefs_editor.commit();
 	//	}
 	//
-	//	public boolean isHUDSelfScanningEnabled() {
+	//	public boolean isHUDSelfScanningSelected() {
 	//		return shared_prefs.getBoolean(PREF_HUD_SELF_SCANNING, false);
 	//	}
 	//
-	//	public void setHUDSelfScanningEnabled(boolean enabled) {
-	//		prefs_editor.putBoolean(PREF_HUD_SELF_SCANNING, enabled);
+	//	public void setHUDSelfScanningSelected(boolean selected) {
+	//		prefs_editor.putBoolean(PREF_HUD_SELF_SCANNING, selected);
 	//		prefs_editor.commit();
 	//	}
 	//

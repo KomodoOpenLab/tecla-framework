@@ -349,7 +349,7 @@ public class TeclaShieldService extends Service implements Runnable {
 			switch_event_provider.injectSwitchEvent(switchChanges, mSwitchStates);
 
 			if (mSwitchStates != SwitchEvent.SWITCH_STATES_DEFAULT) {
-				if(!TeclaApp.persistence.isMorseModeEnabled()) {
+				if(!TeclaApp.persistence.isMorseModeSelected()) {
 					//Disables sending a category.HOME intent when
 					//using Morse repeat-on-switch-down
 					long fullResetDelay=TeclaApp.persistence.getFullResetTimeout();

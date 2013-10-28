@@ -99,7 +99,7 @@ implements OnPreferenceClickListener
 			@Override
 			public void onConnetionEstablished() {
 				dismissProgressDialog();
-				showTeclaOverlay();
+				TeclaApp.a11yservice.showFeedback();
 			}
 		};
 
@@ -120,24 +120,26 @@ implements OnPreferenceClickListener
 	@Override
 	public boolean onPreferenceChange(Preference pref, Object newValue) {
 		if(pref.equals(mFullscreenMode)) {
-			TeclaStatic.logD(CLASS_TAG, "FullscreenMode pressed!");
 			if (newValue.toString().equals("true")) {
-				TeclaApp.getInstance().turnFullscreenOn();
-				mPrefSelfScanning.setChecked(true);
+				TeclaStatic.logD(CLASS_TAG, "User wants to enable full screen mode!");
+				TeclaApp.a11yservice.enableScreenSwitch();
+				//mPrefSelfScanning.setChecked(true);
 			} else {
-				TeclaApp.getInstance().turnFullscreenOff();
-				mPrefSelfScanning.setChecked(false);
+				TeclaStatic.logD(CLASS_TAG, "User wants to disable full screen mode!");
+				//TeclaApp.getInstance().turnFullscreenOff();
+				TeclaApp.a11yservice.disableScreenSwitch();
+				//mPrefSelfScanning.setChecked(false);
 			}
 			return true;
 		}
 		if(pref.equals(mPrefSelfScanning)) {
 			TeclaStatic.logD(CLASS_TAG, "Self scanning preference changed!");
 			if (newValue.toString().equals("true")) {
-				TeclaApp.persistence.setSelfScanningEnabled(true);
+				TeclaApp.persistence.setSelfScanningSelected(true);
 				//if(TeclaApp.persistence.isFullscreenEnabled())
 				AutoScanManager.start();
 			} else {
-				TeclaApp.persistence.setSelfScanningEnabled(false);
+				TeclaApp.persistence.setSelfScanningSelected(false);
 				//if(TeclaApp.persistence.isFullscreenEnabled() )
 				AutoScanManager.stop();
 			}
@@ -146,17 +148,17 @@ implements OnPreferenceClickListener
 		if(pref.equals(mPrefInverseScanning)) {
 			TeclaStatic.logD(CLASS_TAG, "Inverse scanning preference changed!");
 			if (newValue.toString().equals("true")) {
-				TeclaApp.persistence.setInverseScanningEnabled(true);
+				TeclaApp.persistence.setInverseScanningSelected(true);
 				TeclaApp.a11yservice.setFullscreenSwitchLongClick(false);
-				if(TeclaApp.persistence.isFullscreenEnabled() 
-						&& TeclaApp.persistence.isSelfScanningEnabled()) {
+				if(TeclaApp.persistence.isScreenSwitchSelected() 
+						&& TeclaApp.persistence.isSelfScanningSelected()) {
 					AutoScanManager.stop();
 				}
 			} else {
-				TeclaApp.persistence.setInverseScanningEnabled(false);
+				TeclaApp.persistence.setInverseScanningSelected(false);
 				TeclaApp.a11yservice.setFullscreenSwitchLongClick(true);
-				if(TeclaApp.persistence.isFullscreenEnabled() 
-						&& TeclaApp.persistence.isSelfScanningEnabled()) {
+				if(TeclaApp.persistence.isScreenSwitchSelected() 
+						&& TeclaApp.persistence.isSelfScanningSelected()) {
 					AutoScanManager.start();
 				}
 			}
@@ -244,10 +246,10 @@ implements OnPreferenceClickListener
 	//		mPrefTempDisconnect.setEnabled(false);
 	//	}
 	//
-	private void showTeclaOverlay() {
+/*	private void showTeclaOverlay() {
 		TeclaApp.a11yservice.getOverlay().showAll();
 	}
-
+*/
 	private void showDiscoveryDialog() {
 		mProgressDialog.setMessage(getString(R.string.searching_for_shields));
 		mProgressDialog.setOnCancelListener(new OnCancelListener() {
@@ -276,13 +278,13 @@ implements OnPreferenceClickListener
 	}
 
 	public void onResumeSettingsActivityUpdatePrefs() {
-		mFullscreenMode.setChecked(TeclaApp.persistence.isFullscreenEnabled());
-		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningEnabled());
-		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningEnabled());;
+		mFullscreenMode.setChecked(TeclaApp.persistence.isScreenSwitchSelected());
+		mPrefSelfScanning.setChecked(TeclaApp.persistence.isSelfScanningSelected());
+		mPrefInverseScanning.setChecked(TeclaApp.persistence.isInverseScanningSelected());;
 	}
 
 	public void uncheckFullScreenMode() {
-		if(!TeclaApp.persistence.isFullscreenEnabled()) {
+		if(!TeclaApp.persistence.isScreenSwitchSelected()) {
 			mFullscreenMode.setChecked(false);
 		}
 	}

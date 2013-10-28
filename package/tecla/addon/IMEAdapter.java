@@ -393,7 +393,7 @@ public class IMEAdapter {
 			}
 			switch(sState) {
 			case(SCAN_STOPPED):		sState = SCAN_ROW;
-									if(TeclaApp.getInstance().persistence.isSelfScanningEnabled()){
+									if(TeclaApp.getInstance().persistence.isSelfScanningSelected()){
 									AutoScanManager.start();}
 									break;
 			case(SCAN_ROW):			if(sCurrentRow == sRowCount) {
@@ -403,8 +403,9 @@ public class IMEAdapter {
 										//TeclaApp.ime.requestHideSelf(0);
 										IMEStates.reset();
 										TeclaApp.ime.hideWindow();
-										TeclaApp.a11yservice.getOverlay().hidePreviewHUD();
-										TeclaApp.a11yservice.getOverlay().showAll();
+										TeclaApp.a11yservice.getHUD().hide();
+										TeclaApp.a11yservice.getHUD().setPreviewHUD(false);
+										TeclaApp.a11yservice.showFeedback();
 										TeclaApp.persistence.setIMEShowing(false);
 									} else {									
 										sState = SCAN_COLUMN;
@@ -481,7 +482,8 @@ public class IMEAdapter {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
 				WordPredictionAdapter.highlightNext();
 			} else if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaApp.a11yservice.getOverlay().hidePreviewHUD();
+				TeclaApp.a11yservice.getHUD().hide();
+				TeclaApp.a11yservice.getHUD().setPreviewHUD(false);
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			++sCurrentRow;
 			sCurrentRow %= sRowCount + 2;
@@ -493,9 +495,11 @@ public class IMEAdapter {
 					WordPredictionAdapter.highlightNext();
 			}
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount + 1) {
-				TeclaApp.a11yservice.getOverlay().showPreviewHUD();
+				TeclaApp.a11yservice.getHUD().setPreviewHUD(true);
+				TeclaApp.a11yservice.getHUD().show();
 			} else {
-				TeclaApp.a11yservice.getOverlay().hidePreviewHUD();
+				TeclaApp.a11yservice.getHUD().hide();
+				TeclaApp.a11yservice.getHUD().setPreviewHUD(false);
 				highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 				}
 		}
@@ -504,7 +508,8 @@ public class IMEAdapter {
 			if(IMEStates.sCurrentRow == IMEStates.sRowCount ) {
 				WordPredictionAdapter.highlightNext();
 			} else if(IMEStates.sCurrentRow == -1) {
-				TeclaApp.a11yservice.getOverlay().showPreviewHUD();
+				TeclaApp.a11yservice.getHUD().setPreviewHUD(true);
+				TeclaApp.a11yservice.getHUD().show();
 			} else highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, false);
 			--sCurrentRow;
 			if (sCurrentRow==-2){
@@ -518,9 +523,11 @@ public class IMEAdapter {
 					WordPredictionAdapter.highlightNext();
 			}
 			if(IMEStates.sCurrentRow == -1) {
-				TeclaApp.a11yservice.getOverlay().showPreviewHUD();
+				TeclaApp.a11yservice.getHUD().setPreviewHUD(true);
+				TeclaApp.a11yservice.getHUD().show();
 			} else {
-				TeclaApp.a11yservice.getOverlay().hidePreviewHUD();
+				TeclaApp.a11yservice.getHUD().hide();
+				TeclaApp.a11yservice.getHUD().setPreviewHUD(false);
 				highlightKeys(IMEStates.sKeyStartIndex, IMEStates.sKeyEndIndex, true);
 				}
 		}

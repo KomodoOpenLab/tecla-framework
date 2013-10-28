@@ -9,8 +9,8 @@ import com.android.tecla.addon.SwitchEventProvider.LocalBinder;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
+import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.TeclaStatic;
-import ca.idrc.tecla.highlighter.TeclaHighlighter;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;
@@ -49,8 +49,9 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	private ArrayList<AccessibilityNodeInfo> mActiveNodes;
 	private int mNodeIndex;
 
-	private static TeclaOverlay mTeclaOverlay;
-	private SingleSwitchTouchInterface mFullscreenSwitch;
+	private OverlayHUD mHUD;
+	private OverlayHighlighter mHighlighter;
+	private OverlaySwitch mSwitch;
 
 	protected static ReentrantLock mActionLock;
 	
@@ -80,12 +81,16 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
 
-		if(mTeclaOverlay == null) {
-			mTeclaOverlay = new TeclaOverlay(this);
+		if (mHighlighter == null) {
+			mHighlighter = new OverlayHighlighter(this);
 		}
 		
-		if (mFullscreenSwitch == null) {
-			mFullscreenSwitch = new SingleSwitchTouchInterface(this);
+		if (mHUD == null) {
+			mHUD = new OverlayHUD(this);
+		}
+		
+		if (mSwitch == null) {
+			mSwitch = new OverlaySwitch(this);
 			//TeclaApp.setFullscreenSwitch(mFullscreenSwitch);		
 		}
 
@@ -98,43 +103,139 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		
 		SEPManager.start(this);
 
-		mTeclaOverlay.showAll();
-		mFullscreenSwitch.show();
-		mTeclaOverlay.hideAll();
-		mFullscreenSwitch.hide();
+		//mOverlayHighlighter.show();
+		//mOverlayHUD.show();
+		//mFullscreenSwitch.show();
+		//mTeclaOverlay.hide();
+		//mFullscreenSwitch.hide();
 		
 		TeclaApp.setA11yserviceInstance(this);
 	}
 	
-	public static TeclaOverlay getOverlay() {
-		return mTeclaOverlay;
+	public OverlayHUD getHUD() {
+		return mHUD;
+	}
+	
+	public OverlayHighlighter getHighlighter() {
+		return mHighlighter;
 	}
 	
 	public void setFullscreenSwitchLongClick(boolean enabled) {
-		if(mFullscreenSwitch != null)
-			mFullscreenSwitch.setLongClick(enabled);
+		if(mSwitch != null)
+			mSwitch.setLongClick(enabled);
 	}
 	
-	public void hideFullscreenSwitch() {
-		if (mFullscreenSwitch != null) {
-			if (mFullscreenSwitch.isVisible()) {
-				mFullscreenSwitch.hide();
+	private void showHighlighter() {
+		if (mHighlighter != null) {
+			if (!mHighlighter.isVisible()) {
+				mHighlighter.show();
 			}
 		}
 	}
-
-	public void showFullscreenSwitch() {
-		if (mFullscreenSwitch != null) {
-			if (!mFullscreenSwitch.isVisible()) {
-				mFullscreenSwitch.show();
+	
+	private void hideHighlighter() {
+		if (mHighlighter != null) {
+			if (mHighlighter.isVisible()) {
+				mHighlighter.hide();
 			}
 		}
 	}
+	
+	private void showHUD() {
+		if (mHUD != null) {
+			if (!mHUD.isVisible()) {
+				mHUD.show();
+			}
+		}
+	}
+	
+	private void hideHUD() {
+		if (mHUD != null) {
+			if (mHUD.isVisible()) {
+				mHUD.hide();
+			}
+		}
+	}
+	
+	public void showSwitch() {
+		if (mSwitch != null) {
+			if (!mSwitch.isVisible()) {
+				mSwitch.show();
+			}
+		}
+	}
+	
+	public void hideSwitch() {
+		if (mSwitch != null) {
+			if (mSwitch.isVisible()) {
+				mSwitch.hide();
+			}
+		}
+	}
+	
+	private void showAll() {
+		showHUD();
+		showHighlighter();
+		showSwitch();
+	}
+	
+	public boolean isFeedbackVisible() {
+		return (mHighlighter.isVisible() && mHUD.isVisible());
+	}
+	
+	public void enableScreenSwitch() {
+		TeclaApp.persistence.setSelfScanningSelected(true);
+		if(!TeclaApp.persistence.isInverseScanningSelected())
+			AutoScanManager.start();
+		showAll();
+		sendGlobalHomeAction();
+		TeclaApp.persistence.setScreenSwitchSelected(true);
+	}
 
+	public void disableScreenSwitch() {
+		mSwitch.getRootView().setBackgroundResource(R.drawable.screen_switch_background_normal);
+		mSwitch.getRootView().invalidate();
+		TeclaApp.ime.hideWindow();
+		TeclaApp.persistence.setScreenSwitchSelected(false);
+		mSwitch.hide();		
+	}
+
+	public void showFeedback() {
+		showHighlighter();
+		showHUD();
+	}
+	
+	public void hideFeedback() {
+		hideHighlighter();
+		hideHUD();
+	}
+	
+/*	public void turnFullscreenOn() {
+		TeclaApp.persistence.setSelfScanningEnabled(true);
+		if(!TeclaApp.persistence.isInverseScanningEnabled())
+			AutoScanManager.start();
+		showAll();
+		//showFullscreenSwitch();
+		sendGlobalHomeAction();
+		//TeclaApp.persistence.setFullscreenEnabled(true);
+	}
+	
+	public void turnFullscreenOff() {
+		TeclaApp.a11yservice.hideFullscreenSwitch();
+		TeclaApp.persistence.setSelfScanningEnabled(false);
+		AutoScanManager.stop();				
+		//TeclaApp.overlay.hideAll();
+		TeclaApp.persistence.setFullscreenEnabled(false);
+//		if(TeclaApp.settingsactivity != null) {
+//			TeclaApp.settingsactivity.uncheckFullScreenMode();
+//		}
+	}
+	
+*/
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (TeclaApp.getInstance().isSupportedIMERunning()) {
-			if (mTeclaOverlay.isVisible()) {
+			if (isFeedbackVisible()) {
 				int event_type = event.getEventType();
 				TeclaStatic.logD(CLASS_TAG, AccessibilityEvent.eventTypeToString(event_type) + ": " + event.getText());
 
@@ -153,12 +254,12 @@ public class TeclaAccessibilityService extends AccessibilityService {
 						AccessibilityNodeInfo selectednode = findSelectedNode();
 						if(selectednode != null && selectednode.getParent().isScrollable()) {
 							mSelectedNode = selectednode;
-							TeclaHighlighter.highlightNode(mSelectedNode);
+							mHighlighter.highlightNode(mSelectedNode);
 						}
 //						mVisualOverlay.checkAndUpdateHUDHeight();
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
 						mSelectedNode = node;
-						TeclaHighlighter.highlightNode(mSelectedNode);
+						mHighlighter.highlightNode(mSelectedNode);
 						if(mSelectedNode.getClassName().toString().contains(EDITTEXT_CLASSNAME))
 								TeclaApp.ime.showWindow(true);
 					} else if (event_type == AccessibilityEvent.TYPE_VIEW_SELECTED) {
@@ -209,7 +310,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 			if(mFocusedNode != null) {
 				mSelectedNode = mFocusedNode;
 			}
-			TeclaHighlighter.highlightNode(mSelectedNode);
+			mHighlighter.highlightNode(mSelectedNode);
 			if(mPreviousOriginalNode != null) 
 				mPreviousOriginalNode.recycle();
 		}
@@ -223,8 +324,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		while (!q.isEmpty()) {
 			AccessibilityNodeInfo thisnode = q.poll();
 			if(thisnode == null) continue;
-			if(thisnode.isVisibleToUser() && thisnode.isClickable() 
-					&& !thisnode.isScrollable()) {
+			if(isActive(thisnode) && !thisnode.isScrollable()) {
 				mActiveNodes.add(thisnode);
 				if(thisnode.isFocused())
 					mFocusedNode = thisnode;
@@ -293,11 +393,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		nodes = sorted; 
 	}
 
-	public static void selectNode(int direction ) {
+	public void selectNode(int direction ) {
 		selectNode(sInstance.mSelectedNode,  direction );
 	}
 
-	public static void selectNode(AccessibilityNodeInfo refnode, int direction ) {
+	public void selectNode(AccessibilityNodeInfo refnode, int direction ) {
 		NodeSelectionThread thread = new NodeSelectionThread(refnode, direction);
 		thread.start();	
 	}
@@ -357,7 +457,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return result;		
 	}
 
-	public static void clickActiveNode() {
+	public void clickActiveNode() {
 		if(sInstance.mActiveNodes.size() == 0) return;
 		if(sInstance.mSelectedNode == null) sInstance.mSelectedNode = sInstance.mActiveNodes.get(0);
 		
@@ -365,8 +465,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		//Log.i("NODE TO STRING"," " + sInstance.mSelectedNode.toString());
 		
 		sInstance.mSelectedNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-		if(sInstance.mTeclaOverlay.isVisible()) 
-			sInstance.mTeclaOverlay.clearHighlight();
+		if(isFeedbackVisible()) 
+			mHighlighter.clearHighlight();
 	}
 
 	//	public static void selectActiveNode(int index) {
@@ -410,14 +510,14 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		if (event.isAnyPressed()) {
 			isSwitchPressed = true;
 			actions = (String[]) extras.get(SwitchEvent.EXTRA_SWITCH_ACTIONS);
-			if(TeclaApp.persistence.isInverseScanningEnabled()) {
+			if(TeclaApp.persistence.isInverseScanningSelected()) {
 				AutoScanManager.start();
 			}
 		} else if(isSwitchPressed) { // on switch released
 			isSwitchPressed = false;
-			if(TeclaApp.persistence.isInverseScanningEnabled()) {
+			if(TeclaApp.persistence.isInverseScanningSelected()) {
 				if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-				else TeclaHUD.selectScanHighlighted();
+				else selectHighlighted();
 				AutoScanManager.stop();
 			} else {
 				String action_tecla = actions[0];
@@ -426,22 +526,22 @@ public class TeclaAccessibilityService extends AccessibilityService {
 
 				case SwitchEvent.ACTION_NEXT:
 					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanNext();
-					else mTeclaOverlay.scanNext();
+					else mHUD.scanNext();
 					break;
 				case SwitchEvent.ACTION_PREV:
 					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.scanPrevious();
-					else mTeclaOverlay.scanPrevious();
+					else mHUD.scanPrevious();
 					break;
 				case SwitchEvent.ACTION_SELECT:
 					if(IMEAdapter.isShowingKeyboard()) IMEAdapter.selectScanHighlighted();
-					else TeclaHUD.selectScanHighlighted();				
+					else selectHighlighted();				
 					break;
 				case SwitchEvent.ACTION_CANCEL:
 					//TODO: Programmatic back key?
 				default:
 					break;
 				}
-				if(TeclaApp.persistence.isSelfScanningEnabled())
+				if(TeclaApp.persistence.isSelfScanningSelected())
 					AutoScanManager.setExtendedTimer();
 			}
 			
@@ -459,6 +559,81 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		shutdownInfrastructure();
 	}
 
+	private void selectHighlighted() {
+		AccessibilityNodeInfo node = TeclaApp.a11yservice.mSelectedNode;
+		AccessibilityNodeInfo parent = null;
+		if(node != null) parent = node.getParent();
+		int actions = 0;
+		if(parent != null) actions = node.getParent().getActions();
+		
+		if(mHUD.getPage() == 0) {
+			switch (mHUD.getIndex()){
+			case OverlayHUD.HUD_BTN_TOP:
+				if(isActiveScrollNode(node) 
+						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+					parent.performAction(AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD);
+				} else
+					TeclaApp.a11yservice.selectNode(TeclaAccessibilityService.DIRECTION_UP);
+				break;
+			case OverlayHUD.HUD_BTN_BOTTOM:
+				if(isLastActiveScrollNode(node)
+						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
+						== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
+					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+				} else 
+					TeclaApp.a11yservice.selectNode(TeclaAccessibilityService.DIRECTION_DOWN);
+				break;
+			case OverlayHUD.HUD_BTN_LEFT:
+				TeclaApp.a11yservice.selectNode(TeclaAccessibilityService.DIRECTION_LEFT);
+				break;
+			case OverlayHUD.HUD_BTN_RIGHT:
+				TeclaApp.a11yservice.selectNode(TeclaAccessibilityService.DIRECTION_RIGHT);
+				break;
+			case OverlayHUD.HUD_BTN_TOPRIGHT:
+				TeclaApp.a11yservice.clickActiveNode();
+				break;
+			case OverlayHUD.HUD_BTN_BOTTOMLEFT:
+				TeclaApp.a11yservice.sendGlobalBackAction();
+				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+					TeclaApp.ime.pressBackKey();
+				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
+				break;
+			case OverlayHUD.HUD_BTN_TOPLEFT:
+				TeclaApp.a11yservice.sendGlobalNotificationAction();
+				/*if(Persistence.isDefaultIME(mContext) && TeclaApp.persistence.isIMERunning()) {
+					TeclaStatic.logI(CLASS_TAG, "LatinIME is active");
+					TeclaApp.ime.pressHomeKey();
+				} else TeclaStatic.logW(CLASS_TAG, "LatinIME is not active!");*/
+				break;
+			case OverlayHUD.HUD_BTN_BOTTOMRIGHT:
+				mHUD.turnPage();
+				break;
+			}
+		} else if(mHUD.getPage() == 1) {
+			switch (mHUD.getIndex()){
+			case OverlayHUD.HUD_BTN_TOP:
+			case OverlayHUD.HUD_BTN_BOTTOM:
+			case OverlayHUD.HUD_BTN_LEFT:
+			case OverlayHUD.HUD_BTN_RIGHT:
+			case OverlayHUD.HUD_BTN_TOPRIGHT:
+			case OverlayHUD.HUD_BTN_BOTTOMLEFT:
+				break;
+			case OverlayHUD.HUD_BTN_TOPLEFT:
+				TeclaApp.a11yservice.sendGlobalHomeAction();
+				break;
+			case OverlayHUD.HUD_BTN_BOTTOMRIGHT:
+				mHUD.turnPage();
+				break;
+			}
+		}
+		
+		if(TeclaApp.persistence.isSelfScanningSelected())
+			AutoScanManager.resetTimer();
+
+	}
+	
 	/**
 	 * Shuts down the infrastructure in case it has been initialized.
 	 */
@@ -466,13 +641,11 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		TeclaStatic.logD(CLASS_TAG, "Shutting down infrastructure...");
 		if (mBound) unbindService(mConnection);
 		SEPManager.stop(getApplicationContext());
-		if (mTeclaOverlay != null) {
-			mTeclaOverlay.hideAll();
-		}
+		hideFeedback();
 		
-		if (mFullscreenSwitch != null) {
-			if(mFullscreenSwitch.isVisible()) {
-				mFullscreenSwitch.hide();
+		if (mSwitch != null) {
+			if(mSwitch.isVisible()) {
+				mSwitch.hide();
 			}
 		}
 		if (register_receiver_called) {
@@ -481,7 +654,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		}
 	}
 
-	protected static class NodeSelectionThread extends Thread {
+	protected class NodeSelectionThread extends Thread {
 		AccessibilityNodeInfo current_node;
 		int direction; 
 		public NodeSelectionThread(AccessibilityNodeInfo node, int dir) {
@@ -501,7 +674,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 				if (sInstance.mSelectedNode.toString().contains(MAP_VIEW)){
 					navigateWithDPad(direction);
 				}else{
-				TeclaHighlighter.highlightNode(node);
+					mHighlighter.highlightNode(node);
 				if(node.isFocusable()) 
 					node.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
 				sInstance.mSelectedNode = node;
@@ -540,33 +713,42 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return true;
 	}
 
-	public static boolean isFirstScrollNode(AccessibilityNodeInfo node) {
-		if(!hasScrollableParent(node)) return false;
-		AccessibilityNodeInfo parent = node.getParent();
-		AccessibilityNodeInfo  firstScrollNode = null;
-		for(int i=0; i<parent.getChildCount(); ++i) {
-			AccessibilityNodeInfo  aNode = parent.getChild(i);
-			if(aNode.isVisibleToUser() && aNode.isClickable()) {
-				firstScrollNode = aNode;
-				break;
-			}
-		}
+//	public boolean isFirstActiveScrollNode(AccessibilityNodeInfo node) {
+//		if(!hasScrollableParent(node)) return false;
+//		AccessibilityNodeInfo parent = node.getParent();
+//		AccessibilityNodeInfo  activeNode = null;
+//		for(int i=0; i < parent.getChildCount()-1; ++i) {
+//			AccessibilityNodeInfo  aNode = parent.getChild(i);
+//			if(isActive(aNode)) {
+//				activeNode = aNode;
+//				break;
+//			}
+//		}
+//
+//		return isSameNode(node, activeNode);
+//	}
 
-		return isSameNode(node, firstScrollNode);
+	public boolean isActiveScrollNode(AccessibilityNodeInfo node) {
+		if(node == null) return false;
+		return (hasScrollableParent(node) && isActive(node))? true:false;
 	}
 
-	public static boolean isLastScrollNode(AccessibilityNodeInfo node) {
+	public boolean isLastActiveScrollNode(AccessibilityNodeInfo node) {
 		if(!hasScrollableParent(node)) return false;
 		AccessibilityNodeInfo parent = node.getParent();
 		AccessibilityNodeInfo  lastScrollNode = null;
 		for(int i=parent.getChildCount()-1; i>=0; --i) {
 			AccessibilityNodeInfo aNode = parent.getChild(i);
-			if(aNode.isVisibleToUser() && aNode.isClickable()) {
+			if(isActive(aNode)) {
 				lastScrollNode = aNode;
 				break;
 			}
 		}	
 		return isSameNode(node, lastScrollNode);
+	}
+	
+	private boolean isActive(AccessibilityNodeInfo node) {
+		return (node.isVisibleToUser() && node.isClickable())? true:false;
 	}
 
 	public static boolean isSameNode(AccessibilityNodeInfo node1, AccessibilityNodeInfo node2) {
