@@ -195,9 +195,10 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	public void disableScreenSwitch() {
 		mSwitch.getRootView().setBackgroundResource(R.drawable.screen_switch_background_normal);
 		mSwitch.getRootView().invalidate();
-		TeclaApp.ime.hideWindow();
+		if (TeclaApp.ime != null) TeclaApp.ime.hideWindow();
 		TeclaApp.persistence.setScreenSwitchSelected(false);
-		mSwitch.hide();		
+		mSwitch.hide();
+		hideFeedback();
 	}
 
 	public void showFeedback() {
@@ -206,6 +207,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 	
 	public void hideFeedback() {
+		AutoScanManager.stop();
 		hideHighlighter();
 		hideHUD();
 	}
@@ -577,7 +579,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 					TeclaApp.a11yservice.selectNode(TeclaAccessibilityService.DIRECTION_UP);
 				break;
 			case OverlayHUD.HUD_BTN_BOTTOM:
-				if(isLastActiveScrollNode(node)
+				if(isActiveScrollNode(node)
 						&& (actions & AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) 
 						== AccessibilityNodeInfo.ACTION_SCROLL_FORWARD) {
 					node.getParent().performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
@@ -733,19 +735,19 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		return (hasScrollableParent(node) && isActive(node))? true:false;
 	}
 
-	public boolean isLastActiveScrollNode(AccessibilityNodeInfo node) {
-		if(!hasScrollableParent(node)) return false;
-		AccessibilityNodeInfo parent = node.getParent();
-		AccessibilityNodeInfo  lastScrollNode = null;
-		for(int i=parent.getChildCount()-1; i>=0; --i) {
-			AccessibilityNodeInfo aNode = parent.getChild(i);
-			if(isActive(aNode)) {
-				lastScrollNode = aNode;
-				break;
-			}
-		}	
-		return isSameNode(node, lastScrollNode);
-	}
+//	public boolean isLastActiveScrollNode(AccessibilityNodeInfo node) {
+//		if(!hasScrollableParent(node)) return false;
+//		AccessibilityNodeInfo parent = node.getParent();
+//		AccessibilityNodeInfo  lastScrollNode = null;
+//		for(int i=parent.getChildCount()-1; i>=0; --i) {
+//			AccessibilityNodeInfo aNode = parent.getChild(i);
+//			if(isActive(aNode)) {
+//				lastScrollNode = aNode;
+//				break;
+//			}
+//		}	
+//		return isSameNode(node, lastScrollNode);
+//	}
 	
 	private boolean isActive(AccessibilityNodeInfo node) {
 		return (node.isVisibleToUser() && node.isClickable())? true:false;
