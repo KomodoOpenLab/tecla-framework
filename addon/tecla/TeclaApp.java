@@ -1,4 +1,4 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 
 import com.android.inputmethod.latin.LatinIME;
@@ -32,7 +32,7 @@ public class TeclaApp extends Application {
 
 	public static final String CLASS_TAG = "TeclaApp";
 	
-	private static final String SHIELD_SERVICE_CLASS = "com.android.tecla.addon.TeclaShieldService";
+	private static final String SHIELD_SERVICE_CLASS = "com.android.tecla.TeclaShieldService";
 
 	public static final int WAKE_LOCK_TIMEOUT = 5000;
 

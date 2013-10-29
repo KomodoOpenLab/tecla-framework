@@ -1,4 +1,4 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 

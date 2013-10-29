@@ -1,6 +1,6 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
-import com.android.tecla.addon.ManagerShield.OnConnectionAttemptListener;
+import com.android.tecla.ManagerShield.OnConnectionAttemptListener;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;

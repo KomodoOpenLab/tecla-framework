@@ -1,4 +1,4 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.android.tecla.addon.TeclaApp;
+import com.android.tecla.TeclaApp;
 
 public class OverlayHUD extends SimpleOverlay {
 

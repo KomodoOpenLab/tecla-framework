@@ -1,4 +1,4 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import java.util.Timer;
 import java.util.TimerTask;

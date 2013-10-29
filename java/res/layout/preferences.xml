@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
     
-    <fragment class="com.android.tecla.addon.PreferencesFragment"
+    <fragment class="com.android.tecla.PreferencesFragment"
         android:id="@+id/tecla_prefs_frag"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

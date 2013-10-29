@@ -1,6 +1,6 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
-import com.android.tecla.addon.ServiceShield.ShieldServiceBinder;
+import com.android.tecla.ServiceShield.ShieldServiceBinder;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,7 +18,7 @@ public class ManagerShield {
 	 * provider service. {@link #EXTRA_SHIELD_ADDRESS}
 	 * must be provided to start the service.
 	 */
-	//private static final String SHIELD_SERVICE = "com.android.tecla.addon.TECLA_SHIELD_SERVICE";
+	//private static final String SHIELD_SERVICE = "com.android.tecla.TECLA_SHIELD_SERVICE";
 	
 	/**
 	 * Tecla Shield MAC Address to connect to.

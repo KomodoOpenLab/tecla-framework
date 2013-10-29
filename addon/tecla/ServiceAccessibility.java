@@ -1,11 +1,11 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.android.tecla.addon.ServiceSwitchEventProvider.SwitchEventProviderBinder;
+import com.android.tecla.ServiceSwitchEventProvider.SwitchEventProviderBinder;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idi.tecla.sdk.SEPManager;
