@@ -1,4 +1,4 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import ca.idrc.tecla.R;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import ca.idrc.tecla.framework.SimpleOverlay;
-import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idi.tecla.sdk.*;
 
 public class OverlaySwitch extends SimpleOverlay {

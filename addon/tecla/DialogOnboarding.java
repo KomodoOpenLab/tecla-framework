@@ -1,7 +1,6 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import ca.idrc.tecla.R;
-import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-public class OnboardingDialog extends Dialog implements View.OnClickListener {
+public class DialogOnboarding extends Dialog implements View.OnClickListener {
 	
 	public static final String CLASS_TAG = "OnboardingDialog";
 	
@@ -31,8 +30,8 @@ public class OnboardingDialog extends Dialog implements View.OnClickListener {
 	private Button mA11yCancelBtn;
 	private Button mFinalOkBtn;
 
-	private static OnboardingDialog sInstance;
-	public static OnboardingDialog createInstance(Context context, View.OnClickListener listener) {
+	private static DialogOnboarding sInstance;
+	public static DialogOnboarding createInstance(Context context, View.OnClickListener listener) {
 		
 		if (sInstance != null) {
 			if (sInstance.isShowing()) {
@@ -40,15 +39,15 @@ public class OnboardingDialog extends Dialog implements View.OnClickListener {
 			}
 			sInstance = null;
 		}
-		sInstance = new OnboardingDialog(context);
+		sInstance = new DialogOnboarding(context);
 		sInstance.setExternalClickListener(listener);
 		return sInstance;
 	}
-	public static OnboardingDialog getInstance() {
+	public static DialogOnboarding getInstance() {
 		return sInstance;
 	}
 	
-	private OnboardingDialog(Context context) {
+	private DialogOnboarding(Context context) {
 		super(context);
 		mContext = context;
 		setContentView(R.layout.tecla_onboarding);
@@ -110,14 +109,14 @@ public class OnboardingDialog extends Dialog implements View.OnClickListener {
 				TeclaStatic.logD(CLASS_TAG, "Selecting IME!");
 		    	if (TeclaStatic.isDefaultIMESupported(mContext)) {
 		    		mOnboardingFlipper.showNext();
-			    	if (TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+			    	if (TeclaApp.getInstance().isAccessibilityServiceRunning()) {
 						TeclaStatic.logD(CLASS_TAG, "Enabling A11y Service!");
 			    		mOnboardingFlipper.showNext();
 			    	}
 		    	}
 		    	break;
 			case ONBOARD_ENABLE_A11Y:
-		    	if (TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
+		    	if (TeclaApp.getInstance().isAccessibilityServiceRunning()) {
 		    		mOnboardingFlipper.showNext();
 		    	}
 			}

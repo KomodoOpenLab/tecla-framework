@@ -1,10 +1,9 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import java.util.ArrayList;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.SimpleOverlay;
-import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.hud.TeclaHUDButtonView;
 
 import android.animation.AnimatorInflater;
@@ -21,7 +20,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.android.tecla.addon.TeclaApp;
+import com.android.tecla.TeclaApp;
 
 public class OverlayHUD extends SimpleOverlay {
 

@@ -1,4 +1,4 @@
-package com.android.tecla.addon;
+package com.android.tecla;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class WordPredictionAdapter {
+public class AdapterWordPrediction {
 
 	private static final int[] SUGGESTIONSVIEWINDICES = {0,2,4};
 	private static final int BACKGROUND_HIGHLIGHT_COLOR = Color.BLUE;
