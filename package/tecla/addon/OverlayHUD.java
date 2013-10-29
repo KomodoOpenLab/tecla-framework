@@ -49,9 +49,6 @@ public class OverlayHUD extends SimpleOverlay {
 	private float stroke_width_proportion;
 	private float scan_alpha_max;
 
-	private final WindowManager mWindowManager;
-	//private static TeclaHUD sInstance;
-
 	private ArrayList<TeclaHUDButtonView> mHUDPad;
 	private ArrayList<AnimatorSet> mHUDAnimators;
 	private int mScanIndex;
@@ -63,7 +60,6 @@ public class OverlayHUD extends SimpleOverlay {
 
 		mContext = context;
 		mResources = mContext.getResources();
-		mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
 
 		scan_alpha_max = Float.parseFloat(mResources.getString(R.string.scan_alpha_max));
 		side_width_proportion = Float.parseFloat(mResources.getString(R.string.side_width_proportion));
@@ -72,7 +68,9 @@ public class OverlayHUD extends SimpleOverlay {
 		final WindowManager.LayoutParams params = getParams();
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
-		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;	
+		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+		//params.flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+		params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 		setParams(params);
 
 		setContentView(R.layout.tecla_hud);
