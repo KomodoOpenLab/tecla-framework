@@ -13,9 +13,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import ca.idi.tecla.sdk.SwitchEvent;
-import ca.idrc.tecla.framework.TeclaStatic;
 
-public class SwitchEventProvider extends Service {
+public class ServiceSwitchEventProvider extends Service {
 
 	private static final String CLASS_TAG = "SwitchEventProvider";
 	private static final int REQUEST_IME_DELAY = 60000;
@@ -178,7 +177,7 @@ public class SwitchEventProvider extends Service {
 
 	/** BINDING METHODS AND VARIABLES **/
 	// Binder given to clients
-    private final IBinder mBinder = new LocalBinder();
+    private final IBinder mBinder = new SwitchEventProviderBinder();
     
     @Override
     public IBinder onBind(Intent intent) {
@@ -189,10 +188,10 @@ public class SwitchEventProvider extends Service {
      * Class used for the client Binder.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with IPC.
      */
-    public class LocalBinder extends Binder {
-    	SwitchEventProvider getService() {
+    public class SwitchEventProviderBinder extends Binder {
+    	ServiceSwitchEventProvider getService() {
             // Return this instance of LocalService so clients can call public methods
-            return SwitchEventProvider.this;
+            return ServiceSwitchEventProvider.this;
         }
     }
     	

@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import ca.idi.tecla.sdk.SwitchEvent;
 import ca.idrc.tecla.R;
-import ca.idrc.tecla.framework.TeclaStatic;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -29,10 +28,11 @@ import android.os.Binder;
 //import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
-public class TeclaShieldService extends Service implements Runnable {
+public class ServiceShield extends Service implements Runnable {
 
 	//Constants
 	/**
@@ -85,7 +85,7 @@ public class TeclaShieldService extends Service implements Runnable {
 	private boolean mShieldFound;
 	private String mShieldAddress, mShieldName;
 	private Boolean mBTEnableRequested, mBTDiscoveryRequested;
-	private TeclaShieldManager.OnConnectionAttemptListener mConnectionAttemptListener;
+	private ManagerShield.OnConnectionAttemptListener mConnectionAttemptListener;
 
 	// VARIABLES FOR SWITCH PROCESSING
 	// TODO: This variable should be used when new Shield versions are available
@@ -124,7 +124,7 @@ public class TeclaShieldService extends Service implements Runnable {
 		TeclaStatic.logD(CLASS_TAG, "Attempting to bind to SwitchEventProvider...");
 
 		// Bind to SwitchEventProvider
-		Intent intent = new Intent(this, SwitchEventProvider.class);
+		Intent intent = new Intent(this, ServiceSwitchEventProvider.class);
 		bindService(intent, mSEPConnection, Context.BIND_AUTO_CREATE);
 
 		mIsBroadcasting = false;
@@ -194,7 +194,7 @@ public class TeclaShieldService extends Service implements Runnable {
 		return Service.START_NOT_STICKY;
 	}
 
-	public void discover(TeclaShieldManager.OnConnectionAttemptListener listener) {
+	public void discover(ManagerShield.OnConnectionAttemptListener listener) {
 		mConnectionAttemptListener = listener;
 		if (bluetooth_adapter != null) {
 			//			mShieldAddress = TeclaApp.persistence.getShieldAddress();
@@ -208,7 +208,7 @@ public class TeclaShieldService extends Service implements Runnable {
 			//				discoverShield();
 			//			}
 		} else {
-			listener.onConnetionFailed(TeclaShieldManager.ERROR_BT_NOT_SUPPORTED);
+			listener.onConnetionFailed(ManagerShield.ERROR_BT_NOT_SUPPORTED);
 			mConnectionAttemptListener = null;
 		}
 	}
@@ -242,6 +242,8 @@ public class TeclaShieldService extends Service implements Runnable {
 		int inByte;
 		boolean gotStreams;
 
+		Looper.prepare();
+		
 		shieldAddress = TeclaApp.persistence.getShieldAddress();
 		while(mKeepReconnecting) {
 			TeclaStatic.logI(CLASS_TAG, "Attempting connection to TeclaShield: " + shieldAddress);
@@ -283,6 +285,8 @@ public class TeclaShieldService extends Service implements Runnable {
 
 					broadcastShieldConnected();
 					mConnectionAttemptListener.onConnetionEstablished();
+					TeclaApp.a11yservice.showFeedback();
+					//TODO: Start self-scanning if selected
 					mIsBroadcasting = true;
 					while(mIsBroadcasting) {
 						try {
@@ -548,7 +552,7 @@ public class TeclaShieldService extends Service implements Runnable {
 		notification_manager.cancel(R.string.shield_connected);
 	}
 
-	SwitchEventProvider switch_event_provider;
+	ServiceSwitchEventProvider switch_event_provider;
 	boolean mBound = false;
 
 	/** Defines callbacks for service binding, passed to bindService() */
@@ -557,7 +561,7 @@ public class TeclaShieldService extends Service implements Runnable {
 		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
 			// We've bound to LocalService, cast the IBinder and get LocalService instance
-			SwitchEventProvider.LocalBinder binder = (SwitchEventProvider.LocalBinder) service;
+			ServiceSwitchEventProvider.SwitchEventProviderBinder binder = (ServiceSwitchEventProvider.SwitchEventProviderBinder) service;
 			switch_event_provider = binder.getService();
 			mBound = true;
 		}
@@ -586,7 +590,7 @@ public class TeclaShieldService extends Service implements Runnable {
 			}
 		} else {
 			if (mConnectionAttemptListener != null) {
-				mConnectionAttemptListener.onConnetionFailed(TeclaShieldManager.ERROR_BT_NOT_SUPPORTED);
+				mConnectionAttemptListener.onConnetionFailed(ManagerShield.ERROR_BT_NOT_SUPPORTED);
 			}
 		}
 	}
@@ -608,8 +612,8 @@ public class TeclaShieldService extends Service implements Runnable {
 					&& mBTDiscoveryRequested) {
 				BluetoothDevice dev = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
 				if ((dev.getName() != null) && (
-						dev.getName().startsWith(TeclaShieldService.SHIELD_PREFIX_2) ||
-						dev.getName().startsWith(TeclaShieldService.SHIELD_PREFIX_3) )) {
+						dev.getName().startsWith(ServiceShield.SHIELD_PREFIX_2) ||
+						dev.getName().startsWith(ServiceShield.SHIELD_PREFIX_3) )) {
 					TeclaStatic.logD(CLASS_TAG, "Found a Tecla Access Shield candidate");
 					mShieldFound = true;
 					mShieldAddress = dev.getAddress();
@@ -626,7 +630,7 @@ public class TeclaShieldService extends Service implements Runnable {
 						TeclaApp.persistence.setShieldAddress(mShieldAddress);
 						connect();
 					} else {
-						mConnectionAttemptListener.onConnetionFailed(TeclaShieldManager.ERROR_SHIELD_NOT_FOUND);
+						mConnectionAttemptListener.onConnetionFailed(ManagerShield.ERROR_SHIELD_NOT_FOUND);
 						TeclaApp.getInstance().showToast(R.string.no_shields_inrange);
 					}
 				}
@@ -644,7 +648,7 @@ public class TeclaShieldService extends Service implements Runnable {
 
 	/** BINDING METHODS AND VARIABLES **/
 	// Binder given to clients
-	private final IBinder mBinder = new LocalBinder();
+	private final IBinder mBinder = new ShieldServiceBinder();
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -656,10 +660,10 @@ public class TeclaShieldService extends Service implements Runnable {
 	 * Class used for the client Binder.  Because we know this service always
 	 * runs in the same process as its clients, we don't need to deal with IPC.
 	 */
-	public class LocalBinder extends Binder {
-		TeclaShieldService getService() {
+	public class ShieldServiceBinder extends Binder {
+		ServiceShield getService() {
 			// Return this instance of LocalService so clients can call public methods
-			return TeclaShieldService.this;
+			return ServiceShield.this;
 		}
 	}
 

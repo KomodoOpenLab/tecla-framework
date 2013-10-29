@@ -5,7 +5,6 @@ import com.android.inputmethod.latin.LatinIME;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
-import ca.idrc.tecla.framework.TeclaStatic;
 
 import android.app.ActivityManager;
 import android.app.Application;
@@ -40,9 +39,9 @@ public class TeclaApp extends Application {
 	private static TeclaApp sInstance;
 	public static Persistence persistence;
 	public static TeclaIME ime;
-	public static TeclaAccessibilityService a11yservice;
+	public static ServiceAccessibility a11yservice;
 //	public static SingleSwitchTouchInterface fullscreenswitch;
-	private static TeclaShieldManager shield_manager;
+	private static ManagerShield shield_manager;
 
 	private PowerManager power_manager;
 	private KeyguardManager keyguard_manager;
@@ -77,7 +76,7 @@ public class TeclaApp extends Application {
 
 		sInstance = this;
 		persistence = new Persistence(this);
-		shield_manager = new TeclaShieldManager(this);
+		shield_manager = new ManagerShield(this);
 
 		power_manager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wake_lock = power_manager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.FULL_WAKE_LOCK |
@@ -108,7 +107,7 @@ public class TeclaApp extends Application {
 		ime_manager.showInputMethodPicker();
 	}
 	
-	public static TeclaShieldManager getShieldManager() {
+	public static ManagerShield getShieldManager() {
 		return shield_manager;
 	}
 	
@@ -123,7 +122,7 @@ public class TeclaApp extends Application {
 	    return false;
 	}
 
-	public boolean isTeclaA11yServiceRunning() {
+	public boolean isAccessibilityServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaStatic.A11Y_SERVICE.equals(service.service.getClassName())) {
 	            return true;
@@ -142,7 +141,7 @@ public class TeclaApp extends Application {
 	}
 	
 	private boolean isTeclaFrameworkReady() {
-		return (isTeclaA11yServiceRunning() && isSupportedIMERunning());
+		return (isAccessibilityServiceRunning() && isSupportedIMERunning());
 	}
 
 	public static void setIMEInstance (TeclaIME ime_instance) {
@@ -154,7 +153,7 @@ public class TeclaApp extends Application {
 //		overlay = overlay_instance;
 //	}
 	
-	public static void setA11yserviceInstance (TeclaAccessibilityService a11yservice_instance) {
+	public static void setA11yserviceInstance (ServiceAccessibility a11yservice_instance) {
 		a11yservice = a11yservice_instance;
 		getInstance().engageFramework();
 	}

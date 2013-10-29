@@ -1,7 +1,6 @@
 package com.android.tecla.addon;
 
 import ca.idi.tecla.sdk.SwitchEvent;
-import ca.idrc.tecla.framework.TeclaStatic;
 
 import com.android.inputmethod.keyboard.KeyboardSwitcher;
 import android.content.Intent;
@@ -31,14 +30,14 @@ public class TeclaIME extends InputMethodService {
 		public void handleMessage(Message msg) {
 			if(msg.what == MSG_IMESCAN_SETUP) {
 				KeyboardView kbv = KeyboardSwitcher.getInstance().getKeyboardView();
-				boolean kb_ready = IMEAdapter.setKeyboardView(kbv);
+				boolean kb_ready = AdapterInputMethod.setKeyboardView(kbv);
 				if(!kb_ready) {
 					++ msg.arg1;
 					if(msg.arg1 < 10) {
 						mHandler.sendMessageDelayed(msg, 250);
 					}
 				} else {
-					IMEAdapter.selectHighlighted();
+					AdapterInputMethod.selectHighlighted();
 				}
 			}
 //			if(msg.what == MSG_SHIELD_KEYEVENT_TIMEOUT) {
@@ -71,7 +70,7 @@ public class TeclaIME extends InputMethodService {
 	
 	@Override
 	public void onStartInputView(EditorInfo info, boolean restarting) {
-		if(TeclaApp.getInstance().isTeclaA11yServiceRunning()
+		if(TeclaApp.getInstance().isAccessibilityServiceRunning()
 				&& TeclaApp.a11yservice.isFeedbackVisible()) {
 			Message msg = new Message();
 			msg.what = MSG_IMESCAN_SETUP;
@@ -86,7 +85,7 @@ public class TeclaIME extends InputMethodService {
 
 	@Override
 	public void onFinishInputView(boolean finishingInput) {
-		IMEAdapter.setKeyboardView(null);
+		AdapterInputMethod.setKeyboardView(null);
 		TeclaApp.persistence.setIMEShowing(false);
 		if(TeclaApp.persistence.shouldShowHUD()){
 				//&& !TeclaApp.overlay.isVisible()) {
@@ -144,7 +143,7 @@ public class TeclaIME extends InputMethodService {
 	
 	public void pressBackKey() {
 		keyDownUp(KeyEvent.KEYCODE_BACK);
-		IMEAdapter.setKeyboardView(null);
+		AdapterInputMethod.setKeyboardView(null);
 	}
 
 	public void sendKey(int keycode) {

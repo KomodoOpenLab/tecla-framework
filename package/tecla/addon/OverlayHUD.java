@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.SimpleOverlay;
-import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.hud.TeclaHUDButtonView;
 
 import android.animation.AnimatorInflater;

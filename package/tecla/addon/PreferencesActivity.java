@@ -2,7 +2,6 @@ package com.android.tecla.addon;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.ScanSpeedDialog;
-import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -18,20 +17,20 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
-public class TeclaSettingsActivity extends Activity {
+public class PreferencesActivity extends Activity {
 
 	private static final String CLASS_TAG = "TeclaSettingsActivity2";
 
-	private static TeclaSettingsActivity sInstance;
+	private static PreferencesActivity sInstance;
 	//private TeclaShieldConnect mTeclaShieldManager;
-	private TeclaPreferenceFragment mPreferenceFragment;
+	private PreferencesFragment mPreferenceFragment;
 	
 	private ScanSpeedDialog mScanSpeedDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.tecla_settings);
+		setContentView(R.layout.preferences);
 		
 		mScanSpeedDialog = new ScanSpeedDialog(this);
 		mScanSpeedDialog.setContentView(R.layout.scan_speed_dialog);
@@ -42,7 +41,7 @@ public class TeclaSettingsActivity extends Activity {
 //		if(mTeclaShieldManager == null)
 //			mTeclaShieldManager = new TeclaShieldManager(this);
 		
-		mPreferenceFragment = (TeclaPreferenceFragment) getFragmentManager()
+		mPreferenceFragment = (PreferencesFragment) getFragmentManager()
 				.findFragmentById(R.id.tecla_prefs_frag);
 		
 		sInstance = this;
@@ -50,8 +49,8 @@ public class TeclaSettingsActivity extends Activity {
 
 	private void initOnboarding() {
 		if (!TeclaStatic.isDefaultIMESupported(getApplicationContext()) ||
-				!TeclaApp.getInstance().isTeclaA11yServiceRunning()) {
-			OnboardingDialog.createInstance(this, mOnboardingClickListener).show();
+				!TeclaApp.getInstance().isAccessibilityServiceRunning()) {
+			DialogOnboarding.createInstance(this, mOnboardingClickListener).show();
 		} 
 	}
 
@@ -69,7 +68,7 @@ public class TeclaSettingsActivity extends Activity {
 			switch(id) {
 			case R.id.ime_cancel_btn:
 			case R.id.a11y_cancel_btn:
-				OnboardingDialog.getInstance().dismiss();
+				DialogOnboarding.getInstance().dismiss();
 				finish();
 				break;
 			case R.id.a11y_ok_btn:

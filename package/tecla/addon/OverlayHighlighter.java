@@ -2,7 +2,6 @@ package com.android.tecla.addon;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.SimpleOverlay;
-import ca.idrc.tecla.framework.TeclaStatic;
 import ca.idrc.tecla.highlighter.HighlightBoundsView;
 import android.content.Context;
 import android.graphics.Color;

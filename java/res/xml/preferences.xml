@@ -22,7 +22,7 @@
                 android:key="switch_e1"
                 android:title="@string/switch_e1" >
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="4"
                     android:entries="@array/switch_actions"
                     android:entryValues="@array/switch_action_values"
@@ -30,7 +30,7 @@
                     android:persistent="true"
                     android:title="@string/switch_e1_tecla" />
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="0"
                     android:entries="@array/morse_actions"
                     android:entryValues="@array/morse_action_values"
@@ -44,7 +44,7 @@
                 android:key="switch_e2"
                 android:title="@string/switch_e2" >
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="3"
                     android:entries="@array/switch_actions"
                     android:entryValues="@array/switch_action_values"
@@ -52,7 +52,7 @@
                     android:persistent="true"
                     android:title="@string/switch_e2_tecla" />
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="0"
                     android:entries="@array/morse_actions"
                     android:entryValues="@array/morse_action_values"
@@ -66,7 +66,7 @@
                 android:key="switch_j1"
                 android:title="@string/switch_j1" >
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="1"
                     android:entries="@array/switch_actions"
                     android:entryValues="@array/switch_action_values"
@@ -74,7 +74,7 @@
                     android:persistent="true"
                     android:title="@string/switch_j1_tecla" />
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="1"
                     android:entries="@array/morse_actions"
                     android:entryValues="@array/morse_action_values"
@@ -88,7 +88,7 @@
                 android:key="switch_j2"
                 android:title="@string/switch_j2" >
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="2"
                     android:entries="@array/switch_actions"
                     android:entryValues="@array/switch_action_values"
@@ -96,7 +96,7 @@
                     android:persistent="true"
                     android:title="@string/switch_j2_tecla" />
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="2"
                     android:entries="@array/morse_actions"
                     android:entryValues="@array/morse_action_values"
@@ -110,7 +110,7 @@
                 android:key="switch_j3"
                 android:title="@string/switch_j3" >
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="3"
                     android:entries="@array/switch_actions"
                     android:entryValues="@array/switch_action_values"
@@ -118,7 +118,7 @@
                     android:persistent="true"
                     android:title="@string/switch_j3_tecla" />
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="3"
                     android:entries="@array/morse_actions"
                     android:entryValues="@array/morse_action_values"
@@ -132,7 +132,7 @@
                 android:key="switch_j4"
                 android:title="@string/switch_j4" >
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="4"
                     android:entries="@array/switch_actions"
                     android:entryValues="@array/switch_action_values"
@@ -140,7 +140,7 @@
                     android:persistent="true"
                     android:title="@string/switch_j4_tecla" />
 
-                <com.android.tecla.addon.ListPreference
+                <ca.idi.tecla.lib.ListPreference
                     android:defaultValue="4"
                     android:entries="@array/morse_actions"
                     android:entryValues="@array/morse_action_values"
@@ -227,7 +227,7 @@
                 android:summary="@string/morse_show_hud_summary"
                 android:title="@string/morse_show_hud" />
 
-            <com.android.tecla.addon.ListPreference
+            <ca.idi.tecla.lib.ListPreference
                 android:defaultValue="0"
                 android:entries="@array/morse_key_mode_array"
                 android:entryValues="@array/morse_key_mode_values"

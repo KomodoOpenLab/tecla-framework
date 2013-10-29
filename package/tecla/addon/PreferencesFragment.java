@@ -1,10 +1,9 @@
 package com.android.tecla.addon;
 
-import com.android.tecla.addon.TeclaShieldManager.OnConnectionAttemptListener;
+import com.android.tecla.addon.ManagerShield.OnConnectionAttemptListener;
 
 import ca.idrc.tecla.R;
 import ca.idrc.tecla.framework.Persistence;
-import ca.idrc.tecla.framework.TeclaStatic;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
@@ -20,13 +19,13 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.view.KeyEvent;
 
-public class TeclaPreferenceFragment extends PreferenceFragment
+public class PreferencesFragment extends PreferenceFragment
 implements OnPreferenceClickListener
 , OnPreferenceChangeListener  {
 
 	private final static String CLASS_TAG = "TeclaPreferenceFragment";
 
-	private static TeclaPreferenceFragment sInstance;
+	private static PreferencesFragment sInstance;
 
 	private ProgressDialog mProgressDialog;
 	private OnConnectionAttemptListener mOnConnectionAttemptListener;
@@ -48,7 +47,7 @@ implements OnPreferenceClickListener
 	private void init() {
 		sInstance = this;
 
-		addPreferencesFromResource(R.xml.tecla_prefs);
+		addPreferencesFromResource(R.xml.preferences);
 
 		mFullscreenMode = (CheckBoxPreference) findPreference(Persistence.PREF_FULLSCREEN_MODE);
 		mPrefSelfScanning = (CheckBoxPreference) findPreference(Persistence.PREF_SELF_SCANNING);
@@ -64,7 +63,7 @@ implements OnPreferenceClickListener
 		mPrefConnectToShield.setOnPreferenceChangeListener(sInstance);
 		mPrefTempDisconnect.setOnPreferenceChangeListener(sInstance);
 
-		mProgressDialog = new ProgressDialog((TeclaSettingsActivity)getActivity());
+		mProgressDialog = new ProgressDialog((PreferencesActivity)getActivity());
 		mOnConnectionAttemptListener = new OnConnectionAttemptListener() {
 
 			@Override
@@ -87,9 +86,9 @@ implements OnPreferenceClickListener
 			@Override
 			public void onConnetionFailed(int error) {
 				switch(error) {
-				case TeclaShieldManager.ERROR_BT_NOT_SUPPORTED:
-				case TeclaShieldManager.ERROR_SERVICE_NOT_BOUND:
-				case TeclaShieldManager.ERROR_SHIELD_NOT_FOUND:
+				case ManagerShield.ERROR_BT_NOT_SUPPORTED:
+				case ManagerShield.ERROR_SERVICE_NOT_BOUND:
+				case ManagerShield.ERROR_SHIELD_NOT_FOUND:
 					TeclaStatic.logE(CLASS_TAG, getString(R.string.couldnt_connect_shield));
 				}
 				dismissProgressDialog();
@@ -99,7 +98,7 @@ implements OnPreferenceClickListener
 			@Override
 			public void onConnetionEstablished() {
 				dismissProgressDialog();
-				TeclaApp.a11yservice.showFeedback();
+				//TeclaApp.a11yservice.showFeedback();
 			}
 		};
 
@@ -108,7 +107,7 @@ implements OnPreferenceClickListener
 	@Override
 	public boolean onPreferenceClick(Preference pref) {	
 		if(pref.equals(mScanSpeedPref)) {
-			((TeclaSettingsActivity)getActivity()).showScanSpeedDialog();
+			((PreferencesActivity)getActivity()).showScanSpeedDialog();
 			return true;
 		}
 		return false;
@@ -137,11 +136,11 @@ implements OnPreferenceClickListener
 			if (newValue.toString().equals("true")) {
 				TeclaApp.persistence.setSelfScanningSelected(true);
 				//if(TeclaApp.persistence.isFullscreenEnabled())
-				AutoScanManager.start();
+				ManagerAutoScan.start();
 			} else {
 				TeclaApp.persistence.setSelfScanningSelected(false);
 				//if(TeclaApp.persistence.isFullscreenEnabled() )
-				AutoScanManager.stop();
+				ManagerAutoScan.stop();
 			}
 			return true;
 		}
@@ -152,14 +151,14 @@ implements OnPreferenceClickListener
 				TeclaApp.a11yservice.setFullscreenSwitchLongClick(false);
 				if(TeclaApp.persistence.isScreenSwitchSelected() 
 						&& TeclaApp.persistence.isSelfScanningSelected()) {
-					AutoScanManager.stop();
+					ManagerAutoScan.stop();
 				}
 			} else {
 				TeclaApp.persistence.setInverseScanningSelected(false);
 				TeclaApp.a11yservice.setFullscreenSwitchLongClick(true);
 				if(TeclaApp.persistence.isScreenSwitchSelected() 
 						&& TeclaApp.persistence.isSelfScanningSelected()) {
-					AutoScanManager.start();
+					ManagerAutoScan.start();
 				}
 			}
 			return true;

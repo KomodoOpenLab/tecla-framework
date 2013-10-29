@@ -3,7 +3,7 @@ package com.android.tecla.addon;
 import android.os.Handler;
 import android.os.Message;
 
-public class AutoScanManager {
+public class ManagerAutoScan {
 	private static final String tag = "AutomaticScan";
 	
 	private static final int TICK = 0x33;
@@ -29,7 +29,7 @@ public class AutoScanManager {
 				&& !TeclaApp.a11yservice.getHUD().isPreview()) {
 			TeclaApp.a11yservice.getHUD().scanNext();
 		} else if(TeclaApp.getInstance().isSupportedIMERunning()) {
-			IMEAdapter.scanNext();			
+			AdapterInputMethod.scanNext();			
 		}
 		Message msg = new Message();
 		msg.what = TICK;

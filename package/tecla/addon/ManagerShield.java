@@ -1,15 +1,14 @@
 package com.android.tecla.addon;
 
-import com.android.tecla.addon.TeclaShieldService.LocalBinder;
+import com.android.tecla.addon.ServiceShield.ShieldServiceBinder;
 
-import ca.idrc.tecla.framework.TeclaStatic;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class TeclaShieldManager {
+public class ManagerShield {
 	
 	
 	private final static String CLASS_TAG = "TeclaShieldManager";
@@ -28,11 +27,11 @@ public class TeclaShieldManager {
 
 	//private static final int REQUEST_ENABLE_BT = 1;
 
-	private TeclaShieldService mTeclaShieldService;
+	private ServiceShield mTeclaShieldService;
 	private Boolean mBound = false;
 	private Context mContext;
 
-	public TeclaShieldManager(Context context) {
+	public ManagerShield(Context context) {
 		init(context);
 //		init();
 	}
@@ -80,7 +79,7 @@ public class TeclaShieldManager {
 		TeclaStatic.logD(CLASS_TAG, "Attempting to bind to Tecla Shield Service...");
 
 		// Bind to TeclaShieldService
-		Intent intent = new Intent(mContext, TeclaShieldService.class);
+		Intent intent = new Intent(mContext, ServiceShield.class);
 		mContext.bindService(intent, mTSSConnection, Context.BIND_AUTO_CREATE);
 
 		//mHandler = new Handler();
@@ -99,7 +98,7 @@ public class TeclaShieldManager {
 		@Override
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
 			// We've bound to LocalService, cast the IBinder and get LocalService instance
-			LocalBinder binder = (LocalBinder) service;
+			ShieldServiceBinder binder = (ShieldServiceBinder) service;
 			mTeclaShieldService = binder.getService();
 			mBound = true;
 		}
