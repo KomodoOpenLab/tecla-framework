@@ -81,13 +81,8 @@ public class TeclaAccessibilityService extends AccessibilityService {
 		mActiveNodes = new ArrayList<AccessibilityNodeInfo>();
 		mActionLock = new ReentrantLock();
 
-		if (mHighlighter == null) {
-			mHighlighter = new OverlayHighlighter(this);
-		}
-		
-		if (mHUD == null) {
-			mHUD = new OverlayHUD(this);
-		}
+		mHighlighter = new OverlayHighlighter(this);
+		mHUD = new OverlayHUD(this);
 		
 		if (mSwitch == null) {
 			mSwitch = new OverlaySwitch(this);
@@ -174,8 +169,7 @@ public class TeclaAccessibilityService extends AccessibilityService {
 	}
 	
 	private void showAll() {
-		showHUD();
-		showHighlighter();
+		showFeedback();
 		showSwitch();
 	}
 	

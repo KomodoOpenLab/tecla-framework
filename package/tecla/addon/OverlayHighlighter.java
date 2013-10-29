@@ -22,14 +22,13 @@ public class OverlayHighlighter extends SimpleOverlay {
 		params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 		params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 		params.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
-		params.flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+		//params.flags |= WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
 		params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 		setParams(params);
 		
 		setContentView(R.layout.tecla_highlighter);
 
 		mInnerBounds = (HighlightBoundsView) findViewById(R.id.announce_bounds);
-//		mAnnounceBounds.setHighlightColor(Color.argb(0xff, 0x21, 0xad, 0xe3));
 		mInnerBounds.setHighlightColor(Color.WHITE);
 		
 		
@@ -40,7 +39,6 @@ public class OverlayHighlighter extends SimpleOverlay {
 	@Override
 	protected void onShow() {
 		TeclaStatic.logD(CLASS_TAG, "Showing Highlighter");
-		//sInstance = this;
 	}
 
 	@Override
