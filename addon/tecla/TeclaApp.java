@@ -145,7 +145,7 @@ public class TeclaApp extends Application {
 	        //Log.d("Services Running",service.service.getClassName());
 	    }
 	    if(isAccessibilityServiceEnabled()){
-	    	Log.d("TAG", "the service is enabled but not started");
+	    	//Log.d("TAG", "the service is enabled but not started");
 	    	//Do something
 	    }		
 		return false;
