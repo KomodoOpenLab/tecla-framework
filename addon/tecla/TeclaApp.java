@@ -1,18 +1,15 @@
 package com.android.tecla;
 
 
-import com.android.inputmethod.latin.LatinIME;
+import java.util.List;
 
-import ca.idrc.tecla.R;
-import ca.idrc.tecla.framework.Persistence;
-
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
 import android.app.KeyguardManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,10 +20,15 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+import ca.idrc.tecla.framework.Persistence;
+
+import com.android.inputmethod.latin.LatinIME;
 
 public class TeclaApp extends Application {
 
@@ -122,13 +124,31 @@ public class TeclaApp extends Application {
 	    return false;
 	}
 
+	private boolean isAccessibilityServiceEnabled(){
+		String settingValue= Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+		if(settingValue !=null){
+			String [] enabledServices=TextUtils.split(settingValue, "/");
+			for(String service: enabledServices){
+				if(service.equals(TeclaStatic.A11Y_SERVICE)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public boolean isAccessibilityServiceRunning() {
 	    for (RunningServiceInfo service : activity_manager.getRunningServices(Integer.MAX_VALUE)) {
 	        if (TeclaStatic.A11Y_SERVICE.equals(service.service.getClassName())) {
 	            return true;
 	        }
+	        //Log.d("Services Running",service.service.getClassName());
 	    }
-	    return false;
+	    if(isAccessibilityServiceEnabled()){
+	    	Log.d("TAG", "the service is enabled but not started");
+	    	//Do something
+	    }		
+		return false;
 	}
 
 	public boolean isSupportedIMERunning() {
